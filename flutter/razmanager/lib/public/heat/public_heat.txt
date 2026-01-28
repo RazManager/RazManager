@@ -1,0 +1,7 @@
+PublicHeat                  StatefulWidget
+_PublicHeatState            State<PublicHeat>         ChangeNotifierProvider
+    _PublicHeatChild        PublicHeatChildBase       Id
+    _PublicHeatChildState   PublicHeatChildStateBase  heatProto, heatStateStreamSubscription, 
+
+        PublicHeatLeaderboard         PublicHeatStateDetailBase
+        _PublicHeatLeaderboardState   PublicHeatStateDetailStateBase background, StartLights, etc
