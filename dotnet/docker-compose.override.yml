@@ -1,0 +1,53 @@
+version: '3.4'
+
+services:
+  razmanager.postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - "razmanager.repository:/var/lib/postgresql/data"
+
+  razmanager.repository:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - razmanager.postgres
+
+  razmanager.identity:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - razmanager.repository
+
+  razmanager.silo:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    depends_on:
+      - razmanager.repository
+
+  razmanager.app:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - razmanager.repository
+
+  razmanager.device:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - razmanager.repository
+
+  razmanager.reverseproxy:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "443:443"
+    depends_on:
+      - razmanager.identity
+
+volumes:
+  razmanager.repository:

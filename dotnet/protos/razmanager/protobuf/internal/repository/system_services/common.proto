@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package razmanager.protobuf.internal.repository.system_services.common;
+
+
+message TenantIdEntityIdRequest {
+  string tenant_id = 1;
+  string id = 2;
+}
+
+
+enum Idp {
+  IDP_LOCAL = 0;
+  IDP_FACEBOOK = 1;
+  IDP_GOOGLE = 2;
+}

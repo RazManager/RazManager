@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device_configuration_input.v1.proto";
+import "razmanager/protobuf/public/device_configuration_input_type_id.v1.proto";
+import "razmanager/protobuf/public/device_configuration_output.v1.proto";
+import "razmanager/protobuf/public/device_configuration_output_type_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service DeviceConfigurationService {
+  rpc DeviceConfigurationInputsPublish (stream DeviceConfigurationDeviceConfigurationInputs) returns (google.protobuf.Empty);
+  rpc DeviceConfigurationOutputsSubscribe (google.protobuf.StringValue) returns (stream public.v1.DeviceConfigurationOutputs);
+}
+
+message DeviceConfigurationDeviceConfigurationInputs {
+  string id = 1;
+  public.v1.DeviceConfigurationInputs device_configuration_inputs = 2;
+}

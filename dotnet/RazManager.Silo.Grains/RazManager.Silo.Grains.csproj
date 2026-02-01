@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.33.4" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.76.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.76.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Reminders" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RazManager.Resources\RazManager.Resources.csproj" />
+    <ProjectReference Include="..\RazManager.Silo.Grains.Abstractions\RazManager.Silo.Grains.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/common.proto" GrpcServices="None">
+		  <Link>Protos/internal/repository/system_services/common.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/device.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/device.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/device_configuration.proto" GrpcServices="Cient">
+		  <Link>Protos/internal/repository/system_services/device_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/event.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/event.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/heat.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_indicator_stint.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/heat_indicator_stint.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/race.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/race.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/track.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track_configuration.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/track_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/silo/system_services/device_configuration.proto" GrpcServices="None">
+		  <Link>Protos/internal/silo/system_services/device_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.user_services.tenant;
+
+
+service TenantService {
+  rpc Read (google.protobuf.Empty) returns (TenantRead);
+  rpc Select (google.protobuf.Empty) returns (TenantSelectResponse);
+}
+
+
+message TenantRead {
+  string id = 1;
+  string name = 2;
+}
+
+
+message TenantSelectResponse {
+  repeated TenantSelect result = 1;
+}
+
+message TenantSelect {
+  string id = 1;
+  string name = 2;
+  google.protobuf.BytesValue image = 3;
+  bool administrator = 4;
+}

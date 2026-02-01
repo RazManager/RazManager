@@ -1,0 +1,228 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/session_type_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+enum HeatCommandTypeId {
+  HEAT_COMMAND_TYPE_ID_OPEN = 0;
+  HEAT_COMMAND_TYPE_ID_START = 1;
+  HEAT_COMMAND_TYPE_ID_YELLOW = 2;
+  HEAT_COMMAND_TYPE_ID_RED = 3;
+  HEAT_COMMAND_TYPE_ID_END = 4;
+  HEAT_COMMAND_TYPE_ID_REOPEN = 5;
+  HEAT_COMMAND_TYPE_ID_CLOSE = 6;
+  HEAT_COMMAND_TYPE_ID_RESET = 7;
+}
+
+
+message HeatCommandPermissions {
+  repeated HeatCommandTypeId items = 1;
+}
+
+
+enum HeatStateTypeId {
+  HEAT_STATE_TYPE_ID_PENDING = 0;
+  HEAT_STATE_TYPE_ID_OPENED = 1;
+  HEAT_STATE_TYPE_ID_COUNTDOWN = 2;
+  HEAT_STATE_TYPE_ID_RUNNING = 3;
+  HEAT_STATE_TYPE_ID_YELLOW = 4;
+  HEAT_STATE_TYPE_ID_COUNTDOWN_YELLOW = 5;
+  HEAT_STATE_TYPE_ID_RED = 6;
+  HEAT_STATE_TYPE_ID_COUNTDOWN_RED = 7;
+  HEAT_STATE_TYPE_ID_ENDED = 8;
+  HEAT_STATE_TYPE_ID_OFF = 9;
+  HEAT_STATE_TYPE_ID_CLOSED = 10;
+}
+
+
+enum HeatEndTypeId {
+  HEAT_END_TYPE_ID_UNDEFINED = 0;
+  HEAT_END_TYPE_ID_LAP = 1;
+  HEAT_END_TYPE_ID_DURATION = 2;
+  HEAT_END_TYPE_ID_MANUAL = 3;
+}
+
+enum HeatIndicatorFlag {
+  HEAT_INDICATOR_FLAG_FINISHED = 0;
+  HEAT_INDICATOR_FLAG_FASTEST_LAP = 1;
+  HEAT_INDICATOR_FLAG_PITLANE = 2;
+  HEAT_INDICATOR_FLAG_CAR_OFF_TRACK = 3;
+  HEAT_INDICATOR_FLAG_CONTROLLER_BATTERY_WARNING = 4;
+  HEAT_INDICATOR_FLAG_CHARGING = 5;
+  HEAT_INDICATOR_FLAG_WARNING = 10;
+}
+
+
+message SessionType {
+  SessionTypeId id = 1;
+  string name = 2;
+}
+
+
+message HeatStateType {
+  HeatStateTypeId id = 1;
+  string name = 2;
+}
+
+
+message Heat {
+  string id = 1;
+  uint32 number = 2;
+  string race_id = 3;
+  SessionType session_type = 4;
+  HeatStateType heat_state_type = 5;
+  repeated HeatIndicator heat_indicators = 6;
+}
+
+message HeatIndicator {
+  string id = 1;
+  uint32 indicator_id = 2;
+  google.protobuf.UInt32Value color = 3;
+  string event_user_id = 4;
+  google.protobuf.UInt32Value car_class_color = 5;
+  google.protobuf.BytesValue car_image = 6;
+  repeated HeatIndicatorStint heat_indicator_stints = 7;
+}
+
+
+message HeatIndicatorStint {
+  string id = 1;
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+}
+
+
+message HeatState {
+  HeatStateType heat_state_type = 1;
+  google.protobuf.UInt32Value laps_current = 2;
+  bool timer_is_running = 3;
+  google.protobuf.Duration timer_elapsed = 4;
+  uint32 start_light_id = 5;
+}
+
+
+message HeatLeaderboard {
+  google.protobuf.StringValue correlation_id = 1;
+  repeated HeatLeaderboardIndicator indicators = 2;
+}
+
+
+message HeatLeaderboardIndicator {
+  uint32 indicator_id = 1;
+  uint32 position = 2;
+  google.protobuf.UInt32Value laps = 3;
+  repeated HeatIndicatorTimeTypeTime time_type_times = 4;
+  google.protobuf.StringValue gap_leader = 5;
+  google.protobuf.StringValue gap_interval = 6;
+  uint32 energy_percent = 7;
+  google.protobuf.UInt32Value energy_laps_left = 8;
+  repeated HeatIndicatorFlag flags = 9;
+  uint32 pit_lanes = 10;
+  uint32 car_off_tracks = 11;
+  google.protobuf.StringValue team_event_user_id = 12;
+}
+
+  // leader
+  // interval/split
+
+  //INDICATOR_STATE_TYPE_POWER_ON = 1;
+  //INDICATOR_STATE_TYPE_POWER_SLOW = 2;
+  //INDICATOR_STATE_TYPE_POWER_OFF = 3;
+  //INDICATOR_STATE_TYPE_YELLOW = 4;
+  //INDICATOR_STATE_TYPE_RED = 5;
+  //INDICATOR_STATE_TYPE_DISQUALIFIED = 6;
+  //INDICATOR_STATE_TYPE_FASTEST_LAP = 7;
+  // Car on Track
+  // Car in pit lane
+//}
+
+enum HeatIndicatorTimeTypeId {
+  HEAT_INDICATOR_TIME_TYPE_ID_LAP = 0;
+  HEAT_INDICATOR_TIME_TYPE_ID_SECTOR1 = 1;
+  HEAT_INDICATOR_TIME_TYPE_ID_SECTOR2 = 2;
+  HEAT_INDICATOR_TIME_TYPE_ID_SECTOR3 = 3;
+  HEAT_INDICATOR_TIME_TYPE_ID_SPEED_TRAP = 4;
+}
+
+enum HeatIndicatorFastestTimeTypeId {
+  HEAT_INDICATOR_FASTEST_TIME_TYPE_ID_NONE = 0;
+  HEAT_INDICATOR_FASTEST_TIME_TYPE_ID_INDICATOR = 1;
+  HEAT_INDICATOR_FASTEST_TIME_TYPE_ID_ALL_INDICATORS = 2;
+}
+
+message HeatIndicatorTimeTypeTime {
+  public.v1.HeatIndicatorTimeTypeId time_type_id = 1;
+  google.protobuf.DoubleValue time = 2;
+  public.v1.HeatIndicatorFastestTimeTypeId fastest_time_type_id = 3;
+  google.protobuf.DoubleValue fastest_time = 4;
+}
+
+
+message HeatAnalyses {
+  repeated HeatAnalysis items = 1;
+}
+
+message HeatAnalysis {
+  google.protobuf.Duration timer_elapsed = 1;
+  google.protobuf.UInt32Value indicator_id = 2;
+  oneof value {
+    public.v1.HeatStateTypeId heat_state_type_id = 3;
+    HeatAnalysisLap lap = 4;
+    HeatAnalysisGap gap = 5;
+  }
+}
+
+message HeatAnalysisLap {
+  uint32 position = 1;
+  uint32 lap = 2;
+  google.protobuf.DoubleValue time = 3;
+  uint32 pitlanes = 4;
+  uint32 car_off_tracks = 5;
+}
+
+message HeatAnalysisGap {
+  uint32 indicator_id = 1;
+  double value = 2;
+  string display_value = 3;
+  google.protobuf.DoubleValue delta_value = 4;
+  google.protobuf.DoubleValue delta_fraction = 5;
+  repeated HeatIndicatorFlag flags = 6;
+}
+
+
+message HeatStintAnalysis {
+  bool refresh = 1;
+  HeatStintAnalysisIndicatorStints heat_stint_analysis_indicator_stints = 2;
+}
+
+
+message HeatStintAnalysisIndicatorStints {
+  repeated HeatStintAnalysisIndicatorStint items = 1;
+}
+
+message HeatStintAnalysisIndicatorStint {
+  string id = 1;
+  uint32 indicator_id = 2;
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+
+  repeated HeatStintAnalysisIndicatorStintLap laps = 10;
+  google.protobuf.Duration duration = 11;
+  google.protobuf.DoubleValue average_time = 12;
+}
+
+
+message HeatStintAnalysisIndicatorStintLap {
+  uint32 indicator_id = 1;
+  uint32 lap = 2;
+  google.protobuf.Duration timer_elapsed = 3;
+  google.protobuf.DoubleValue time = 4;
+  uint32 pitlanes = 5;
+  uint32 car_off_tracks = 6;
+}

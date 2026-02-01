@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.points_scheme;
+
+
+service PointsSchemeService {
+  rpc Initialize (google.protobuf.Empty) returns (PointsSchemeRead);
+  rpc Read (common.IdRequest) returns (PointsSchemeReadResponse);
+  rpc Create (PointsSchemeCreateUpdate) returns (common.CreateResponse);
+  rpc Update (PointsSchemeUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (PointsSchemeListResponse);
+  rpc Select (google.protobuf.Empty) returns (PointsSchemeSelectResponse);
+}
+
+
+message PointsSchemeReadResponse {
+  PointsSchemeRead entity = 1;
+  string etag = 2;
+}
+
+message PointsSchemeRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue description = 3;
+  uint32 position = 4;
+  google.protobuf.UInt32Value points_race_session_heat_fastest_lap = 5;
+  google.protobuf.UInt32Value points_race_session_heat_most_led_laps = 6;
+  google.protobuf.UInt32Value points_race_session_heat_led_at_least_one_lap = 7;
+  google.protobuf.UInt32Value points_race_session_overall_fastest_lap = 8;
+  google.protobuf.UInt32Value points_race_session_overall_most_led_laps = 9;
+  uint32 min_drivers = 11;
+  uint32 max_drivers = 12;
+  repeated PointsSchemePositionReadCreateUpdate points_scheme_positions = 14;
+}
+
+
+message PointsSchemeCreateUpdate {
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  uint32 position = 4;
+  google.protobuf.UInt32Value points_race_session_heat_fastest_lap = 5;
+  google.protobuf.UInt32Value points_race_session_heat_most_led_laps = 6;
+  google.protobuf.UInt32Value points_race_session_heat_led_at_least_one_lap = 7;
+  google.protobuf.UInt32Value points_race_session_overall_fastest_lap = 8;
+  google.protobuf.UInt32Value points_race_session_overall_most_led_laps = 9;
+  uint32 min_drivers = 11;
+  uint32 max_drivers = 12;
+  repeated PointsSchemePositionReadCreateUpdate points_scheme_positions = 14;
+}
+
+
+message PointsSchemeUpdateRequest {
+  string id = 1;
+  PointsSchemeCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message PointsSchemePositionReadCreateUpdate {
+  uint32 position = 2;
+  uint32 points = 3;
+}
+
+
+
+message PointsSchemeListResponse {
+  repeated PointsSchemeList result = 1;
+}
+
+message PointsSchemeList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  string etag = 4;
+}
+
+
+message PointsSchemeSelectResponse {
+  repeated PointsSchemeSelect result = 1;
+}
+
+message PointsSchemeSelect {
+  string id = 1;
+  string name = 2;
+  uint32 min_drivers = 3;
+  uint32 max_drivers = 4;
+}

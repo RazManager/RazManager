@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.system_services.track_configuration;
+
+
+service TrackConfigurationService {
+  rpc Read (google.protobuf.StringValue) returns (TrackConfigurationRead);
+}
+
+
+message TrackConfigurationRead {
+  repeated string device_configuration_ids = 1;
+}

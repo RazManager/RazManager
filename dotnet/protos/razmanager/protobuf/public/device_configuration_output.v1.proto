@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device_configuration_output_type_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message DeviceConfigurationOutput {
+  string device_configuration_id = 1;
+  google.protobuf.StringValue correlation_id = 2;
+  DeviceConfigurationOutputTypeId device_configuration_output_type_id = 3;
+  google.protobuf.UInt32Value device_configuration_output_id = 4;
+}
+
+message DeviceConfigurationOutputs {
+  repeated DeviceConfigurationOutput items = 1;
+}

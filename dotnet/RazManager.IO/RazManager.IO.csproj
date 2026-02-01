@@ -1,0 +1,183 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Protobuf Include="../protos/razmanager/protobuf/internal/io/commissioning.proto" GrpcServices="Server">
+			<Link>Protos/internal/io/commissioning.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/internal/io/system_information.proto" GrpcServices="Server">
+			<Link>Protos/internal/io/system_information.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/device.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/device_configuration.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_feature_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_configuration_feature_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_configuration_input.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_configuration_input_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_output.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_configuration_output.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_output_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_configuration_output_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/driver_identification_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/event.v1.proto" GrpcServices="None">
+			<Link>Protos/public/event.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/event_user_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/event_user_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat.v1.proto" GrpcServices="None">
+			<Link>Protos/public/heat.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_configuration_input_output_id_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race.v1.proto" GrpcServices="None">
+			<Link>Protos/public/race.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_feature_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/race_feature_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/session_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/session_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/track.v1.proto" GrpcServices="None">
+			<Link>Protos/public/track.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/track_configuration.v1.proto" GrpcServices="None">
+			<Link>Protos/public/track_configuration.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/heat.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/race.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+		<PackageReference Include="Azure.Identity" Version="1.17.1" />
+		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
+		<PackageReference Include="System.Device.Gpio" Version="4.1.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Protos\" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\RazManager.Utilities.Host\RazManager.Utilities.Host.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Compile Update="Utilities\ExceptionMessages.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ExceptionMessages.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Utilities\GpioInputType.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>GpioInputType.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Utilities\GpioOutputType.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>GpioOutputType.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Content Update="settings - Prod.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Utilities\ExceptionMessages.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Utilities\GpioInputType.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>GpioInputType.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Utilities\GpioOutputType.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>GpioOutputType.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Update="24h.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="GT31.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="GT32.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="suzuka_1.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="suzuka_2.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

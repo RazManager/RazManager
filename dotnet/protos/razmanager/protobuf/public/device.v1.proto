@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device_configuration_input_type_id.v1.proto";
+import "razmanager/protobuf/public/device_configuration_output_type_id.v1.proto";
+import "razmanager/protobuf/public/device_configuration_feature_type_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message DeviceInformation {
+  string id = 1;
+  string name = 2;
+  repeated DeviceProperty device_properties = 3;
+  repeated DeviceConfiguration device_configurations = 4;
+  //repeated string ip_addresses = 3;
+}
+
+
+message DeviceProperty {
+  string label = 1;
+  string value = 2;
+}
+
+message DeviceConfiguration {
+  string id = 1;
+  string name = 2;
+  repeated DeviceDeviceConfigurationInput device_configuration_inputs = 3;
+  repeated DeviceDeviceConfigurationOutput device_configuration_outputs = 4;
+  repeated DeviceConfigurationFeatureTypeId device_configuration_features = 5;
+}
+
+
+message DeviceDeviceConfigurationInput {
+  DeviceConfigurationInputTypeId device_configuration_input_type_id = 1;
+  google.protobuf.UInt32Value device_configuration_input_id = 2;
+  google.protobuf.UInt32Value device_configuration_input_sub_id = 3;
+}
+
+message DeviceDeviceConfigurationOutput {
+  DeviceConfigurationOutputTypeId device_configuration_output_type_id = 1;
+  google.protobuf.UInt32Value device_configuration_output_id = 2;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.user_services.heat;
+
+
+service HeatService {
+  rpc AuthorizedDriver (google.protobuf.StringValue) returns (HeatAuthorizedTenantResponse);
+  rpc AuthorizedTenantAdministrator (google.protobuf.StringValue) returns (google.protobuf.BoolValue);
+}
+
+
+message HeatAuthorizedTenantResponse {
+  bool authorized = 1;
+  google.protobuf.StringValue tenant_id = 2;
+}

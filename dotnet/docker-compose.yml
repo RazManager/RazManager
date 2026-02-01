@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  razmanager.repository:
+    image: ${DOCKER_REGISTRY-}razmanagerrepository
+    build:
+      context: .
+      dockerfile: RazManager.Repository/Dockerfile
+
+  razmanager.identity:
+    image: ${DOCKER_REGISTRY-}razmanageridentity
+    build:
+      context: .
+      dockerfile: RazManager.Identity/Dockerfile
+
+  razmanager.silo:
+    image: ${DOCKER_REGISTRY-}razmanagersilo
+    build:
+      context: .
+      dockerfile: RazManager.Silo.Host/Dockerfile
+
+  razmanager.app:
+    image: ${DOCKER_REGISTRY-}razmanagerapp
+    build:
+      context: .
+      dockerfile: RazManager.App/Dockerfile
+
+  razmanager.device:
+    image: ${DOCKER_REGISTRY-}razmanagerdevice
+    build:
+      context: .
+      dockerfile: RazManager.Device/Dockerfile
+
+  razmanager.reverseproxy:
+    image: ${DOCKER_REGISTRY-}razmanagerreverseproxy
+    build:
+      context: .
+      dockerfile: RazManager.ReverseProxy/Dockerfile

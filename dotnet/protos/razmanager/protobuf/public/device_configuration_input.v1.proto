@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device_configuration_input_type_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message DeviceConfigurationInput {
+  string device_configuration_id = 1;
+  google.protobuf.StringValue correlation_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  DeviceConfigurationInputTypeId device_configuration_input_type_id = 4;
+  google.protobuf.UInt32Value device_configuration_input_id = 5;
+  google.protobuf.UInt32Value device_configuration_input_sub_id = 6;
+  oneof value {
+    uint32 int_value = 7;
+    bool bool_value = 8;
+  }
+  google.protobuf.StringValue information = 9;
+  google.protobuf.DoubleValue lap_time = 10;
+}
+
+message DeviceConfigurationInputs {
+  repeated DeviceConfigurationInput items = 1;
+}

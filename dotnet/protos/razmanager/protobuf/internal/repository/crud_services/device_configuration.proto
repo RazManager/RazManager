@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "razmanager/protobuf/internal/repository/crud_services/device.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.device_configuration;
+
+
+service DeviceConfigurationService {
+  rpc Select (google.protobuf.Empty) returns (DeviceConfigurationSelectResponse);
+}
+
+
+//message DeviceConfigurationRead {
+//  string id = 1;
+//  string device_id = 2;
+//}
+
+
+message DeviceConfigurationSelectResponse {
+  repeated DeviceConfigurationSelect result = 1;
+}
+
+message DeviceConfigurationSelect {
+  string id = 1;
+  string name = 2;
+  device.DeviceSelect device = 3;
+}

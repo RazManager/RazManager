@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum EventUserTypeId {
+  EVENT_USER_TYPE_ID_UNDEFINED = 0;
+  EVENT_USER_TYPE_ID_TEAM = 1;
+  EVENT_USER_TYPE_ID_DRIVER = 2;
+  EVENT_USER_TYPE_ID_VIEWER = 3;
+}

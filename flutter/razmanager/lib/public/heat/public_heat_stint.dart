@@ -263,7 +263,8 @@ class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> wi
                                     if (model.teamUsers != null && model.teamUsers!.isNotEmpty)
                                       DataCell(
                                         Text(
-                                          x.eventUserId.hasValue()
+                                          x.eventUserId.hasValue() &&
+                                                  model.teamUsers!.where((teamUser) => teamUser.id == x.eventUserId.value).singleOrNull != null
                                               ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == x.eventUserId.value).name.value
                                               : '',
                                         ),
@@ -370,10 +371,8 @@ class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> wi
   List<MapEntry<String, int>> eventUserLaps(PublicHeatStintModel model) {
     return groupBy(publicHeatChildState.heatStintAnalysisIndicatorStints, (x) => x.eventUserId)
         .map((key, value) {
-          return MapEntry(
-            key.hasValue() && model.teamUsers != null ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == key.value).name.value : '',
-            value.map((x) => x.laps.length).reduce((value, element) => value + element),
-          );
+          final teamUser = key.hasValue() ? model.teamUsers?.where((teamUser) => teamUser.id == key.value).singleOrNull : null;
+          return MapEntry(teamUser != null ? teamUser.name.value : '', value.map((x) => x.laps.length).reduce((value, element) => value + element));
         })
         .entries
         .toList();
@@ -382,8 +381,9 @@ class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> wi
   List<MapEntry<String, Duration>> eventUserDuration(PublicHeatStintModel model) {
     return groupBy(publicHeatChildState.heatStintAnalysisIndicatorStints, (x) => x.eventUserId)
         .map((key, value) {
+          final teamUser = key.hasValue() ? model.teamUsers?.where((teamUser) => teamUser.id == key.value).singleOrNull : null;
           return MapEntry(
-            key.hasValue() && model.teamUsers != null ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == key.value).name.value : '',
+            teamUser != null ? teamUser.name.value : '',
             value.map((x) => protobufDurationToDuration(x.duration)).reduce((value, element) => value + element),
           );
         })

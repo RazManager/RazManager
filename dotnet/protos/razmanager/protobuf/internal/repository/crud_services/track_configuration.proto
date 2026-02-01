@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/track.proto";
+import "razmanager/protobuf/internal/repository/crud_services/race_format_type.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.track_configuration;
+
+
+service TrackConfigurationService {
+  rpc Initialize (google.protobuf.Empty) returns (track.TrackConfigurationReadCreateUpdate);
+  rpc Select (google.protobuf.Empty) returns (TrackConfigurationSelectResponse);
+}
+
+
+message TrackConfigurationList {
+  string id = 1;
+  string name = 2;
+  track.TrackSelect track = 3;
+}
+
+
+message TrackConfigurationSelectResponse {
+  repeated TrackConfigurationSelect result = 1;
+}
+
+message TrackConfigurationSelect {
+  string id = 1;
+  string name = 2;
+  track.TrackSelect track = 3;
+  repeated  race_format_type.RaceFormatTypeSelect track_configuration_race_formats = 4;
+  repeated TrackConfigurationIndicatorSelect track_configuration_indicators = 5;
+}
+
+message TrackConfigurationIndicatorSelect {
+  uint32 indicator_id = 1;
+  google.protobuf.UInt32Value color = 2;
+}

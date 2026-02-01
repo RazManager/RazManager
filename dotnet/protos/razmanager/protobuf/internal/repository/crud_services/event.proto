@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/event_user_type_id.v1.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.event;
+
+
+service EventService {
+  rpc Initialize (google.protobuf.Empty) returns (EventRead);
+  rpc Read (common.IdRequest) returns (EventReadResponse);
+  rpc Create (EventCreateUpdate) returns (common.CreateResponse);
+  rpc Update (EventUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (EventListResponse);
+  rpc Select (google.protobuf.Empty) returns (EventSelectResponse);
+}
+
+
+message EventReadResponse {
+  EventRead entity = 1;
+  string etag = 2;
+}
+
+message EventRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue description = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp publish_from = 5;
+  google.protobuf.Timestamp publish_until = 6;
+  EventVisibilityTypeId event_visibility_type_id = 7;
+  google.protobuf.BytesValue image = 8;
+  repeated EventInviteReadCreateUpdate event_invites = 10;
+  repeated EventUserRead event_users = 11;
+}
+
+
+message EventCreateUpdate {
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  google.protobuf.Timestamp starts_at = 4;
+  google.protobuf.Timestamp publish_from = 5;
+  google.protobuf.Timestamp publish_until = 6;
+  EventVisibilityTypeId event_visibility_type_id = 7;
+  optional bytes image = 8;
+  optional bool image_deleted = 9;
+  repeated EventInviteReadCreateUpdate event_invites = 10;
+  repeated string event_invites_deleted = 11;
+  repeated EventUserCreateUpdate event_users = 12;
+  repeated string event_users_deleted = 13;
+}
+
+
+message EventUpdateRequest {
+  string id = 1;
+  EventCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message EventListResponse {
+  repeated EventList result = 1;
+}
+
+message EventList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  google.protobuf.Timestamp publish_from = 4;
+  google.protobuf.Timestamp publish_until = 5;
+  google.protobuf.BytesValue image = 6;
+  string etag = 7;
+}
+
+
+message EventSelectResponse {
+  repeated EventSelect result = 1;
+}
+
+message EventSelect {
+  string id = 1;
+  string name = 2;
+  repeated EventUserSelect event_users = 9;
+}
+
+
+message EventInviteReadCreateUpdate {
+  string id = 1;
+  int32 code = 2;
+  bool multiple = 3;
+  google.protobuf.Timestamp time_to_live_at = 4;
+}
+
+
+message EventUserRead {
+  string id = 1;
+  google.protobuf.StringValue event_user_id = 2;
+  google.protobuf.StringValue user_id = 3;
+  //google.protobuf.StringValue autopilot_id = 4;
+  google.protobuf.StringValue name = 5;
+  google.protobuf.StringValue short_name = 6;
+  public.v1.EventUserTypeId event_user_type_id = 7;
+  google.protobuf.BytesValue image = 8;
+}
+
+message EventUserCreateUpdate {
+  string id = 1;
+  google.protobuf.StringValue event_user_id = 2;
+  google.protobuf.StringValue user_id = 3;
+  //google.protobuf.StringValue autopilot_id = 4;
+  google.protobuf.StringValue name = 5;
+  google.protobuf.StringValue short_name = 6;
+  public.v1.EventUserTypeId event_user_type_id = 7;
+  optional bytes image = 8;
+  optional bool image_deleted = 9;
+}
+
+message EventUserSelect {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue short_name = 3;
+  google.protobuf.BytesValue image = 4;
+}
+
+
+enum EventVisibilityTypeId {
+  EVENT_VISIBILITY_TYPE_ID_UNDEFINED = 0;
+  EVENT_VISIBILITY_TYPE_ID_PUBLIC = 1;
+  EVENT_VISIBILITY_TYPE_ID_MEMBERS_AND_GUESTS = 2;
+}

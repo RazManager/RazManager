@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "razmanager/protobuf/public/device.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service DeviceService {
+  rpc DeviceInformation (public.v1.DeviceInformation) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.io.system_information;
+
+
+service SystemInformationService {
+  rpc Read (google.protobuf.Empty) returns (SystemInformationRead);
+}
+
+
+message SystemInformationRead {
+  google.protobuf.StringValue hardware_model = 1;
+  google.protobuf.StringValue hardware_processor = 2;
+  google.protobuf.StringValue software_assembly_version = 3;
+  google.protobuf.StringValue software_snap_version = 4;
+  google.protobuf.StringValue software_dot_net_version = 5;
+  google.protobuf.StringValue software_os_version = 6;
+  google.protobuf.StringValue software_os_release_version = 7;
+  repeated string network_ip_addresses = 8;
+}

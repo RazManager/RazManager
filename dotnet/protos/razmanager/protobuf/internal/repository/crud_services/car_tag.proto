@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.car_tag;
+
+
+service CarTagService {
+  rpc Initialize (google.protobuf.Empty) returns (CarTagRead);
+  rpc Read (common.IdRequest) returns (CarTagReadResponse);
+  rpc Create (CarTagCreateUpdate) returns (common.CreateResponse);
+  rpc Update (CarTagUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (CarTagListResponse);
+  rpc Select (google.protobuf.Empty) returns (CarTagSelectResponse);
+}
+
+
+message CarTagReadResponse {
+  CarTagRead entity = 1;
+  string etag = 2;
+}
+
+message CarTagRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue description = 3;
+  uint32 position = 4;
+}
+
+
+message CarTagCreateUpdate {
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  uint32 position = 4;
+}
+
+
+message CarTagUpdateRequest {
+  string id = 1;
+  CarTagCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message CarTagList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  string etag = 4;
+}
+
+message CarTagListResponse {
+  repeated CarTagList result = 1;
+}
+
+
+message CarTagSelect {
+  string id = 1;
+  string name = 2;
+}
+
+message CarTagSelectResponse {
+  repeated CarTagSelect result = 1;
+}

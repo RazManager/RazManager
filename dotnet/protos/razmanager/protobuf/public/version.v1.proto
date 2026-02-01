@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service VersionService {
+  rpc All (VersionAllRequest) returns (VersionAllResponse);
+  rpc Newer (VersionNewerRequest) returns (VersionNewerResponse);
+}
+
+
+enum VersionPlatformId {
+  VERSION_PLATFORM_ID_SERVER = 0;
+  VERSION_PLATFORM_ID_WINDOWS = 1;
+  VERSION_PLATFORM_ID_LINUX = 2;
+  VERSION_PLATFORM_ID_MACOS = 3;
+  VERSION_PLATFORM_ID_IOS = 4;
+  VERSION_PLATFORM_ID_ANDROID = 5;
+}
+
+
+message Version {
+  google.protobuf.Timestamp date = 2;
+  uint32 major = 3;
+  uint32 minor = 4;
+  uint32 patch = 5;
+  bool valid = 7;
+  google.protobuf.StringValue description = 8;
+  repeated VersionNote notes = 9;
+  repeated VersionPlatform platforms = 10;
+}
+
+message VersionNote {
+  string description = 1;
+}
+
+message VersionPlatform {
+  VersionPlatformId id = 1;
+  string name = 2;
+}
+
+
+message VersionAllRequest {
+  VersionPlatformId version_platform_id = 1;
+}
+
+message VersionAllResponse {
+  repeated Version result = 1;
+}
+
+
+message VersionNewerRequest {
+  VersionPlatformId version_platform_id = 1;
+  uint32 current_version_major = 2;
+  uint32 current_version_minor = 3;
+  uint32 current_version_patch = 4;
+  uint32 confirmed_version_major = 5;
+  uint32 confirmed_version_minor = 6;
+  uint32 confirmed_version_patch = 7;
+}
+
+message VersionNewerResponse {
+  repeated Version result = 1;
+  bool current_version_valid = 2;
+}

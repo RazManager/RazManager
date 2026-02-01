@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/race.v1.proto";
+
+package razmanager.protobuf.internal.repository.system_services.race;
+
+
+service RaceService {
+  rpc Read (google.protobuf.StringValue) returns (public.v1.Race);
+  rpc UpdateState (RaceStateUpdateRequest) returns (google.protobuf.Empty);
+}
+
+
+message RaceStateUpdateRequest {
+  string id = 1;
+  public.v1.RaceStateTypeId race_state_type_id = 2;
+}

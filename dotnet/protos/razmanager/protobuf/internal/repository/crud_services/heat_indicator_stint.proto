@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.heat_indicator_stint;
+
+
+service HeatIndicatorStintService {
+  rpc Initialize (google.protobuf.Empty) returns (HeatIndicatorStintRead);
+  rpc Read (common.IdRequest) returns (HeatIndicatorStintReadResponse);
+  rpc Create (HeatIndicatorStintCreate) returns (common.CreateResponse);
+  rpc Update (HeatIndicatorStintUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+}
+
+
+message HeatIndicatorStintReadResponse {
+  HeatIndicatorStintRead entity = 1;
+  string etag = 2;
+}
+
+message HeatIndicatorStintRead {
+  google.protobuf.StringValue id = 1;
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+}
+
+
+message HeatIndicatorStintCreate {
+  string heat_indicator_id = 2;
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+}
+
+
+message HeatIndicatorStintUpdate {
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+}
+
+
+message HeatIndicatorStintUpdateRequest {
+  string id = 1;
+  HeatIndicatorStintUpdate entity = 2;
+  string etag = 3;
+}

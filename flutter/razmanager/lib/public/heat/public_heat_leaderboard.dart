@@ -312,7 +312,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                               final teamUsers = heatModel.heatUsers[heatLeaderboardIndicator.indicatorId]?.teamUsers;
                               TeamUser? teamDriver;
                               if (teamHeat && heatLeaderboardIndicator.teamEventUserId.hasValue()) {
-                                teamDriver =  teamUsers!.singleWhere((teamUser) => teamUser.id == heatLeaderboardIndicator.teamEventUserId.value);
+                                teamDriver =  teamUsers!.where((teamUser) => teamUser.id == heatLeaderboardIndicator.teamEventUserId.value).singleOrNull;
                               }
                               final timeTypeTimeLap = heatLeaderboardIndicator.timeTypeTimes
                                   .where((x) => x.timeTypeId == HeatIndicatorTimeTypeId.HEAT_INDICATOR_TIME_TYPE_ID_LAP)

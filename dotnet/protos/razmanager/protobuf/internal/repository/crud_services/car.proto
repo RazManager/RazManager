@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.car;
+
+
+service CarService {
+  rpc Initialize (google.protobuf.Empty) returns (CarRead);
+  rpc Read (common.IdRequest) returns (CarReadResponse);
+  rpc Create (CarCreateUpdate) returns (common.CreateResponse);
+  rpc Update (CarUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (CarListRequest) returns (CarListResponse);
+  rpc Select (google.protobuf.Empty) returns (CarSelectResponse);
+}
+
+
+message CarReadResponse {
+  CarRead entity = 1;
+  string etag = 2;
+}
+
+message CarRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.UInt32Value number = 3;
+  google.protobuf.StringValue description = 4;
+  repeated string car_tag_ids = 5;
+  repeated string track_configuration_ids = 6;
+  google.protobuf.BytesValue image = 7;
+}
+
+
+message CarCreateUpdate {
+  string name = 2;
+  google.protobuf.UInt32Value number = 3;
+  google.protobuf.StringValue description = 4;
+  repeated string car_tag_ids = 5;
+  repeated string track_configuration_ids = 6;
+  optional bytes image = 7;
+  optional bool image_deleted = 8;
+}
+
+
+message CarUpdateRequest {
+  string id = 1;
+  CarCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message CarListRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  repeated string car_tag_ids = 3;
+}
+
+message CarListResponse {
+  repeated CarList result = 1;
+}
+
+message CarList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.UInt32Value number = 3;
+  google.protobuf.StringValue description = 4;
+  string car_tag_names = 5;
+  google.protobuf.BytesValue image = 6;
+  string etag = 7;
+}
+
+
+message CarSelectResponse {
+  repeated CarSelect result = 1;
+}
+
+message CarSelect {
+  string id = 1;
+  string name = 2;
+  google.protobuf.BytesValue image = 3;
+  repeated string car_tag_ids = 4;
+}

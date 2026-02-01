@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/event.v1.proto";
+
+package razmanager.protobuf.internal.repository.system_services.heat_indicator_stint;
+
+
+service HeatIndicatorStintService {
+  rpc Read (google.protobuf.StringValue) returns (HeatIndicatorStintReadResponse);
+  rpc Create (HeatIndicatorStintCreate) returns (google.protobuf.Empty);
+}
+
+
+message HeatIndicatorStintReadResponse {
+  string heat_id = 1;
+  string heat_indicator_id = 2;
+}
+
+message HeatIndicatorStintCreate {
+  string heat_indicator_id = 2;
+  uint32 lap = 3;
+}

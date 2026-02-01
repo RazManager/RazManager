@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+import "razmanager/protobuf/internal/repository/user_services/event.proto";
+import "razmanager/protobuf/internal/repository/user_services/tenant.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.user;
+
+
+service UserService {
+  rpc Read (google.protobuf.Empty) returns (UserReadResponse);
+  rpc Create (UserCreate) returns (common.CreateResponse);
+  rpc Update (UserUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.EtagRequest) returns (google.protobuf.Empty);
+}
+
+
+message UserReadResponse {
+  UserRead entity = 1;
+  string etag = 2;
+}
+
+message UserRead {
+  string id = 1;
+  google.protobuf.StringValue user_name = 2;
+  google.protobuf.StringValue email = 3;
+  google.protobuf.StringValue name = 4;
+  google.protobuf.StringValue short_name = 5;
+  google.protobuf.BytesValue image = 6;
+  repeated user_services.event.EventSelect events = 7;
+  repeated user_services.tenant.TenantSelect tenants = 8;
+}
+
+
+message UserCreate {
+  string user_name = 2;
+  google.protobuf.StringValue email = 3;
+  string name = 4;
+  string short_name = 5;
+  optional bytes image = 6;
+  string password = 7;
+}
+
+
+message UserUpdate {
+  google.protobuf.StringValue email = 3;
+  string name = 4;
+  string short_name = 5;
+  optional bytes image = 6;
+  optional bool image_deleted = 7;
+  repeated string events_deleted = 8;
+  repeated string tenants_deleted = 9;
+}
+
+message UserUpdateRequest {
+  UserUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message UserSelect {
+  string id = 1;
+  string name = 2;
+  string short_name = 3;
+}

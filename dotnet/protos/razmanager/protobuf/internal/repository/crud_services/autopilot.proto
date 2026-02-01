@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services_services/common.proto";
+import "razmanager/protobuf/internal/repository/crud_services/track_configuration.proto";
+
+package razmanager.protobuf.internal.repository.crud_services_services.autopilot;
+
+
+service AutopilotService {
+  rpc Default (google.protobuf.Empty) returns (AutopilotRead);
+  rpc Read (common.IdRequest) returns (AutopilotReadResponse);
+  rpc Create (AutopilotCreateUpdate) returns (common.CreateResponse);
+  rpc Update (AutopilotUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (AutopilotListResponse);
+  rpc Select (AutopilotSelectRequest) returns (AutopilotSelectResponse);
+}
+
+
+message AutopilotReadResponse {
+  AutopilotRead entity = 1;
+  string etag = 2;
+}
+
+message AutopilotRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue track_configuration_id = 2;
+  google.protobuf.StringValue name = 3;
+  google.protobuf.StringValue short_name = 4;
+  google.protobuf.StringValue description = 5;
+  google.protobuf.StringValue image_url = 8;
+  //double laptime_target_seconds = 7;
+  //double start_speed_percentage = 8;
+}
+
+
+message AutopilotCreateUpdate {
+  string track_configuration_id = 2;
+  string name = 3;
+  google.protobuf.StringValue short_name = 4;
+  google.protobuf.StringValue description = 5;
+  common.ImageState image_state = 6;
+  bytes image_content = 7;
+  google.protobuf.StringValue image_filename = 8;
+}
+
+message AutopilotUpdateRequest {
+  string id = 1;
+  AutopilotCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message AutopilotListResponse {
+  repeated AutopilotList result = 1;
+}
+
+message AutopilotList {
+  string id = 1;
+  track_configuration.TrackConfigurationList track_configuration = 2;
+  string name = 3;
+  google.protobuf.StringValue description = 4;
+  google.protobuf.StringValue image_url = 5;
+}
+
+
+message AutopilotSelectRequest {
+  repeated string ids_exclude = 1;
+}
+
+message AutopilotSelectResponse {
+  repeated AutopilotSelect result = 1;
+}
+
+message AutopilotSelect {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue short_name = 3;
+}

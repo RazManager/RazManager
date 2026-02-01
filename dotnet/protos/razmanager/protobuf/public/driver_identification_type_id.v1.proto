@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum DriverIdentificationTypeId {
+  DRIVER_IDENTIFICATION_TYPE_ID_INDICATOR = 0;
+  DRIVER_IDENTIFICATION_TYPE_ID_COLOR = 1;
+  DRIVER_IDENTIFICATION_TYPE_ID_INDICATOR_COLOR = 2;
+}

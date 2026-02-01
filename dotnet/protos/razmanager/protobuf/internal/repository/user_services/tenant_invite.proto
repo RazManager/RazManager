@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package razmanager.protobuf.internal.repository.user_services.tenant_invite;
+
+
+service TenantInviteService {
+  rpc Create (TenantInviteCreate) returns (google.protobuf.Empty);
+}
+
+
+message TenantInviteCreate {
+  int32 code = 1;
+}

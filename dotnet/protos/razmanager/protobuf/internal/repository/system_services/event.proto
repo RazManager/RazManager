@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/event.v1.proto";
+
+package razmanager.protobuf.internal.repository.system_services.event;
+
+
+service EventService {
+  rpc Read (google.protobuf.StringValue) returns (public.v1.Event);
+  //rpc ReadState (google.protobuf.StringValue) returns (EventStateReadUpdate);
+  //rpc UpdateState (EventStateReadUpdateRequest) returns (google.protobuf.Empty);
+}
+
+
+message EventStateReadUpdateRequest {
+  string id = 1;
+  EventStateReadUpdate state = 2;
+}
+
+message EventStateReadUpdate {
+  google.protobuf.StringValue current_race_id = 1;
+  google.protobuf.StringValue current_heat_id = 2;
+}

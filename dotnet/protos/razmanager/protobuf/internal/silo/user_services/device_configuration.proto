@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device_configuration_input.v1.proto";
+import "razmanager/protobuf/public/device_configuration_output.v1.proto";
+
+package razmanager.protobuf.internal.silo.user_services.device_configuration;
+
+
+service DeviceConfigurationService {
+  rpc DeviceConfigurationInput (DeviceConfigurationDeviceConfigurationInput) returns (google.protobuf.Empty);
+  rpc DeviceConfigurationInputsSubscribe (google.protobuf.StringValue) returns (stream public.v1.DeviceConfigurationInputs);
+  rpc DeviceConfigurationOutputsSubscribe (google.protobuf.StringValue) returns (stream public.v1.DeviceConfigurationOutputs);
+  rpc DeviceConfigurationSimulationGet (google.protobuf.StringValue) returns (google.protobuf.BoolValue);
+  rpc DeviceConfigurationSimulationSet (DeviceConfigurationSetSimulationSetRequest) returns (google.protobuf.Empty);
+}
+
+message DeviceConfigurationDeviceConfigurationInput {
+  string id = 1;
+  public.v1.DeviceConfigurationInput device_configuration_input = 2;
+}
+
+message DeviceConfigurationSetSimulationSetRequest {
+  string id = 1;
+  bool value = 2;
+}

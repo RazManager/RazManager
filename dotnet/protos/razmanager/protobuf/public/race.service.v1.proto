@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/race.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service RaceService {
+  rpc Subscribe (google.protobuf.StringValue) returns (stream Race);
+  rpc RaceLeaderboardSubscribe (google.protobuf.StringValue) returns (stream RaceLeaderboard);
+  rpc Command (RaceCommandRequest) returns (google.protobuf.Empty);
+  rpc CommandPermissions (google.protobuf.StringValue) returns (RaceCommandPermissions);
+}
+
+message RaceCommandRequest {
+  string id = 1;
+  RaceCommandTypeId race_command_type_id = 2;
+}

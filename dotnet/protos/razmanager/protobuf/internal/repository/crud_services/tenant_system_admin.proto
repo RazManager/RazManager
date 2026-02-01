@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.tenant_system_admin;
+
+
+service TenantSystemAdminService {
+  rpc Read (common.IdRequest) returns (TenantSystemAdminReadResponse);
+  rpc Update (TenantSystemAdminUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (TenantSystemAdminListResponse);
+}
+
+
+message TenantSystemAdminReadResponse {
+  TenantSystemAdminRead entity = 1;
+  string etag = 2;
+}
+
+message TenantSystemAdminRead {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  bool enabled = 4;
+}
+
+
+message TenantSystemAdminUpdate {
+  bool enabled = 1;
+}
+
+
+message TenantSystemAdminUpdateRequest {
+  string id = 1;
+  TenantSystemAdminUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message TenantSystemAdminListResponse {
+  repeated TenantSystemAdminList result = 1;
+}
+
+message TenantSystemAdminList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  bool enabled = 4;
+}

@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
+	</PropertyGroup>
+
+	<ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageReference Include="Azure.Identity" Version="1.17.1" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
+    <PackageReference Include="Duende.IdentityServer" Version="7.4.5" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RazManager.Utilities.EntityFramework\RazManager.Utilities.EntityFramework.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.GrpcClient\RazManager.Utilities.GrpcClient.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Host\RazManager.Utilities.Host.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Store\RazManager.Utilities.Store.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/user.proto" GrpcServices="Client">
+		<Link>Protos/internal/repository/system_services/user.proto</Link>
+		<ProtoRoot>../protos</ProtoRoot>
+	</Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/tenant.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/tenant.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+  </ItemGroup>
+
+</Project>

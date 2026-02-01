@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.user_services.user;
+
+
+service UserService {
+  rpc IsRegistred (google.protobuf.Empty) returns (google.protobuf.BoolValue);
+}

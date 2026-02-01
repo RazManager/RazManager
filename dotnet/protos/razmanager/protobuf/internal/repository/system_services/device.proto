@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+//import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+//import "razmanager/protobuf/public/device.v1.proto";
+//import "razmanager/protobuf/internal/repository/system_services/common.proto";
+
+package razmanager.protobuf.internal.repository.system_services.device;
+
+
+service DeviceService {
+  rpc Read (google.protobuf.StringValue) returns (DeviceRead);
+  //rpc DeviceInformation (public.v1.DeviceInformation) returns (google.protobuf.Empty);
+  //rpc Connected (google.protobuf.StringValue) returns (google.protobuf.Empty);
+  //rpc Disconnected (google.protobuf.StringValue) returns (google.protobuf.Empty);
+  //rpc AuthorizedCertificate (google.protobuf.StringValue) returns (DeviceAuthorizedResponse);
+  //rpc AuthorizedUser (common.TenantIdEntityIdRequest) returns (google.protobuf.BoolValue);
+}
+
+
+message DeviceRead {
+  repeated string device_configuration_ids = 1;
+  bool simulated = 2;
+}
+
+
+//message DeviceDeviceInformation {
+//  string id = 1;
+//  public.v1.DeviceInformation device_information = 2;
+//}
+
+//message DeviceAuthorizedResponse {
+//  bool authorized = 1;
+//  string id = 2;
+//}

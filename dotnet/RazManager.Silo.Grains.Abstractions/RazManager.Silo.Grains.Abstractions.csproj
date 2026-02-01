@@ -1,0 +1,92 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.33.4" />
+    <PackageReference Include="Grpc.Tools" Version="2.76.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/silo/user_services/event.proto" GrpcServices="None">
+		  <Link>Protos/internal/silo/user_services/event.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/silo/system_services/track_configuration.proto" GrpcServices="None">
+		  <Link>Protos/internal/silo/system_services/track_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_feature_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_feature_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_output.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_output.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_output_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_output_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/driver_identification_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/event.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/event.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/event_user_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/event_user_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input_output_id_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race_feature_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race_feature_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/session_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/session_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/track.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/track.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/track_configuration.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/track_configuration.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+  </ItemGroup>
+
+</Project>

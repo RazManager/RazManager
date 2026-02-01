@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "razmanager/protobuf/public/device_configuration_input.v1.proto";
+import "razmanager/protobuf/public/device_configuration_output.v1.proto";
+
+package razmanager.protobuf.internal.repository.silo.system_services.device_configuration;
+
+
+message DeviceConfigurationDeviceConfigurationInput2 {
+  string device_id = 1;
+  public.v1.DeviceConfigurationInput device_configuration_input = 2;
+  bool simulated = 3;
+}
+
+message DeviceConfigurationDeviceConfigurationOutput2 {
+  string device_id = 1;
+  public.v1.DeviceConfigurationOutput device_configuration_output = 2;
+  bool simulated = 3;
+}

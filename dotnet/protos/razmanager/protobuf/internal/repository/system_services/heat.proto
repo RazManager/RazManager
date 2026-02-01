@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device_configuration_input.v1.proto";
+import "razmanager/protobuf/public/heat.v1.proto";
+
+package razmanager.protobuf.internal.repository.system_services.heat;
+
+
+service HeatService {
+  rpc Read (google.protobuf.StringValue) returns (public.v1.Heat);
+  rpc ListHeatJournals (google.protobuf.StringValue) returns (HeatJournalListResponse);
+  rpc CreateHeatJournal (HeatJournalCreateRequest) returns (google.protobuf.Empty);
+  rpc DeleteHeatJournals (google.protobuf.StringValue) returns (google.protobuf.Empty);
+  rpc DeleteStints (google.protobuf.StringValue) returns (google.protobuf.Empty);
+}
+
+
+message HeatJournalListResponse {
+  uint32 sequence_number = 1;
+  repeated HeatJournal heat_journals = 2;
+}
+
+message HeatJournalCreateRequest {
+  string heat_id = 1;
+  uint32 sequence_number = 2;
+  HeatJournal heat_journal = 3;
+}
+
+message HeatJournalState {
+  google.protobuf.Timestamp timestamp = 1;
+  public.v1.HeatStateTypeId heat_state_type_id = 2;
+  uint32  start_light_id = 3;
+  bool ended = 4;
+  google.protobuf.Duration timer_elapsed = 5;
+  google.protobuf.Timestamp timer_started_at = 6;
+}
+
+message HeatJournal {
+  HeatJournalState heat_journal_state = 1;
+  oneof update_type {
+    public.v1.HeatStateTypeId heat_state_type_id = 2;
+    public.v1.DeviceConfigurationInputs device_configuration_inputs = 3;
+  }
+}

@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/event.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service EventService {
+  rpc Subscribe (google.protobuf.StringValue) returns (stream Event);
+  rpc EventStateSubscribe (google.protobuf.StringValue) returns (stream EventState);
+  rpc EventUserSpeechSubscribe (EventUserSpeechSubscribeRequest) returns (stream EventSpeech);
+  rpc EventSpeechSettings (EventSpeechSettingsRequest) returns (EventSpeechSettingsReponse);
+}
+
+
+message EventSpeech {
+  google.protobuf.BytesValue speech = 1;
+}
+
+message EventUserSpeechSubscribeRequest {
+  string event_id = 1;
+  string event_user_id = 2;
+  string locale = 3;
+  string local_name = 4;
+}
+
+message EventSpeechSettingsRequest {
+  string locale = 1;
+}
+
+message EventSpeechSettingsReponse {
+  repeated EventSpeechSettings items = 1;
+}
+
+message EventSpeechSettings {
+  string locale = 1;
+  string locale_name = 2;
+  string local_name = 3;
+}

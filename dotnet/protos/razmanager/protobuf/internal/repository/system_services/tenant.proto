@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.system_services.tenant;
+
+
+service TenantService {
+  rpc IsAdministrator (TenantIdUserIdRequest) returns (google.protobuf.BoolValue);
+}
+
+
+message TenantIdUserIdRequest {
+  string tenant_id = 1;
+  string user_id = 2;
+}

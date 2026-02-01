@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.user_services.device;
+
+
+service DeviceService {
+  rpc Attach (DeviceAttachRequest) returns (DeviceAttachResponse);
+}
+
+
+message DeviceAttachRequest {
+  google.protobuf.StringValue id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+}
+
+message DeviceAttachResponse {
+  string client_id = 1;
+  string certificate_pem = 2;
+  string key_pem = 3;
+}

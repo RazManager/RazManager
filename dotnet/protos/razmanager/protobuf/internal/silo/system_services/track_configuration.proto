@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "razmanager/protobuf/public/device_configuration_input.v1.proto";
+
+package razmanager.protobuf.internal.repository.silo.system_services.track_configuration;
+
+
+message TrackConfigurationDeviceConfigurationInputs {
+  string track_configuration_id = 1;
+  public.v1.DeviceConfigurationInputs device_configuration_inputs = 2;
+  bool simulated = 3;
+}

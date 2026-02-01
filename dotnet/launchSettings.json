@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "razmanager.identity": "StartDebugging",
+        "razmanager.repository": "StartDebugging",
+        "razmanager.reverseproxy": "StartDebugging",
+        "razmanager.app": "StartDebugging"
+      }
+    }
+  }
+}

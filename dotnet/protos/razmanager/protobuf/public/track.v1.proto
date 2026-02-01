@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+message Track {
+  string name = 1;
+}

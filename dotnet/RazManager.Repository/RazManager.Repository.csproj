@@ -1,0 +1,301 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
+	</PropertyGroup>
+
+	<ItemGroup>
+	<Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/common.proto" GrpcServices="None">
+		<Link>Protos/internal/repository/crud_services/common.proto</Link>
+		<ProtoRoot>../protos</ProtoRoot>
+	</Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/car.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/car.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/car_tag.proto" GrpcServices="Server">
+        <Link>Protos/internal/repository/crud_services/car_tag.proto</Link>
+	    <ProtoRoot>../protos</ProtoRoot>
+    </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/device.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/device.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/event.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/event.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/device_configuration.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/device_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/heat_car_type.proto" GrpcServices="None">
+		  <Link>Protos/internal/repository/crud_services/heat_car_type.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/heat_indicator_stint.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/heat_indicator_stint.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/points_scheme.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/points_scheme.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/race.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/race.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/race_format_type.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/race_format_type.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/tenant.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/tenant.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/tenant_user.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/tenant_user.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/track.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/track.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/track_configuration.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/crud_services/track_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/crud_services/user.proto" GrpcServices="Server">
+		<Link>Protos/internal/repository/crud_services/user.proto</Link>
+		<ProtoRoot>../protos</ProtoRoot>
+	</Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/device.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/device.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/device_services/device.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/device_services/device.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/device_configuration.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/device_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/event.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/event.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/heat.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_indicator_stint.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/heat_indicator_stint.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/race.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/race.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/track.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/tenant.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/tenant.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track_configuration.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/track_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/user.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/user.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/user_services/event.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/user_services/event.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/user_services/event_invite.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/user_services/event_invite.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/user_services/heat_indicator.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/user_services/heat_indicator.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/user_services/tenant.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/user_services/tenant.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/user_services/tenant_invite.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/user_services/tenant_invite.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_feature_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_feature_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_output.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_output.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_output_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_output_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/driver_identification_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input_output_id_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/event.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/event.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/event_user_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/event_user_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat.service.v1.proto" GrpcServices="Server">
+		  <Link>Protos/public/heat.service.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Server">
+		  <Link>Protos/public/race.service.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race_feature_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race_feature_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/session_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/session_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/track.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/track.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/track_configuration.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/track_configuration.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/version.v1.proto" GrpcServices="Server">
+		  <Link>Protos/public/version.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageReference Include="Azure.Identity" Version="1.17.1" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RazManager.Resources\RazManager.Resources.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.EntityFramework\RazManager.Utilities.EntityFramework.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Exceptions\RazManager.Utilities.Exceptions.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Grpc\RazManager.Utilities.Grpc.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Host\RazManager.Utilities.Host.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Protobuf\RazManager.Utilities.Protobuf.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.Store\RazManager.Utilities.Store.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\DeviceInputType.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeviceInputType.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\DeviceOutputType.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeviceOutputType.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Platform.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Platform.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\RaceFormatType.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RaceFormatType.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Stores\Utilities\ExceptionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\DeviceInputType.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DeviceInputType.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\DeviceOutputType.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>DeviceOutputType.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Platform.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Platform.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\RaceFormatType.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>RaceFormatType.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Stores\Utilities\ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CrudServices\Entities\Autopilot\" />
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.user_services.race;
+
+
+service RaceService {
+  rpc AuthorizedTenantAdministrator (google.protobuf.StringValue) returns (google.protobuf.BoolValue);
+}

@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device.v1.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.device;
+
+
+service DeviceService {
+  rpc Initialize (google.protobuf.Empty) returns (DeviceRead);
+  rpc Read (common.IdRequest) returns (DeviceReadResponse);
+  rpc Create (DeviceCreateUpdate) returns (common.CreateResponse);
+  rpc Update (DeviceUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (DeviceListResponse);
+  rpc CertificateRequest (DeviceCommissioningCertificateRequest) returns (DeviceCommissioningCertificateResponse);
+}
+
+
+message DeviceReadResponse {
+  DeviceRead entity = 1;
+  string etag = 2;
+}
+
+message DeviceRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue description = 3;
+  bool simulated = 4;
+  //repeated public.v1.DeviceProperty device_properties = 5;
+  repeated DeviceConfigurationRead device_configurations = 6;
+}
+
+
+message DeviceCreateUpdate {
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  repeated DeviceConfigurationCreateUpdate device_configurations = 6;
+}
+
+
+message DeviceUpdateRequest {
+  string id = 1;
+  DeviceCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+
+message DeviceConfigurationRead {
+  string id = 1;
+  string name = 2;
+  repeated public.v1.DeviceDeviceConfigurationInput device_configuration_inputs = 3;
+  repeated public.v1.DeviceDeviceConfigurationOutput device_configuration_outputs = 4;
+}
+
+
+message DeviceConfigurationCreateUpdate {
+  repeated public.v1.DeviceDeviceConfigurationInput device_configuration_inputs = 3;
+  repeated public.v1.DeviceDeviceConfigurationOutput device_configuration_outputs = 4;
+}
+
+
+message DeviceListResponse {
+  repeated DeviceList result = 1;
+}
+
+message DeviceList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  bool connected = 4;
+  google.protobuf.Timestamp last_connected_at = 5;
+  bool simulated = 6;
+  string etag = 7;
+}
+
+
+message DeviceSelect {
+  string id = 1;
+  string name = 2;
+}
+
+message DeviceCommissioningCertificateRequest {
+  string certificate_request_pem = 1;
+  string name = 2;
+}
+
+message DeviceCommissioningCertificateResponse {
+  string certificate_pem = 1;
+}

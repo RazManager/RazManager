@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/race.v1.proto";
+import "razmanager/protobuf/public/heat.v1.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+import "razmanager/protobuf/internal/repository/crud_services/event.proto";
+import "razmanager/protobuf/internal/repository/crud_services/points_scheme.proto";
+import "razmanager/protobuf/internal/repository/crud_services/track_configuration.proto";
+import "razmanager/protobuf/internal/repository/crud_services/race_format_type.proto";
+import "razmanager/protobuf/internal/repository/crud_services/heat_car_type.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.race;
+
+
+service RaceService {
+  rpc Initialize (google.protobuf.Empty) returns (RaceRead);
+  rpc Read (common.IdRequest) returns (RaceReadResponse);
+  rpc Create (RaceCreate) returns (common.CreateResponse);
+  rpc Update (RaceUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (RaceListResponse);
+  rpc Select (RaceSelectRequest) returns (RaceSelectResponse);
+  rpc Copy (common.IdRequest) returns (common.CreateResponse);
+}
+
+
+message RaceReadResponse {
+  RaceRead entity = 1;
+  string etag = 2;
+}
+
+message RaceRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue event_id = 2;
+  event.EventSelect event = 3;
+  google.protobuf.UInt32Value number = 4;
+  google.protobuf.StringValue name = 5;
+  google.protobuf.StringValue track_configuration_id = 6;
+  track_configuration.TrackConfigurationSelect track_configuration = 7;
+  google.protobuf.StringValue points_scheme_id = 8;
+  points_scheme.PointsSchemeSelect points_scheme = 9;
+  bool practice_session = 10;
+  bool qualifying_session = 11;
+  bool race_session = 12;
+  race_format_type.RaceFormatTypeId race_format_type_id = 13;
+  public.v1.HeatEndTypeId race_heat_end_type_id = 14;
+  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
+  google.protobuf.Duration race_heat_end_duration_duration = 16;
+  repeated string car_tag_ids = 17;
+  heat_car_type.HeatCarTypeId heat_car_type_id = 18;
+  repeated RaceIndicatorReadCreateUpdate race_indicators = 19;
+  repeated RaceEventUserReadCreateUpdate race_event_users = 20;
+  repeated RaceIndicatorEventUserReadCreateUpdate race_indicator_event_users = 21;
+  bool energy_simulation = 22;
+}
+
+
+message RaceCreate {
+  string event_id = 2;
+  google.protobuf.StringValue name = 5;
+  string track_configuration_id = 6;
+  google.protobuf.StringValue points_scheme_id = 8;
+  bool practice_session = 10;
+  bool qualifying_session = 11;
+  bool race_session = 12;
+  race_format_type.RaceFormatTypeId race_format_type_id = 13;
+  public.v1.HeatEndTypeId race_heat_end_type_id = 14;
+  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
+  google.protobuf.Duration race_heat_end_duration_duration = 16;
+  repeated string car_tag_ids = 17;
+  heat_car_type.HeatCarTypeId heat_car_type_id = 18;
+  repeated RaceIndicatorReadCreateUpdate race_indicators = 19;
+  repeated RaceEventUserReadCreateUpdate race_event_users = 20;
+  repeated RaceIndicatorEventUserReadCreateUpdate race_indicator_event_users = 21;
+  bool energy_simulation = 22;
+}
+
+
+message RaceUpdateRequest {
+  string id = 1;
+  RaceUpdate entity = 2;
+  string etag = 3;
+}
+
+message RaceUpdate {
+  google.protobuf.StringValue name = 5;
+  google.protobuf.StringValue points_scheme_id = 8;
+  bool practice_session = 10;
+  bool qualifying_session = 11;
+  bool race_session = 12;
+  race_format_type.RaceFormatTypeId race_format_type_id = 13;
+  public.v1.HeatEndTypeId race_heat_end_type_id = 14;
+  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
+  google.protobuf.Duration race_heat_end_duration_duration = 16;
+  repeated string car_tag_ids = 17;
+  heat_car_type.HeatCarTypeId heat_car_type_id = 18;
+  repeated RaceIndicatorReadCreateUpdate race_indicators = 19;
+  repeated RaceEventUserReadCreateUpdate race_event_users = 20;
+  repeated RaceIndicatorEventUserReadCreateUpdate race_indicator_event_users = 21;
+  bool energy_simulation = 22;
+}
+
+
+message RaceIndicatorReadCreateUpdate {
+  uint32 indicator_id = 1;
+  google.protobuf.StringValue car_id = 2;
+}
+
+
+message RaceEventUserReadCreateUpdate {
+  string event_user_id = 1;
+  google.protobuf.StringValue car_id = 2;
+}
+
+
+message RaceIndicatorEventUserReadCreateUpdate {
+  uint32 indicator_id = 1;
+  string event_user_id = 2;
+  google.protobuf.UInt32Value car_class_color = 3;
+  google.protobuf.StringValue car_id = 4;
+}
+
+
+
+message RaceStateType {
+  public.v1.RaceStateTypeId id = 1;
+  string name = 2;
+}
+
+
+message RaceListResponse {
+  repeated RaceList result = 1;
+}
+
+message RaceList {
+  string id = 1;
+  event.EventSelect event = 2;
+  uint32 number = 3;
+  google.protobuf.StringValue name = 4;
+  track_configuration.TrackConfigurationList track_configuration = 5;
+  RaceStateType race_state_type = 6;
+  string etag = 7;
+}
+
+
+message RaceSelectRequest {
+  string event_id = 1;
+}
+
+message RaceSelectResponse {
+  repeated RaceSelect result = 1;
+}
+
+message RaceSelect {
+  string id = 1;
+  string number = 2;
+  google.protobuf.StringValue name = 3;
+}

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/event_user_type_id.v1.proto";
+import "razmanager/protobuf/internal/repository/crud_services/event.proto";
+
+
+package razmanager.protobuf.internal.repository.user_services.heat_indicator;
+
+
+service HeatIndicatorService {
+  rpc Read (google.protobuf.StringValue) returns (HeatIndicatorRead);
+}
+
+
+message HeatIndicatorRead {
+  string id = 1;
+  public.v1.EventUserTypeId event_user_type_id = 2;
+  repeated crud_services.event.EventUserSelect event_users = 3;
+}

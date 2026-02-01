@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.tenant_user;
+
+
+service TenantUserService {
+  rpc Select (TenantUserSelectRequest) returns (TenantUserSelectResponse);
+}
+
+
+message TenantUserSelectRequest {
+  repeated string user_ids_exclude = 1;
+  repeated string short_names_exclude = 2;
+}
+
+message TenantUserSelectResponse {
+  repeated TenantUserSelect result = 1;
+}
+
+message TenantUserSelect {
+  string id = 1;
+  google.protobuf.StringValue user_id = 2;
+  string name = 3;
+  google.protobuf.StringValue short_name = 4;
+  google.protobuf.BytesValue image = 5;
+}

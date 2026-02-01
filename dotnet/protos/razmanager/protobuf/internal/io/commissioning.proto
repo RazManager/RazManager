@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package razmanager.protobuf.internal.io.commissioning;
+
+
+service CommissioningService {
+
+  rpc CertificateRequest (google.protobuf.Empty) returns (CommissioningCertificateRequest);
+  rpc CertificateResponse (CommissioningCertificateResponse) returns (google.protobuf.Empty);
+}
+
+
+message CommissioningCertificateRequest {
+  string certificate_request_pem = 1;
+  string name = 2;
+}
+
+message CommissioningCertificateResponse {
+  string certificate_pem = 1;
+}

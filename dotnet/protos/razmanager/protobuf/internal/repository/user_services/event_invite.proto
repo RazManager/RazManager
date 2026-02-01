@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+import "razmanager/protobuf/public/event_user_type_id.v1.proto";
+
+package razmanager.protobuf.internal.repository.user_services.event_invite;
+
+
+service EventInviteService {
+  rpc Create (EventInviteCreate) returns (google.protobuf.Empty);
+}
+
+
+message EventInviteCreate {
+  int32 code = 1;
+  public.v1.EventUserTypeId event_user_type_id = 2;
+}

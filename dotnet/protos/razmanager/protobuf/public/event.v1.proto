@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/event_user_type_id.v1.proto";
+import "razmanager/protobuf/public/race.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message Event {
+  string id = 1;
+  string name = 2;
+  google.protobuf.Timestamp starts_at = 3;
+  google.protobuf.BytesValue image = 4;
+  repeated EventUser event_users = 7;
+  repeated Race races = 8;
+}
+
+message EventUser {
+  string id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue short_name = 3;
+  google.protobuf.BytesValue image = 4;
+  EventUserTypeId event_user_type_id = 5;
+  repeated TeamUser team_users = 6;
+}
+
+message TeamUser {
+  string id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue short_name = 3;
+  google.protobuf.BytesValue image = 4;
+  //EventUserTypeId event_user_type_id = 5;
+}
+
+message EventState {
+  string id = 1;
+  google.protobuf.StringValue race_id = 2;
+  google.protobuf.StringValue heat_id = 3;
+}
+
+
+// eventleaderboard

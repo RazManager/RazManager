@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/internal/repository/crud_services/common.proto";
+import "razmanager/protobuf/internal/repository/crud_services/race_format_type.proto";
+
+package razmanager.protobuf.internal.repository.crud_services.track;
+
+
+service TrackService {
+  rpc Initialize (google.protobuf.Empty) returns (TrackRead);
+  rpc Read (common.IdRequest) returns (TrackReadResponse);
+  rpc Create (TrackCreateUpdate) returns (common.CreateResponse);
+  rpc Update (TrackUpdateRequest) returns (common.UpdateResponse);
+  rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
+  rpc List (common.ListRequest) returns (TrackListResponse);
+}
+
+
+message TrackReadResponse {
+  TrackRead entity = 1;
+  string etag = 2;
+}
+
+message TrackRead {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  google.protobuf.StringValue description = 3;
+  google.protobuf.BytesValue image = 4;
+  repeated TrackConfigurationReadCreateUpdate track_configurations = 5;
+}
+
+
+message TrackCreateUpdate {
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  optional bytes image = 4;
+  optional bool image_deleted = 5;
+  repeated TrackConfigurationReadCreateUpdate track_configurations = 6;
+}
+
+
+message TrackUpdateRequest {
+  string id = 1;
+  TrackCreateUpdate entity = 2;
+  string etag = 3;
+}
+
+message TrackConfigurationReadCreateUpdate {
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
+  uint32 laptime_min_seconds = 3;
+  uint32 laptime_max_seconds = 4;
+  repeated string device_configuration_ids = 5;
+  repeated race_format_type.RaceFormatTypeId race_format_type_ids = 6;
+  repeated TrackConfigurationIndicatorReadCreateUpdate track_configuration_indicators = 7;
+}
+
+
+message TrackConfigurationIndicatorReadCreateUpdate {
+  uint32 indicator_id = 2;
+  uint32 color = 3;
+}
+
+
+message TrackListResponse {
+  repeated TrackList result = 1;
+}
+
+message TrackList {
+  string id = 1;
+  string name = 2;
+  google.protobuf.StringValue description = 3;
+  google.protobuf.BytesValue image = 4;
+  string etag = 5;
+}
+
+
+message TrackSelect {
+  string id = 1;
+  string name = 2;
+}

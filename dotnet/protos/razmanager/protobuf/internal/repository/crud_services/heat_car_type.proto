@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package razmanager.protobuf.internal.repository.crud_services.heat_car_type;
+
+
+enum HeatCarTypeId {
+  HEAT_CAR_TYPE_ID_UNDEFINED = 0;
+  HEAT_CAR_TYPE_ID_NONE = 1;
+  HEAT_CAR_TYPE_ID_INDICATOR = 2;
+  HEAT_CAR_TYPE_ID_DRIVER = 3;
+}

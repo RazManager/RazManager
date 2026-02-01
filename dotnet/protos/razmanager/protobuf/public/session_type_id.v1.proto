@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum SessionTypeId {
+  SESSION_TYPE_ID_RACE = 0;
+  SESSION_TYPE_ID_QUALIFYING = 1;
+  SESSION_TYPE_ID_PRACTICE = 2;
+}

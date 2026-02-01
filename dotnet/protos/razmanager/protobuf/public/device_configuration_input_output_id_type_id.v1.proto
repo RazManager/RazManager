@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum DeviceConfigurationInputOutputIdTypeId {
+  DEVICE_CONFIGURATION_INPUT_OUTPUT_ID_TYPE_ID_REQUIRED = 0;
+  DEVICE_CONFIGURATION_INPUT_OUTPUT_ID_TYPE_ID_OPTIONAL = 1;
+  DEVICE_CONFIGURATION_INPUT_OUTPUT_ID_TYPE_ID_NONE = 2;
+}
