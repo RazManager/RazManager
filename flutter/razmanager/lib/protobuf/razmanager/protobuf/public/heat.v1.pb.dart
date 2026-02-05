@@ -1041,9 +1041,11 @@ class HeatIndicatorTimeTypeTime extends $pb.GeneratedMessage {
 class HeatAnalyses extends $pb.GeneratedMessage {
   factory HeatAnalyses({
     $core.Iterable<HeatAnalysis>? items,
+    $0.DoubleValue? progress,
   }) {
     final result = create();
     if (items != null) result.items.addAll(items);
+    if (progress != null) result.progress = progress;
     return result;
   }
 
@@ -1063,6 +1065,8 @@ class HeatAnalyses extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..pPM<HeatAnalysis>(1, _omitFieldNames ? '' : 'items',
         subBuilder: HeatAnalysis.create)
+    ..aOM<$0.DoubleValue>(2, _omitFieldNames ? '' : 'progress',
+        subBuilder: $0.DoubleValue.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1086,6 +1090,17 @@ class HeatAnalyses extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(1)
   $pb.PbList<HeatAnalysis> get items => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $0.DoubleValue get progress => $_getN(1);
+  @$pb.TagNumber(2)
+  set progress($0.DoubleValue value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasProgress() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearProgress() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $0.DoubleValue ensureProgress() => $_ensure(1);
 }
 
 enum HeatAnalysis_Value { heatStateTypeId, lap, gap, notSet }

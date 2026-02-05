@@ -22,6 +22,7 @@ class AppModel extends ChangeNotifier with GrpcClient, ExceptionMessage {
   late String applicationVersion;
   int menuIndex = 0;
   bool busy = false;
+  double? progress;
   final exceptionStreamController = StreamController<String>.broadcast();
 
   String? accessToken;
@@ -53,6 +54,13 @@ class AppModel extends ChangeNotifier with GrpcClient, ExceptionMessage {
   void setBusy({required bool value, required bool notify}) {
     busy = value;
     if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void setProgress({required double? value}) {
+    if (progress != null && value == null || progress == null && value != null || progress != null && value != null && progress != value) {
+      progress = value;
       notifyListeners();
     }
   }

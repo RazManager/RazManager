@@ -165,6 +165,7 @@ message HeatIndicatorTimeTypeTime {
 
 message HeatAnalyses {
   repeated HeatAnalysis items = 1;
+  google.protobuf.DoubleValue progress = 2;
 }
 
 message HeatAnalysis {

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:protobuf/well_known_types/google/protobuf/wrappers.pb.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:protobuf/well_known_types/google/protobuf/duration.pb.dart' as protobuf_duration;
 
 import '../../app_model.dart';
@@ -89,7 +92,7 @@ class _PublicHeatStintState extends State<PublicHeatStint> {
     builder: (context, constraints) {
       smallLayout = constraints.maxWidth < 1000 && heatModel.teamHeat;
       return DefaultTabController(
-        length: 3  + (heatModel.teamHeat ? 1 : 0), // + (smallLayout ? 1 : 0)
+        length: 3 + (heatModel.teamHeat ? 1 : 0), // + (smallLayout ? 1 : 0)
         child: Column(
           children: [
             TabBar.secondary(
@@ -97,7 +100,7 @@ class _PublicHeatStintState extends State<PublicHeatStint> {
                 Tab(text: 'Stints'),
                 Tab(text: smallLayout ? 'Percentages' : 'Driver percentages'),
                 Tab(text: 'Lap times'),
-                if (heatModel.teamHeat) Tab(text: smallLayout ? 'Averages' :  'Driver averages'),
+                if (heatModel.teamHeat) Tab(text: smallLayout ? 'Averages' : 'Driver averages'),
               ],
             ),
             ChangeNotifierProvider(
@@ -259,8 +262,8 @@ class _PublicHeatStintStintsLayout extends StatelessWidget {
           //     ],
           //   );
           // } else {
-            //return const Placeholder();
-            return _PublicHeatStintList();
+          //return const Placeholder();
+          return _PublicHeatStintList();
           //}
         },
       ),
@@ -285,7 +288,7 @@ class _PublicHeatStintListState extends State<_PublicHeatStintList> with GrpcCli
     appModel = context.read<AppModel>();
   }
 
-  Future<void> heatIndicatorStintDetail({String? id}) async {
+  Future<void> heatIndicatorStintDetail(String? id) async {
     final heatIndicatorId = context.read<PublicHeatStintModel>().heatIndicatorId;
     await showDialog(
       context: context,
@@ -301,52 +304,20 @@ class _PublicHeatStintListState extends State<_PublicHeatStintList> with GrpcCli
       builder: (context, _, __) => Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: DataTable(
-                columnSpacing: 16,
-                columns: [
-                  DataColumn(label: Text('Lap'), numeric: true),
-                  DataColumn(label: Text('Laps'), numeric: true),
-                  DataColumn(label: Text('Average'), numeric: true),
-                  DataColumn(label: Text('Deslots'), numeric: true),
-                  DataColumn(label: Text('Started at'), numeric: true),
-                  DataColumn(label: Text('Duration'), numeric: true),
-                  if (model.teamUsers != null && model.teamUsers!.isNotEmpty) DataColumn(label: Text('Driver')),
-                  DataColumn(label: Text('Comments')),
-                  if (appModel.isAuthenticated()) DataColumn(label: Text('')),
-                ],
-                rows: publicHeatChildState.heatStintAnalysisIndicatorStints
-                    .map(
-                      (x) => DataRow(
-                        cells: [
-                          DataCell(Text(x.lap.toString())),
-                          DataCell(Text(x.laps.isNotEmpty ? x.laps.length.toString() : "")),
-                          DataCell(Text(x.averageTime.hasValue() ? x.averageTime.value.toString() : "")),
-                          DataCell(Text(x.laps.isEmpty ? "" : x.laps.map((x) => x.carOffTracks).reduce((value, element) => value + element).toString())),
-                          DataCell(Text(x.laps.firstOrNull != null ? formatTimer(x.laps.firstOrNull!.timerElapsed) : "")),
-                          DataCell(Text(formatTimer(x.duration))),
-                          if (model.teamUsers != null && model.teamUsers!.isNotEmpty)
-                            DataCell(
-                              Text(
-                                x.eventUserId.hasValue() && model.teamUsers!.where((teamUser) => teamUser.id == x.eventUserId.value).singleOrNull != null
-                                    ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == x.eventUserId.value).name.value
-                                    : '',
-                              ),
-                            ),
-                          DataCell(Text(x.comments.hasValue() ? x.comments.value : '')),
-                          if (appModel.isAuthenticated())
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () => heatIndicatorStintDetail(id: x.id),
-                              ),
-                            ),
-                        ],
-                      ),
-                    )
-                    .toList(),
+          Expanded(
+            child: SfDataGridTheme(
+              data: SfDataGridThemeData(frozenPaneLineWidth: 0, frozenPaneElevation: 0, frozenPaneLineColor: Colors.transparent),
+              child: SfDataGrid(
+                source: StintsDataSource(stints: publicHeatChildState.heatStintAnalysisIndicatorStints, model: model, edit: heatIndicatorStintDetail),
+                columns: stintColumns(model),
+                allowSorting: true,
+                allowFiltering: true,
+                showColumnHeaderIconOnHover: true,
+                columnWidthMode: ColumnWidthMode.fitByCellValue,
+                columnWidthCalculationRange: ColumnWidthCalculationRange.allRows,
+                footerFrozenColumnsCount: 1,
+                //gridLinesVisibility: GridLinesVisibility.,
+                //headerGridLinesVisibility: GridLinesVisibility.both,
               ),
             ),
           ),
@@ -355,12 +326,156 @@ class _PublicHeatStintListState extends State<_PublicHeatStintList> with GrpcCli
             FilledButton.tonalIcon(
               icon: const Icon(Icons.add),
               label: const Text('Add a stint'),
-              onPressed: model.heatUserKey == null ? null : () async => await heatIndicatorStintDetail(),
+              onPressed: model.heatUserKey == null ? null : () async => await heatIndicatorStintDetail(null),
             ),
           ],
         ],
       ),
     ),
+  );
+
+  List<GridColumn> stintColumns(PublicHeatStintModel model) => [
+    GridColumn(
+      columnName: 'lap',
+      //autoFitPadding: EdgeInsets.only(left: 32),
+      label: Container(
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerRight,
+        child: Text('Lap', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'laps',
+      //autoFitPadding: EdgeInsets.only(left: 32),
+      label: Container(
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerRight,
+        child: Text('Laps', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'average',
+      //autoFitPadding: EdgeInsets.only(left: 32),
+      label: Container(
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerRight,
+        child: Text('Average', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'deslots',
+      autoFitPadding: EdgeInsets.only(left: 48),
+      //width: 70,
+      //columnWidthMode: ColumnWidthMode.fitByColumnName,
+      label: Container(
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerRight,
+        child: Text('Deslots', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      //width: 80,
+      columnName: 'startedAt',
+      label: Container(
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerRight,
+        child: Text('Started at', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'duration',
+      //autoFitPadding: EdgeInsets.only(left: 48),
+      label: Container(
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerRight,
+        child: Text('Duration', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'teamUser',
+      //autoFitPadding: EdgeInsets.only(left: 100),
+      visible: model.teamUsers != null && model.teamUsers!.isNotEmpty,
+      label: Container(
+        padding: EdgeInsets.only(left: 16.0),
+        alignment: Alignment.centerLeft,
+        child: Text('Driver', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'comments',
+      columnWidthMode: ColumnWidthMode.lastColumnFill,
+      label: Container(
+        padding: EdgeInsets.only(left: 16.0),
+        //padding: EdgeInsets.symmetric(horizontal: 16.0),
+        alignment: Alignment.centerLeft,
+        child: Text('Comments', overflow: TextOverflow.ellipsis),
+      ),
+    ),
+    GridColumn(
+      columnName: 'edit',
+      width: 80,
+      visible: appModel.isAuthenticated(),
+      label: Text(''), //    Container(
+      //padding: EdgeInsets.symmetric(horizontal: 16.0),
+      //alignment: Alignment.center,
+      //child: Text('Comments', overflow: TextOverflow.ellipsis),
+      //),
+    ),
+  ];
+}
+
+class StintsDataSource extends DataGridSource {
+  StintsDataSource({required List<HeatStintAnalysisIndicatorStint> stints, required PublicHeatStintModel model, required this.edit}) {
+    dataGridRows = stints
+        .map(
+          (x) => DataGridRow(
+            cells: [
+              DataGridCell(columnName: 'lap', value: x.lap),
+              DataGridCell(columnName: 'laps', value: x.laps.isNotEmpty ? x.laps.length.toString() : ""),
+              DataGridCell(columnName: 'average', value: x.averageTime.hasValue() ? x.averageTime.value.toString() : ""),
+              DataGridCell(
+                columnName: 'deslots',
+                value: x.laps.isEmpty ? "" : x.laps.map((x) => x.carOffTracks).reduce((value, element) => value + element).toString(),
+              ),
+              DataGridCell(columnName: 'startedAt', value: x.laps.firstOrNull != null ? formatTimer(x.laps.firstOrNull!.timerElapsed) : ""),
+              DataGridCell(columnName: 'duration', value: formatTimer(x.duration)),
+              DataGridCell(
+                columnName: 'teamUser',
+                value: x.eventUserId.hasValue() && model.teamUsers!.where((teamUser) => teamUser.id == x.eventUserId.value).singleOrNull != null
+                    ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == x.eventUserId.value).name.value
+                    : '',
+              ),
+              DataGridCell(columnName: 'comments', value: x.comments.hasValue() ? x.comments.value : ''),
+              DataGridCell(columnName: 'edit', value: x.id),
+            ],
+          ),
+        )
+        .toList();
+  }
+
+  final Future<void> Function(String? id) edit;
+  late List<DataGridRow> dataGridRows;
+
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  @override
+  DataGridRowAdapter? buildRow(DataGridRow row) => DataGridRowAdapter(
+    cells: row
+        .getCells()
+        .map(
+          (dataGridCell) => Container(
+            alignment: (dataGridCell.columnName == 'teamUser' || dataGridCell.columnName == 'comments') ? Alignment.centerLeft : Alignment.centerRight,
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: dataGridCell.columnName != 'edit'
+                ? Text(dataGridCell.value.toString(), overflow: TextOverflow.ellipsis)
+                : IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () => edit(dataGridCell.value), // heatIndicatorStintDetail(id: dataGridCell.value),
+                  ),
+          ),
+        )
+        .toList(),
   );
 
   String formatTimer(protobuf_duration.Duration? value) {
@@ -385,23 +500,12 @@ class _PublicHeatStintDriverPercentagesState extends _PublicHeatStintTabStateBas
   _PublicHeatStintDriverPercentagesState() : super(child: _PublicHeatStintDriverPercentagesChild());
 }
 
-
-// The following assertion was thrown while applying parent data.:
-// Incorrect use of ParentDataWidget.
-// The ParentDataWidget Expanded(flex: 1) wants to apply ParentData of type FlexParentData to a RenderObject, which has been set up to accept ParentData of incompatible type BoxParentData.
-// Usually, this means that the Expanded widget has the wrong ancestor RenderObjectWidget. Typically, Expanded widgets are placed directly inside Flex widgets.
-// The offending Expanded is currently placed inside a LayoutBuilder widget.
-// The ownership chain for the RenderObject that received the incompatible parent data was:
-//   Column ← Expanded ← Consumer<HeatStintAnalysisListModel> ← Consumer<PublicHeatStintModel> ← _PublicHeatStintList ← LayoutBuilder ← Consumer<PublicHeatStintModel> ← _PublicHeatStintStintsLayout ← Consumer<HeatStintAnalysisLoadingModel> ← Column ← ⋯
-
-
-
 class _PublicHeatStintDriverPercentagesChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxHeight  * 1.5 < constraints.maxWidth) {
+        if (constraints.maxHeight * 1.5 < constraints.maxWidth) {
           return Row(
             children: [
               Flexible(child: _PublicHeatStintDriverPercentagesLapsChart()),
@@ -544,7 +648,7 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
       builder: (context, model, _) {
         final raceModel = context.read<RaceModel>();
         final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
-    
+
         // reset legends...
         //zoomPanBehavior.reset();
         return Stack(

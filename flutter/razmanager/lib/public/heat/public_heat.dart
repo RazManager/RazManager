@@ -16,7 +16,6 @@ import 'public_heat_child_base.dart';
 import 'public_heat_analysis.dart';
 import 'public_heat_driverboard.dart';
 import 'public_heat_leaderboard.dart';
-import 'public_heat_leaderboard_stream.dart';
 import 'public_heat_stint.dart';
 
 class PublicHeat extends StatefulWidget {
@@ -125,71 +124,77 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
             },
             child: DefaultTabController(
               length: 5,
-              child:  LayoutBuilder(builder: (context, constraints) => Scaffold(
-                appBar: AppBar(
-                  title: Text( constraints.maxWidth > 800 ?     "${eventModel.eventProto!.name} - ${heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!)}" : heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!)),
-                  flexibleSpace: const AppProgressIndicator(),
-                  actions: [
-                    IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
-                    Consumer<EventModel>(
-                      builder: (context, model, _) {
-                        if (!model.soundEnabled) {
-                          return IconButton(
-                            icon: const Icon(Icons.volume_off),
-                            tooltip: 'Sound on',
-                            onPressed: !model.soundEnabledToggleEnabled
-                                ? null
-                                : () async {
-                                    await model.soundEnabledNotify(true);
-                                  },
-                          );
-                        } else {
-                          return IconButton(
-                            tooltip: 'Sound off',
-                            icon: const Icon(Icons.volume_mute),
-                            onPressed: () async {
-                              await model.soundEnabledNotify(false);
-                            },
-                          );
-                        }
-                      },
+              child: LayoutBuilder(
+                builder: (context, constraints) => Scaffold(
+                  appBar: AppBar(
+                    title: Text(
+                      constraints.maxWidth > 800
+                          ? "${eventModel.eventProto!.name} - ${heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!)}"
+                          : heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!),
                     ),
-                    StreamBuilder<bool>(
-                      stream: eventModel.connectionStreamController.stream,
-                      initialData: true,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData && snapshot.data == true) {
-                          return SizedBox.shrink();
-                        } else {
-                          return Icon(Icons.cloud_off, color: Theme.of(context).colorScheme.error);
-                        }
-                      },
-                    ),
-                  ],
-                  bottom:  TabBar(
-                    tabs: [
-                      Tab(text: constraints.maxWidth > 800 ? 'Heat leaderboard' : 'Leaderboard'),
-                      Tab(text: constraints.maxWidth > 800 ? 'Heat driverboard' : 'Driverboard'),
-                      Tab(text:  constraints.maxWidth > 800 ? 'Heat analysis' :  'Analysis'),
-                      Tab(text: constraints.maxWidth > 800 ? 'Stint analysis' : 'Stints'),
-                      Tab(text: constraints.maxWidth > 800 ? 'Heat summary' : 'Summary' ),
-                      //Tab(text: 'Heat leaderboard stream'),
+                    flexibleSpace: const AppProgressIndicator(),
+                    actions: [
+                      IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
+                      Consumer<EventModel>(
+                        builder: (context, model, _) {
+                          if (!model.soundEnabled) {
+                            return IconButton(
+                              icon: const Icon(Icons.volume_off),
+                              tooltip: 'Sound on',
+                              onPressed: !model.soundEnabledToggleEnabled
+                                  ? null
+                                  : () async {
+                                      await model.soundEnabledNotify(true);
+                                    },
+                            );
+                          } else {
+                            return IconButton(
+                              tooltip: 'Sound off',
+                              icon: const Icon(Icons.volume_mute),
+                              onPressed: () async {
+                                await model.soundEnabledNotify(false);
+                              },
+                            );
+                          }
+                        },
+                      ),
+                      StreamBuilder<bool>(
+                        stream: eventModel.connectionStreamController.stream,
+                        initialData: true,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data == true) {
+                            return SizedBox.shrink();
+                          } else {
+                            return Icon(Icons.cloud_off, color: Theme.of(context).colorScheme.error);
+                          }
+                        },
+                      ),
                     ],
+                    bottom: TabBar(
+                      tabs: [
+                        Tab(text: constraints.maxWidth > 800 ? 'Heat leaderboard' : 'Leaderboard'),
+                        Tab(text: constraints.maxWidth > 800 ? 'Heat driverboard' : 'Driverboard'),
+                        Tab(text: constraints.maxWidth > 800 ? 'Heat analysis' : 'Analysis'),
+                        Tab(text: constraints.maxWidth > 800 ? 'Stint analysis' : 'Stints'),
+                        Tab(text: constraints.maxWidth > 800 ? 'Heat summary' : 'Summary'),
+                        //Tab(text: 'Heat leaderboard stream'),
+                      ],
+                    ),
+                  ),
+                  body: Focus(
+                    autofocus: true,
+                    child: TabBarView(
+                      children: [
+                        PublicHeatLeaderboard(),
+                        PublicHeatDriverboard(),
+                        PublicHeatAnalyses(),
+                        PublicHeatStint(),
+                        const Text('Heat summary...'),
+                        //PublicHeatLeaderboardStream(),
+                      ],
+                    ),
                   ),
                 ),
-                body: Focus(
-                  autofocus: true,
-                  child: TabBarView(
-                    children: [
-                      PublicHeatLeaderboard(),
-                      PublicHeatDriverboard(),
-                      PublicHeatAnalyses(),
-                      PublicHeatStint(),
-                      const Text('Heat summary...'),
-                      //PublicHeatLeaderboardStream(),
-                    ],
-                  ),
-                ),),
               ),
             ),
           );

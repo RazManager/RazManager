@@ -30,6 +30,7 @@ abstract class PublicHeatChildBase extends StatefulWidget {
 
 abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with ExceptionMessage, TimerConversion, PublicFormatter {
   late final String id;
+  late final AppModel appModel;
   late final EventModel eventModel;
   late final RaceModel raceModel;
   late final HeatModel heatModel;
@@ -61,6 +62,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   didChangeDependencies() {
     super.didChangeDependencies();
 
+    appModel = context.read<AppModel>();
     eventModel = context.read<EventModel>();
     raceModel = context.read<RaceModel>();
     heatModel = context.read<HeatModel>();
@@ -221,7 +223,13 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
               heatAnalysisLoadingModel.notify(false);
             }
 
-            final dataStartedAt = DateTime.now();
+            //final dataStartedAt = DateTime.now();
+
+            if (data.progress.hasValue()) {
+              appModel.setProgress(value: data.progress.value);
+            } else {
+              appModel.setProgress(value: null);
+            }
 
             bool gapUpdate = false;
 

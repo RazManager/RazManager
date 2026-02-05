@@ -46,12 +46,14 @@ dependencies:
   protobuf: ^6.0.0
   grpc: ^5.1.0
   uuid: ^4.5.2
-  syncfusion_flutter_charts: ^32.1.23
-  syncfusion_flutter_gauges: ^32.1.23
+  syncfusion_flutter_charts: ^32.2.3
+  syncfusion_flutter_gauges: ^32.2.3
+  syncfusion_flutter_datagrid: ^32.2.3
   audioplayers: ^6.5.1
   fixnum: ^1.1.1
   flutter_launcher_icons: ^0.14.4
   collection: ^1.19.1
+  syncfusion_flutter_core: ^32.2.3
 
 dev_dependencies:
   flutter_test:

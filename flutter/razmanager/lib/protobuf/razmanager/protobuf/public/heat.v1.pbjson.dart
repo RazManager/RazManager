@@ -551,13 +551,22 @@ const HeatAnalyses$json = {
       '6': '.razmanager.protobuf.public.v1.HeatAnalysis',
       '10': 'items'
     },
+    {
+      '1': 'progress',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.DoubleValue',
+      '10': 'progress'
+    },
   ],
 };
 
 /// Descriptor for `HeatAnalyses`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List heatAnalysesDescriptor = $convert.base64Decode(
     'CgxIZWF0QW5hbHlzZXMSQQoFaXRlbXMYASADKAsyKy5yYXptYW5hZ2VyLnByb3RvYnVmLnB1Ym'
-    'xpYy52MS5IZWF0QW5hbHlzaXNSBWl0ZW1z');
+    'xpYy52MS5IZWF0QW5hbHlzaXNSBWl0ZW1zEjgKCHByb2dyZXNzGAIgASgLMhwuZ29vZ2xlLnBy'
+    'b3RvYnVmLkRvdWJsZVZhbHVlUghwcm9ncmVzcw==');
 
 @$core.Deprecated('Use heatAnalysisDescriptor instead')
 const HeatAnalysis$json = {

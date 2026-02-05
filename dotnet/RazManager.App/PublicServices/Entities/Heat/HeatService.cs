@@ -215,11 +215,42 @@ namespace RazManager.App.PublicServices.Entities.Heat
             while (written < proto.Items.Count)
             {
                 var buffer = new HeatAnalyses();
-                var x = CollectionsMarshal.AsSpan(proto.Items.ToList());
+
                 buffer.Items.AddRange(proto.Items.AsEnumerable().Skip(written).Take(10000));
-                await responseStream.WriteAsync(buffer);
                 written += 10000;
+
+                var progress = Convert.ToDouble(written) / Convert.ToDouble(proto.Items.Count);
+                if (progress < 1)
+                {
+                    buffer.Progress = progress;
+                }
+
+                await responseStream.WriteAsync(buffer);
             }
+
+
+            //var memory = proto.Items.ToArray().AsMemory();
+
+            //var written = 0;
+            //while (written < proto.Items.Count)
+            //{
+            //    var buffer = new HeatAnalyses();
+
+            //    buffer.Items.AddRange(memory.Span.Slice(written, 10000));
+
+            //    written += 10000;
+
+            //    var progress = Convert.ToDouble(written) / Convert.ToDouble(proto.Items.Count);
+            //    if (progress < 1)
+            //    {
+            //        buffer.Progress = progress;
+            //    }
+
+            //    //buffer.Items.AddRange(proto.Items.AsEnumerable().Skip(written).Take(10000));
+
+            //    await responseStream.WriteAsync(buffer);
+            //}
+
 
             //await responseStream.WriteAsync(proto);
 
