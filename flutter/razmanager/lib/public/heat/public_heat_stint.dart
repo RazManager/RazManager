@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ import '../../app_model.dart';
 import '../../utilities/color_definitions.dart';
 import '../../utilities/loading.dart';
 import '../../utilities/timer_conversion.dart';
+import '../public_mixin.dart';
 import '../race/public_race.model.dart';
 import 'public_heat.model.dart';
 import 'public_heat_child_base.dart';
@@ -28,10 +30,8 @@ class PublicHeatStintModel extends ChangeNotifier {
 
   late BuildContext _context;
   int? heatUserKey;
-  //List<HeatIndicatorStint> heatIndicatorStints = [];
   String? heatIndicatorId;
   List<TeamUser>? teamUsers;
-  //TrendlineType trendlineType = TrendlineType.linear;
 
   void notify(int? heatUserKey) {
     this.heatUserKey = heatUserKey;
@@ -65,6 +65,7 @@ class PublicHeatStint extends StatefulWidget {
 class _PublicHeatStintState extends State<PublicHeatStint> {
   late final PublicHeatChildStateBase publicHeatChildState;
   late final HeatModel heatModel;
+  late bool smallLayout;
 
   @override
   void didChangeDependencies() {
@@ -84,43 +85,66 @@ class _PublicHeatStintState extends State<PublicHeatStint> {
   }
 
   @override
-  Widget build(BuildContext context) => DefaultTabController(
-    length: 2 + (heatModel.teamHeat ? 1 : 0),
-    child: Column(
-      children: [
-        TabBar.secondary(
-          tabs: [
-            Tab(text: 'Stints'),
-            Tab(text: 'Lap times'),
-            if (heatModel.teamHeat) Tab(text: 'Drivers'),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      smallLayout = constraints.maxWidth < 1000 && heatModel.teamHeat;
+      return DefaultTabController(
+        length: 3  + (heatModel.teamHeat ? 1 : 0), // + (smallLayout ? 1 : 0)
+        child: Column(
+          children: [
+            TabBar.secondary(
+              tabs: [
+                Tab(text: 'Stints'),
+                Tab(text: smallLayout ? 'Percentages' : 'Driver percentages'),
+                Tab(text: 'Lap times'),
+                if (heatModel.teamHeat) Tab(text: smallLayout ? 'Averages' :  'Driver averages'),
+              ],
+            ),
+            ChangeNotifierProvider(
+              create: (context) => PublicHeatStintModel(context),
+              child: Expanded(
+                child: TabBarView(
+                  children: [
+                    _PublicHeatStintStints(),
+                    //if (smallLayout) _PublicHeatStintDriverPercentages(),
+                    _PublicHeatStintDriverPercentages(),
+                    _PublicHeatStintLaps(),
+                    if (heatModel.teamHeat) _PublicHeatStintCompare(),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
-        ChangeNotifierProvider(
-          create: (context) => PublicHeatStintModel(context),
-          child: Expanded(child: TabBarView(children: [_PublicHeatStintList(), _PublicHeatStintLaps(), if (heatModel.teamHeat) _PublicHeatStintCompare()])),
-        ),
-      ],
-    ),
+      );
+    },
   );
 }
 
 abstract class _PublicHeatStintTabBase extends PublicHeatStateDetailBase {}
 
-abstract class _PublicHeatStintTabStateBase extends PublicHeatStateDetailStateBase {
+abstract class _PublicHeatStintTabStateBase extends PublicHeatStateDetailStateBase with PublicFormatter {
   _PublicHeatStintTabStateBase({required this.child});
 
   final Widget child;
-  // late final PublicHeatChildStateBase publicHeatChildState;
+  late final PublicHeatChildStateBase publicHeatChildState;
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  //   publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
-  // }
+    publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
+  }
 
   @override
   Widget foreground() {
+    var fontSize = Theme.of(context).textTheme.labelLarge!.fontSize!;
+    var choiceChipWidth =
+        publicHeatChildState.heatModel.heatProto!.heatIndicators
+            .map((x) => textWidth(publicHeatChildState.seriesName(indicatorId: x.indicatorId, useShortName: false), fontSize) + 34 + 16)
+            .reduce((value, element) => value + element) +
+        40;
+
     return Consumer<HeatModel>(
       builder: (context, heatModel, _) => Padding(
         padding: const EdgeInsets.all(16),
@@ -136,37 +160,64 @@ abstract class _PublicHeatStintTabStateBase extends PublicHeatStateDetailStateBa
                     child: Consumer<PublicHeatStintModel>(
                       builder: (context, model, _) => Column(
                         children: [
-                          Wrap(
-                            spacing: 16,
-                            runSpacing: 16,
-                            children: [
-                              ...heatModel.heatUsers.entries.map(
-                                (x) => ChoiceChip(
-                                  label: Text(heatModel.heatUsers[x.key]?.name.value ?? '?'),
-                                  selected: model.heatUserKey == x.key,
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              if (choiceChipWidth > constraints.maxWidth) {
+                                return DropdownMenu<int>(
+                                  label: Text(publicHeatChildState.heatModel.teamHeat ? "Team *" : 'Driver *'),
+                                  inputDecorationTheme: InputDecorationTheme(enabledBorder: null),
+                                  initialSelection: model.heatUserKey,
+                                  dropdownMenuEntries: heatModel.heatUsers.entries
+                                      .map(
+                                        (kv) => DropdownMenuEntry(
+                                          value: kv.key,
+                                          label: publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false),
+                                        ),
+                                      )
+                                      .toList(),
                                   onSelected: (value) {
-                                    if (value) {
-                                      model.notify(x.key);
-                                    } else {
-                                      model.notify(null);
+                                    if (value != null) {
+                                      model.notify(value);
                                     }
                                   },
-                                ),
-                              ),
-                            ],
+                                );
+                              } else {
+                                return Wrap(
+                                  spacing: 16,
+                                  runSpacing: 16,
+                                  children: [
+                                    ...heatModel.heatUsers.entries.map(
+                                      (x) => ChoiceChip(
+                                        label: Text(heatModel.heatUsers[x.key]?.name.value ?? '?'),
+                                        selected: model.heatUserKey == x.key,
+                                        onSelected: (value) {
+                                          if (value) {
+                                            model.notify(x.key);
+                                          } else {
+                                            model.notify(null);
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }
+                            },
                           ),
                           SizedBox(height: 16),
                           if (model.heatUserKey == null)
                             Row(children: [Text("Please select a ${heatModel.teamHeat ? 'team' : 'driver'}.")])
                           else
-                            Consumer<HeatStintAnalysisLoadingModel>(
-                              builder: (context, model, _) {
-                                if (model.loading) {
-                                  return const Center(child: Loading());
-                                } else {
-                                  return child;
-                                }
-                              },
+                            Expanded(
+                              child: Consumer<HeatStintAnalysisLoadingModel>(
+                                builder: (context, model, _) {
+                                  if (model.loading) {
+                                    return const Center(child: Loading());
+                                  } else {
+                                    return child;
+                                  }
+                                },
+                              ),
                             ),
                         ],
                       ),
@@ -183,21 +234,46 @@ abstract class _PublicHeatStintTabStateBase extends PublicHeatStateDetailStateBa
   }
 }
 
-class _PublicHeatStintList extends _PublicHeatStintTabBase {
+class _PublicHeatStintStints extends _PublicHeatStintTabBase {
   @override
-  State createState() => _PublicHeatStintListState();
+  State createState() => _PublicHeatStintStintsState();
 }
 
-class _PublicHeatStintListState extends _PublicHeatStintTabStateBase {
-  _PublicHeatStintListState() : super(child: _PublicHeatStintListChild());
+class _PublicHeatStintStintsState extends _PublicHeatStintTabStateBase {
+  _PublicHeatStintStintsState() : super(child: _PublicHeatStintStintsLayout());
 }
 
-class _PublicHeatStintListChild extends StatefulWidget {
+class _PublicHeatStintStintsLayout extends StatelessWidget {
   @override
-  State<_PublicHeatStintListChild> createState() => _PublicHeatStintListChildState();
+  Widget build(BuildContext context) {
+    //final publicHeatStintState = context.findAncestorStateOfType<_PublicHeatStintState>()!;
+    return Consumer<PublicHeatStintModel>(
+      builder: (context, model, _) => LayoutBuilder(
+        builder: (context, constraints) {
+          // if (!publicHeatStintState.smallLayout && model.teamUsers != null && model.teamUsers!.isNotEmpty) {
+          //   return Row(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       _PublicHeatStintList(),
+          //       Column(children: [_PublicHeatStintDriverPercentagesLapsChart(), _PublicHeatStintDriverPercentagesDurationChart()]),
+          //     ],
+          //   );
+          // } else {
+            //return const Placeholder();
+            return _PublicHeatStintList();
+          //}
+        },
+      ),
+    );
+  }
 }
 
-class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> with GrpcClient, ExceptionMessage {
+class _PublicHeatStintList extends StatefulWidget {
+  @override
+  State<_PublicHeatStintList> createState() => _PublicHeatStintListState();
+}
+
+class _PublicHeatStintListState extends State<_PublicHeatStintList> with GrpcClient, ExceptionMessage {
   late final PublicHeatChildStateBase publicHeatChildState;
   late final AppModel appModel;
 
@@ -220,124 +296,69 @@ class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> wi
   }
 
   @override
-  Widget build(BuildContext context) => Expanded(
-    child: Consumer<PublicHeatStintModel>(
-      builder: (context, model, _) => Consumer<HeatStintAnalysisListModel>(
-        builder: (context, _, __) => Row(
-          key: UniqueKey(),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: LayoutBuilder(
-                        builder: (BuildContext context, BoxConstraints constraints) => DataTable(
-                          columnSpacing: 16,
-                          columns: [
-                            DataColumn(label: Text('Lap'), numeric: true),
-                            DataColumn(label: Text('Laps'), numeric: true),
-                            DataColumn(label: Text('Average'), numeric: true),
-                            DataColumn(label: Text('Deslots'), numeric: true),
-                            DataColumn(label: Text('Started at'), numeric: true),
-                            DataColumn(label: Text('Duration'), numeric: true),
-                            if (model.teamUsers != null && model.teamUsers!.isNotEmpty) DataColumn(label: Text('Driver')),
-                            DataColumn(label: Text('Comments')),
-                            if (appModel.isAuthenticated()) DataColumn(label: Text('')),
-                          ],
-                          rows: publicHeatChildState.heatStintAnalysisIndicatorStints
-                              .map(
-                                (x) => DataRow(
-                                  cells: [
-                                    DataCell(Text(x.lap.toString())),
-                                    DataCell(Text(x.laps.isNotEmpty ? x.laps.length.toString() : "")),
-                                    DataCell(Text(x.averageTime.hasValue() ? x.averageTime.value.toString() : "")),
-                                    DataCell(
-                                      Text(x.laps.isEmpty ? "" : x.laps.map((x) => x.carOffTracks).reduce((value, element) => value + element).toString()),
-                                    ),
-                                    DataCell(Text(x.laps.firstOrNull != null ? formatTimer(x.laps.firstOrNull!.timerElapsed) : "")),
-                                    DataCell(Text(formatTimer(x.duration))),
-                                    if (model.teamUsers != null && model.teamUsers!.isNotEmpty)
-                                      DataCell(
-                                        Text(
-                                          x.eventUserId.hasValue() &&
-                                                  model.teamUsers!.where((teamUser) => teamUser.id == x.eventUserId.value).singleOrNull != null
-                                              ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == x.eventUserId.value).name.value
-                                              : '',
-                                        ),
-                                      ),
-                                    DataCell(Text(x.comments.hasValue() ? x.comments.value : '')),
-                                    if (appModel.isAuthenticated())
-                                      DataCell(
-                                        IconButton(
-                                          icon: const Icon(Icons.edit),
-                                          onPressed: () => heatIndicatorStintDetail(id: x.id),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                if (appModel.isAuthenticated()) ...[
-                  SizedBox(height: 16),
-                  FilledButton.tonalIcon(
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add a stint'),
-                    onPressed: model.heatUserKey == null ? null : () async => await heatIndicatorStintDetail(),
-                  ),
+  Widget build(BuildContext context) => Consumer<PublicHeatStintModel>(
+    builder: (context, model, _) => Consumer<HeatStintAnalysisListModel>(
+      builder: (context, _, __) => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: DataTable(
+                columnSpacing: 16,
+                columns: [
+                  DataColumn(label: Text('Lap'), numeric: true),
+                  DataColumn(label: Text('Laps'), numeric: true),
+                  DataColumn(label: Text('Average'), numeric: true),
+                  DataColumn(label: Text('Deslots'), numeric: true),
+                  DataColumn(label: Text('Started at'), numeric: true),
+                  DataColumn(label: Text('Duration'), numeric: true),
+                  if (model.teamUsers != null && model.teamUsers!.isNotEmpty) DataColumn(label: Text('Driver')),
+                  DataColumn(label: Text('Comments')),
+                  if (appModel.isAuthenticated()) DataColumn(label: Text('')),
                 ],
-              ],
-            ),
-            if (model.teamUsers != null && model.teamUsers!.isNotEmpty)
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SfCircularChart(
-                        title: ChartTitle(text: 'Laps'),
-                        legend: Legend(isVisible: true),
-                        series: [
-                          PieSeries<MapEntry<String, int>, String>(
-                            dataSource: eventUserLaps(model),
-                            xValueMapper: (data, _) => data.key,
-                            yValueMapper: (data, _) => data.value,
-                            pointColorMapper: (_, i) => ColorDefinitions.ordered.elementAt(i),
-                            dataLabelSettings: DataLabelSettings(isVisible: true, textStyle: TextStyle(fontWeight: FontWeight.bold)),
-                            animationDuration: 0,
-                          ),
+                rows: publicHeatChildState.heatStintAnalysisIndicatorStints
+                    .map(
+                      (x) => DataRow(
+                        cells: [
+                          DataCell(Text(x.lap.toString())),
+                          DataCell(Text(x.laps.isNotEmpty ? x.laps.length.toString() : "")),
+                          DataCell(Text(x.averageTime.hasValue() ? x.averageTime.value.toString() : "")),
+                          DataCell(Text(x.laps.isEmpty ? "" : x.laps.map((x) => x.carOffTracks).reduce((value, element) => value + element).toString())),
+                          DataCell(Text(x.laps.firstOrNull != null ? formatTimer(x.laps.firstOrNull!.timerElapsed) : "")),
+                          DataCell(Text(formatTimer(x.duration))),
+                          if (model.teamUsers != null && model.teamUsers!.isNotEmpty)
+                            DataCell(
+                              Text(
+                                x.eventUserId.hasValue() && model.teamUsers!.where((teamUser) => teamUser.id == x.eventUserId.value).singleOrNull != null
+                                    ? model.teamUsers!.singleWhere((teamUser) => teamUser.id == x.eventUserId.value).name.value
+                                    : '',
+                              ),
+                            ),
+                          DataCell(Text(x.comments.hasValue() ? x.comments.value : '')),
+                          if (appModel.isAuthenticated())
+                            DataCell(
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => heatIndicatorStintDetail(id: x.id),
+                              ),
+                            ),
                         ],
                       ),
-                    ),
-                    Expanded(
-                      child: SfCircularChart(
-                        title: ChartTitle(text: 'Duration'),
-                        legend: Legend(isVisible: true),
-                        series: [
-                          PieSeries<MapEntry<String, Duration>, String>(
-                            dataSource: eventUserDuration(model),
-                            xValueMapper: (data, _) => data.key,
-                            yValueMapper: (data, _) => data.value.inSeconds,
-                            pointColorMapper: (_, i) => ColorDefinitions.ordered.elementAt(i),
-                            dataLabelSettings: DataLabelSettings(isVisible: true, textStyle: TextStyle(fontWeight: FontWeight.bold)),
-                            dataLabelMapper: (datum, index) => formatDuration(datum.value),
-                            animationDuration: 0,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                    )
+                    .toList(),
               ),
+            ),
+          ),
+          if (appModel.isAuthenticated()) ...[
+            SizedBox(height: 16),
+            FilledButton.tonalIcon(
+              icon: const Icon(Icons.add),
+              label: const Text('Add a stint'),
+              onPressed: model.heatUserKey == null ? null : () async => await heatIndicatorStintDetail(),
+            ),
           ],
-        ),
+        ],
       ),
     ),
   );
@@ -353,22 +374,78 @@ class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> wi
     final hours = duration.inHours.floor();
     return "${hours == 0 ? '' : '$hours:'}${formatter.format(duration.inMinutes % 60)}:${formatter.format(duration.inSeconds % 60)}";
   }
+}
 
-  Duration protobufDurationToDuration(protobuf_duration.Duration? value) {
-    if (value == null || !value.hasNanos()) {
-      return Duration();
-    }
+class _PublicHeatStintDriverPercentages extends _PublicHeatStintTabBase {
+  @override
+  State createState() => _PublicHeatStintDriverPercentagesState();
+}
 
-    return Duration(milliseconds: (value.seconds.toInt() * 1000 + value.nanos / 1000000).round());
+class _PublicHeatStintDriverPercentagesState extends _PublicHeatStintTabStateBase {
+  _PublicHeatStintDriverPercentagesState() : super(child: _PublicHeatStintDriverPercentagesChild());
+}
+
+
+// The following assertion was thrown while applying parent data.:
+// Incorrect use of ParentDataWidget.
+// The ParentDataWidget Expanded(flex: 1) wants to apply ParentData of type FlexParentData to a RenderObject, which has been set up to accept ParentData of incompatible type BoxParentData.
+// Usually, this means that the Expanded widget has the wrong ancestor RenderObjectWidget. Typically, Expanded widgets are placed directly inside Flex widgets.
+// The offending Expanded is currently placed inside a LayoutBuilder widget.
+// The ownership chain for the RenderObject that received the incompatible parent data was:
+//   Column ← Expanded ← Consumer<HeatStintAnalysisListModel> ← Consumer<PublicHeatStintModel> ← _PublicHeatStintList ← LayoutBuilder ← Consumer<PublicHeatStintModel> ← _PublicHeatStintStintsLayout ← Consumer<HeatStintAnalysisLoadingModel> ← Column ← ⋯
+
+
+
+class _PublicHeatStintDriverPercentagesChild extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxHeight  * 1.5 < constraints.maxWidth) {
+          return Row(
+            children: [
+              Flexible(child: _PublicHeatStintDriverPercentagesLapsChart()),
+              Flexible(child: _PublicHeatStintDriverPercentagesDurationChart()),
+            ],
+          );
+        } else {
+          return Column(
+            children: [
+              Flexible(child: _PublicHeatStintDriverPercentagesLapsChart()),
+              Flexible(child: _PublicHeatStintDriverPercentagesDurationChart()),
+            ],
+          );
+        }
+      },
+    );
+  }
+}
+
+class _PublicHeatStintDriverPercentagesLapsChart extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PublicHeatStintModel>(
+      builder: (context, model, _) => Consumer<HeatStintAnalysisListModel>(
+        builder: (context, _, __) => SfCircularChart(
+          title: ChartTitle(text: 'Laps'),
+          legend: Legend(isVisible: true),
+          series: [
+            PieSeries<MapEntry<String, int>, String>(
+              dataSource: eventUserLaps(context, model),
+              xValueMapper: (data, _) => data.key,
+              yValueMapper: (data, _) => data.value,
+              pointColorMapper: (_, i) => ColorDefinitions.ordered.elementAt(i),
+              dataLabelSettings: DataLabelSettings(isVisible: true, textStyle: TextStyle(fontWeight: FontWeight.bold)),
+              animationDuration: 0,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  String formatDuration(Duration value) {
-    final formatter = NumberFormat("00");
-    final hours = value.inHours.floor();
-    return "${hours == 0 ? '' : '$hours:'}${formatter.format(value.inMinutes % 60)}:${formatter.format(value.inSeconds % 60)}";
-  }
-
-  List<MapEntry<String, int>> eventUserLaps(PublicHeatStintModel model) {
+  List<MapEntry<String, int>> eventUserLaps(BuildContext context, PublicHeatStintModel model) {
+    final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
     return groupBy(publicHeatChildState.heatStintAnalysisIndicatorStints, (x) => x.eventUserId)
         .map((key, value) {
           final teamUser = key.hasValue() ? model.teamUsers?.where((teamUser) => teamUser.id == key.value).singleOrNull : null;
@@ -377,26 +454,50 @@ class _PublicHeatStintListChildState extends State<_PublicHeatStintListChild> wi
         .entries
         .toList();
   }
+}
 
-  List<MapEntry<String, Duration>> eventUserDuration(PublicHeatStintModel model) {
+class _PublicHeatStintDriverPercentagesDurationChart extends StatelessWidget with TimerConversion {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PublicHeatStintModel>(
+      builder: (context, model, _) => Consumer<HeatStintAnalysisListModel>(
+        builder: (context, _, __) => SfCircularChart(
+          title: ChartTitle(text: 'Duration'),
+          legend: Legend(isVisible: true),
+          series: [
+            PieSeries<MapEntry<String, Duration>, String>(
+              dataSource: eventUserDuration(context, model),
+              xValueMapper: (data, _) => data.key,
+              yValueMapper: (data, _) => data.value.inSeconds,
+              pointColorMapper: (_, i) => ColorDefinitions.ordered.elementAt(i),
+              dataLabelSettings: DataLabelSettings(isVisible: true, textStyle: TextStyle(fontWeight: FontWeight.bold)),
+              dataLabelMapper: (datum, index) => formatDuration(datum.value),
+              animationDuration: 0,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<MapEntry<String, Duration>> eventUserDuration(BuildContext context, PublicHeatStintModel model) {
+    final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
     return groupBy(publicHeatChildState.heatStintAnalysisIndicatorStints, (x) => x.eventUserId)
         .map((key, value) {
           final teamUser = key.hasValue() ? model.teamUsers?.where((teamUser) => teamUser.id == key.value).singleOrNull : null;
           return MapEntry(
             teamUser != null ? teamUser.name.value : '',
-            value.map((x) => protobufDurationToDuration(x.duration)).reduce((value, element) => value + element),
+            value.map((x) => durationFromProtobufDuration(x.duration)).reduce((value, element) => value + element),
           );
         })
         .entries
         .toList();
   }
 
-  Map<T, List<S>> groupBy<S, T>(Iterable<S> values, T Function(S) key) {
-    var map = <T, List<S>>{};
-    for (var element in values) {
-      (map[key(element)] ??= []).add(element);
-    }
-    return map;
+  String formatDuration(Duration value) {
+    final formatter = NumberFormat("00");
+    final hours = value.inHours.floor();
+    return "${hours == 0 ? '' : '$hours:'}${formatter.format(value.inMinutes % 60)}:${formatter.format(value.inSeconds % 60)}";
   }
 }
 
@@ -439,134 +540,132 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Consumer<PublicHeatStintModel>(
-        builder: (context, model, _) {
-          final raceModel = context.read<RaceModel>();
-          final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
-
-          // reset legends...
-          //zoomPanBehavior.reset();
-          return Stack(
-            children: [
-              SfCartesianChart(
-                key: UniqueKey(),
-                primaryXAxis: DateTimeAxis(
-                  title: const AxisTitle(text: 'Heat time'),
-                  dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
-                  isInversed: raceModel.isInversed,
-                  plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
-                      .map(
-                        (x) => PlotBand(
-                          start: x.timerElapsed,
-                          end: x.timerElapsed,
-                          borderColor: switch (x.heatStateTypeId) {
-                            HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
-                            HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
-                            HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
-                            _ => Colors.white,
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-                primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
-                legend: const Legend(isVisible: true, toggleSeriesVisibility: true),
-                trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
-                zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
-                //onZooming: (zoomingArgs) => debugPrint("onZooming: ${zoomingArgs.currentZoomFactor}"),
-                // onActualRangeChanged: (rangeChangedArgs) {
-                //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
-                //     rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin - (rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval);
-                //   }
-                // },
-                series: [
-                  ...publicHeatChildState.heatStintAnalysisIndicatorStints.indexed.map(
-                    (item) => FastLineSeries<HeatStintAnalysisIndicatorStintLap, DateTime>(
-                      onRendererCreated: (controller) {
-                        final heatAnalysisLapSerie = publicHeatChildState.heatStintAnalysisLapSeries[item.$2.id];
-                        //debugPrint("heatAnalysisLapSerie ${item.$2.id} ${publicHeatChildState.heatStintAnalysisLapSeries.length} $heatAnalysisLapSerie");
-                        // if (heatAnalysisLapSerie == null) {
-                        //   for (var element in publicHeatChildState.heatStintAnalysisLapSeries.entries) {
-                        //     debugPrint("element ${element.key} ${element.value} ");
-                        //   }
-                        // }
-                        Future.microtask(() => heatAnalysisLapSerie!.chartSeriesController = controller);
-                      },
-                      dataSource: item.$2.laps,
-                      xValueMapper: (data, _) => dateTimeFromProtobufDuration(data.timerElapsed),
-                      yValueMapper: (data, _) => data.time.hasValue() ? data.time.value : null,
-                      dataLabelSettings: DataLabelSettings(
-                        isVisible: dataLabelsVisible,
-                        builder: (data, point, series, pointIndex, seriesIndex) {
-                          final d = data as HeatStintAnalysisIndicatorStintLap;
-                          if (d.pitlanes > 0) {
-                            return Icon(Icons.car_repair);
-                          } else if (d.pitlanes > 0) {
-                            return Icon(Icons.car_crash);
-                          } else if (dataLabelsVisible) {
-                            return Text('${d.lap}');
-                          }
-                          return Text('');
+    return Consumer<PublicHeatStintModel>(
+      builder: (context, model, _) {
+        final raceModel = context.read<RaceModel>();
+        final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
+    
+        // reset legends...
+        //zoomPanBehavior.reset();
+        return Stack(
+          children: [
+            SfCartesianChart(
+              key: UniqueKey(),
+              primaryXAxis: DateTimeAxis(
+                title: const AxisTitle(text: 'Heat time'),
+                dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
+                isInversed: raceModel.isInversed,
+                plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
+                    .map(
+                      (x) => PlotBand(
+                        start: x.timerElapsed,
+                        end: x.timerElapsed,
+                        borderColor: switch (x.heatStateTypeId) {
+                          HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
+                          HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
+                          HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
+                          _ => Colors.white,
                         },
                       ),
-                      trendlines: [
-                        Trendline(
-                          //width: 1,
-                          dashArray: [2, 2],
-                          type: TrendlineType.movingAverage,
-                          period: 5,
-                          color: Theme.of(context).colorScheme.secondary,
-                          isVisibleInLegend: false,
-                        ),
-                      ],
-                      animationDuration: 0,
-                      name: legend(model, item.$2),
-                    ),
-                  ),
-                ],
+                    )
+                    .toList(),
               ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(dataLabelsVisible ? Icons.cancel : Icons.numbers),
-                      tooltip: "Show lap number",
-                      onPressed: () {
-                        dataLabelsVisible = !dataLabelsVisible;
-                        setState(() {});
+              primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
+              legend: const Legend(isVisible: true, toggleSeriesVisibility: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
+              trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
+              zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
+              //onZooming: (zoomingArgs) => debugPrint("onZooming: ${zoomingArgs.currentZoomFactor}"),
+              // onActualRangeChanged: (rangeChangedArgs) {
+              //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
+              //     rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin - (rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval);
+              //   }
+              // },
+              series: [
+                ...publicHeatChildState.heatStintAnalysisIndicatorStints.indexed.map(
+                  (item) => FastLineSeries<HeatStintAnalysisIndicatorStintLap, DateTime>(
+                    onRendererCreated: (controller) {
+                      final heatAnalysisLapSerie = publicHeatChildState.heatStintAnalysisLapSeries[item.$2.id];
+                      //debugPrint("heatAnalysisLapSerie ${item.$2.id} ${publicHeatChildState.heatStintAnalysisLapSeries.length} $heatAnalysisLapSerie");
+                      // if (heatAnalysisLapSerie == null) {
+                      //   for (var element in publicHeatChildState.heatStintAnalysisLapSeries.entries) {
+                      //     debugPrint("element ${element.key} ${element.value} ");
+                      //   }
+                      // }
+                      Future.microtask(() => heatAnalysisLapSerie!.chartSeriesController = controller);
+                    },
+                    dataSource: item.$2.laps,
+                    xValueMapper: (data, _) => dateTimeFromProtobufDuration(data.timerElapsed),
+                    yValueMapper: (data, _) => data.time.hasValue() ? data.time.value : null,
+                    dataLabelSettings: DataLabelSettings(
+                      isVisible: dataLabelsVisible,
+                      builder: (data, point, series, pointIndex, seriesIndex) {
+                        final d = data as HeatStintAnalysisIndicatorStintLap;
+                        if (d.pitlanes > 0) {
+                          return Icon(Icons.car_repair);
+                        } else if (d.pitlanes > 0) {
+                          return Icon(Icons.car_crash);
+                        } else if (dataLabelsVisible) {
+                          return Text('${d.lap}');
+                        }
+                        return Text('');
                       },
                     ),
-                    // IconButton(
-                    //   icon: const Icon(Icons.zoom_in),
-                    //   tooltip: "Zoom in",
-                    //   onPressed: () {
-                    //     zoomPanBehavior.zoomIn();
-                    //   },
-                    // ),
-                    // IconButton(
-                    //   icon: const Icon(Icons.zoom_out),
-                    //   tooltip: "Zoom out",
-                    //   onPressed: () {
-                    //     zoomPanBehavior.zoomOut();
-                    //   },
-                    // ),
-                    // IconButton(
-                    //   icon: const Icon(Icons.undo),
-                    //   tooltip: "Reset zoom",
-                    //   onPressed: () {
-                    //     zoomPanBehavior.reset();
-                    //   },
-                    // ),
-                  ],
+                    trendlines: [
+                      Trendline(
+                        //width: 1,
+                        dashArray: [2, 2],
+                        type: TrendlineType.movingAverage,
+                        period: 5,
+                        color: Theme.of(context).colorScheme.secondary,
+                        isVisibleInLegend: false,
+                      ),
+                    ],
+                    animationDuration: 0,
+                    name: legend(model, item.$2),
+                  ),
                 ),
+              ],
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(dataLabelsVisible ? Icons.cancel : Icons.numbers),
+                    tooltip: "Show lap number",
+                    onPressed: () {
+                      dataLabelsVisible = !dataLabelsVisible;
+                      setState(() {});
+                    },
+                  ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.zoom_in),
+                  //   tooltip: "Zoom in",
+                  //   onPressed: () {
+                  //     zoomPanBehavior.zoomIn();
+                  //   },
+                  // ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.zoom_out),
+                  //   tooltip: "Zoom out",
+                  //   onPressed: () {
+                  //     zoomPanBehavior.zoomOut();
+                  //   },
+                  // ),
+                  // IconButton(
+                  //   icon: const Icon(Icons.undo),
+                  //   tooltip: "Reset zoom",
+                  //   onPressed: () {
+                  //     zoomPanBehavior.reset();
+                  //   },
+                  // ),
+                ],
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -617,48 +716,46 @@ class _PublicHeatStintCompareChartState extends State<_PublicHeatStintCompareCha
   }
 
   @override
-  Widget build(BuildContext context) => Expanded(
-    child: Consumer<PublicHeatStintModel>(
-      builder: (context, model, _) => SfCartesianChart(
-        key: UniqueKey(),
-        primaryXAxis: NumericAxis(title: const AxisTitle(text: 'Stint')),
-        primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
-        legend: const Legend(isVisible: true, toggleSeriesVisibility: true),
-        trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
-        zoomPanBehavior: ZoomPanBehavior(enablePanning: true, enableMouseWheelZooming: true, enablePinching: true, enableSelectionZooming: true),
-        series: [
-          ...groupBy(
-            publicHeatChildState.heatStintAnalysisIndicatorStints.where((x) => x.averageTime.hasValue()).indexed,
-            (x) => x.$2.eventUserId,
-          ).entries.indexed.map(
-            (item) => LineSeries<(int, HeatStintAnalysisIndicatorStint), int>(
-              dataSource: item.$2.value,
-              xValueMapper: (data, _) => data.$1 + 1,
-              yValueMapper: (data, _) => data.$2.averageTime.value,
-              color: ColorDefinitions.ordered.elementAt(item.$1),
-              dataLabelMapper: (data, _) => data.$2.lap.toString(),
-              dataLabelSettings: DataLabelSettings(isVisible: true),
-              //dataLabelMapper: (data, _) => data.flags,
-              // dataLabelSettings: DataLabelSettings(
-              //   isVisible: true,
-              //   labelAlignment: ChartDataLabelAlignment.top,
-              //   builder: (data, point, series, pointIndex, seriesIndex) {
-              //     final d = data as _HeatAnalysisLap;
-              //     if (d.flags.isEmpty) {
-              //       return Text('${d.lap}');
-              //     } else {
-              //       return Icon(Icons.warning,
-              //           color: publicHeatChildState
-              //               .heatIndicatorColors[kv.key]);
-              //     }
-              //   },
-              // ),
-              animationDuration: 0,
-              name: legend(model, item.$2.value.first.$2.eventUserId),
-            ),
+  Widget build(BuildContext context) => Consumer<PublicHeatStintModel>(
+    builder: (context, model, _) => SfCartesianChart(
+      key: UniqueKey(),
+      primaryXAxis: NumericAxis(title: const AxisTitle(text: 'Stint')),
+      primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
+      legend: const Legend(isVisible: true, toggleSeriesVisibility: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
+      trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
+      zoomPanBehavior: ZoomPanBehavior(enablePanning: true, enableMouseWheelZooming: true, enablePinching: true, enableSelectionZooming: true),
+      series: [
+        ...groupBy(
+          publicHeatChildState.heatStintAnalysisIndicatorStints.where((x) => x.averageTime.hasValue()).indexed,
+          (x) => x.$2.eventUserId,
+        ).entries.indexed.map(
+          (item) => LineSeries<(int, HeatStintAnalysisIndicatorStint), int>(
+            dataSource: item.$2.value,
+            xValueMapper: (data, _) => data.$1 + 1,
+            yValueMapper: (data, _) => data.$2.averageTime.value,
+            color: ColorDefinitions.ordered.elementAt(item.$1),
+            dataLabelMapper: (data, _) => data.$2.lap.toString(),
+            dataLabelSettings: DataLabelSettings(isVisible: true),
+            //dataLabelMapper: (data, _) => data.flags,
+            // dataLabelSettings: DataLabelSettings(
+            //   isVisible: true,
+            //   labelAlignment: ChartDataLabelAlignment.top,
+            //   builder: (data, point, series, pointIndex, seriesIndex) {
+            //     final d = data as _HeatAnalysisLap;
+            //     if (d.flags.isEmpty) {
+            //       return Text('${d.lap}');
+            //     } else {
+            //       return Icon(Icons.warning,
+            //           color: publicHeatChildState
+            //               .heatIndicatorColors[kv.key]);
+            //     }
+            //   },
+            // ),
+            animationDuration: 0,
+            name: legend(model, item.$2.value.first.$2.eventUserId),
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 

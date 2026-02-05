@@ -42,7 +42,7 @@ class _SignUpState extends State<SignUp> with GrpcClient, ExceptionMessage {
         appBar: AppBar(title: const Text('Sign-up'), flexibleSpace: const AppProgressIndicator()),
         body: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            child: LayoutBuilder(builder: (context, constraints) {
               if (constraints.maxWidth > 600) {
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

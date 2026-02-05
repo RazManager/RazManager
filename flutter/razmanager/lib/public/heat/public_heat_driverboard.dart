@@ -92,7 +92,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
           children: [
             Opacity(opacity: 0.95, child: Card(child: PublicHeatHeatStateHeader())),
             Expanded(
-              child: LayoutBuilder(builder: (context, constraint) {
+              child: LayoutBuilder(builder: (context, constraints) {
                 final indicatorsLength = heatIndicators.length;
                 int rows;
                 int columns;
@@ -102,16 +102,16 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                   rows = 1;
                   columns = 1;
                 } else {
-                  var size = sqrt(constraint.maxHeight * constraint.maxWidth / indicatorsLength);
-                  rows = (constraint.maxHeight / size).ceil();
+                  var size = sqrt(constraints.maxHeight * constraints.maxWidth / indicatorsLength);
+                  rows = (constraints.maxHeight / size).ceil();
                   columns = (indicatorsLength / rows).ceil();
-                  size = constraint.maxHeight / rows;
+                  size = constraints.maxHeight / rows;
                 }
 
                 return Consumer<HeatLeaderboardModel>(
                   builder: (_, heatLeaderboardModel, __) => GridView.count(
                       crossAxisCount: columns,
-                      childAspectRatio: (constraint.maxWidth / columns) / (constraint.maxHeight / rows),
+                      childAspectRatio: (constraints.maxWidth / columns) / (constraints.maxHeight / rows),
                       children: heatIndicators.map((heatIndicator) {
                         final heatLeaderboardIndicator =
                             heatLeaderboardModel.heatLeaderboard?.indicators.where((x) => x.indicatorId == heatIndicator.indicatorId).singleOrNull;
@@ -127,8 +127,8 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                           child: Card(
                             child: Padding(
                               padding: const EdgeInsets.all(16),
-                              child: LayoutBuilder(builder: (context, constraint) {
-                                final nameFontSize = min(refFontSize * constraint.maxWidth / refHeatUsersTeamOrDriversMaxWidth,
+                              child: LayoutBuilder(builder: (context, constraints) {
+                                final nameFontSize = min(refFontSize * constraints.maxWidth / refHeatUsersTeamOrDriversMaxWidth,
                                     Theme.of(context).textTheme.headlineLarge!.fontSize!);
                                 return Column(
                                   children: [
@@ -181,7 +181,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                     Expanded(
                                       flex: 2,
                                       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                        if (constraint.maxWidth > 400)
+                                        if (constraints.maxWidth > 400)
                                           Consumer<HeatAnalysisLoadingModel>(builder: (context, model, _) {
                                             if (model.loading) {
                                               return const Center(child: Loading());
@@ -291,21 +291,21 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                             }
                                           }),
                                         Expanded(
-                                          child: LayoutBuilder(builder: (context, constraint) {
+                                          child: LayoutBuilder(builder: (context, constraints) {
                                             double bottomFontSize = refFontSize;
-                                            if (constraint.maxHeight > 140 && constraint.maxWidth > 220) {
+                                            if (constraints.maxHeight > 140 && constraints.maxWidth > 220) {
                                               bottomFontSize = Theme.of(context).textTheme.headlineSmall!.fontSize!;
                                             }
                                             return Column(
                                               children: [
                                                 Expanded(
-                                                  child: Center(child: LayoutBuilder(builder: (context, constraint) {
+                                                  child: Center(child: LayoutBuilder(builder: (context, constraints) {
                                                     var textSample = "00  0000";
                                                     if (raceModel.motorSimulation) {
                                                       textSample += "  00L";
                                                     }
                                                     final fontSize =
-                                                        min(refFontSize * constraint.maxWidth / textWidth(textSample, refFontSize), constraint.maxHeight / 2.0);
+                                                        min(refFontSize * constraints.maxWidth / textWidth(textSample, refFontSize), constraints.maxHeight / 2.0);
 
                                                     return IntrinsicHeight(
                                                       child: Row(
@@ -411,7 +411,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                           ),
                                       ]),
                                     ),
-                                    if (constraint.maxHeight > 300) ...[
+                                    if (constraints.maxHeight > 300) ...[
                                       SizedBox(height: 16),
                                       Consumer<HeatAnalysisLoadingModel>(builder: (context, model, _) {
                                         if (model.loading) {

@@ -15,9 +15,13 @@ mixin TimerConversion {
         isUtc: true);
   }
 
-  Duration durationFromProtobufDuration(protobuf_duration.Duration duration) {
+  Duration durationFromProtobufDuration(protobuf_duration.Duration? value) {
+    if (value == null || !value.hasNanos()) {
+      return Duration();
+    }
     return Duration(
-        seconds: duration.seconds.toInt());
+        seconds: value.seconds.toInt());
 //        microseconds: (duration.nanos / 1000).round());
+    //return Duration(milliseconds: (value.seconds.toInt() * 1000 + value.nanos / 1000000).round());
   }
 }

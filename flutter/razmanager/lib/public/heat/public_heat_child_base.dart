@@ -215,7 +215,9 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
         .listen(
           (data) {
             if (heatAnalysisLoadingModel.loading) {
-              debugPrint('heatAnalysesSubscribe data.items.length: ${data.items.length}, listen loading duration: ${DateTime.now().difference(listenStartedAt)}');
+              debugPrint(
+                'heatAnalysesSubscribe data.items.length: ${data.items.length}, listen loading duration: ${DateTime.now().difference(listenStartedAt)}',
+              );
               heatAnalysisLoadingModel.notify(false);
             }
 
@@ -540,7 +542,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
         heatStateModel.heatStateType!.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OFF;
   }
 
-  String seriesName(int indicatorId) {
+  String seriesName({required int indicatorId, required bool useShortName}) {
     final showIndicators = raceModel.raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_LANE_BASED_ID).isNotEmpty;
 
     String result = "";
@@ -551,7 +553,11 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
       }
     }
 
-    result += heatModel.heatUsers[indicatorId]!.name.value;
+    if (useShortName) {
+      result += heatModel.heatUsers[indicatorId]!.shortName.value;
+    } else {
+      result += heatModel.heatUsers[indicatorId]!.name.value;
+    }
 
     return result;
   }

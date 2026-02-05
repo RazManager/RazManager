@@ -24,6 +24,7 @@ import '../../refresh_model.dart';
 import '../../utilities/date_formatter.dart';
 import '../../utilities/exception_message.dart';
 import '../../utilities/grpc_client.dart';
+import '../../utilities/intent.dart';
 import '../../utilities/loading.dart';
 
 enum InitializeDataPhase { initialize, versionNewer, token, data }
@@ -36,13 +37,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with GrpcClient, ExceptionMessage {
-  StreamSubscription<String>? exceptionStreamSubscription;
+  StreamSubscription<String>? _exceptionStreamSubscription;
   late VersionNewerResponse versionNewerResponse;
-  int? confirmedVersionMajor;
-  int? confirmedVersionMinor;
-  int? confirmedVersionPatch;
 
   String title = 'RazManager';
+  bool smallLayout = true;
   List<EventSelect> events = [];
   List<TenantSelect> tenants = [];
   InitializeDataPhase initializeDataPhase = InitializeDataPhase.initialize;
@@ -50,7 +49,7 @@ class _HomeState extends State<Home> with GrpcClient, ExceptionMessage {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    exceptionStreamSubscription = context.read<AppModel>().exceptionStreamController.stream.listen((message) {
+    _exceptionStreamSubscription = context.read<AppModel>().exceptionStreamController.stream.listen((message) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), duration: const Duration(seconds: 10)));
     });
   }
@@ -58,8 +57,8 @@ class _HomeState extends State<Home> with GrpcClient, ExceptionMessage {
   @override
   void dispose() async {
     super.dispose();
-    if (exceptionStreamSubscription != null) {
-      await exceptionStreamSubscription!.cancel();
+    if (_exceptionStreamSubscription != null) {
+      await _exceptionStreamSubscription!.cancel();
     }
   }
 
@@ -370,25 +369,33 @@ class _HomeState extends State<Home> with GrpcClient, ExceptionMessage {
                 drawer: const AppDrawer(),
               );
             } else {
-              return Scaffold(
-                appBar: AppBar(
-                  title: Text(title),
-                  flexibleSpace: const AppProgressIndicator(),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      tooltip: 'F5 - Refresh',
-                      onPressed: () async {
+              return Actions(
+                actions: {
+                  RefreshIntent: CallbackAction<RefreshIntent>(
+                    onInvoke: (intent) async {
+                      final model = context.read<AppModel>();
+                      try {
                         final refreshModel = context.read<RefreshModel>();
                         await refreshData(notify: true);
                         refreshModel.refreshed();
-                      },
-                    ),
-                  ],
+                      } on Exception catch (exception) {
+                        model.exceptionStreamController.add(exceptionMessage(exception));
+                      }
+                      return null;
+                    },
+                  ),
+                },
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 1100) {
+                      smallLayout = false;
+                      return _HomeLarge();
+                    } else {
+                      smallLayout = true;
+                      return _HomeSmall();
+                    }
+                  },
                 ),
-                body: _HomeBody(),
-                bottomNavigationBar: _HomeBottomNavigationBar(),
-                drawer: const AppDrawer(),
               );
             }
           } else {
@@ -493,138 +500,199 @@ class _HomeVersionNewerBody extends StatelessWidget with DateFormatter {
   }
 }
 
-class _HomeBody extends StatelessWidget with DateFormatter {
+class _HomeLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appModel = Provider.of<AppModel>(context, listen: false);
     final state = context.findAncestorStateOfType<_HomeState>()!;
-    return Container(
-      constraints: const BoxConstraints.expand(),
-      decoration: const BoxDecoration(
-        image: DecorationImage(fit: BoxFit.cover, image: AssetImage('assets/images/background.jpg')),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(state.title),
+        flexibleSpace: const AppProgressIndicator(),
+        actions: [
+          Builder(
+            builder: (BuildContext context) =>
+                IconButton(icon: const Icon(Icons.refresh), tooltip: 'F5 - Refresh', onPressed: Actions.handler<RefreshIntent>(context, RefreshIntent())),
+          ),
+        ],
       ),
-      child: Consumer<RefreshModel>(
-        builder: (context, model, child) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: Opacity(
-                    opacity: 0.95,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Events', style: Theme.of(context).textTheme.bodyLarge),
-                            if (state.events.isEmpty) const Text("There currently are no events available which you can view."),
-                            if (state.events.isNotEmpty) const Text('Select an event you want to view.'),
-                            const SizedBox(height: 16),
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: state.events.length,
-                                itemBuilder: (context, index) {
-                                  final item = state.events.elementAt(index);
-                                  return ListTile(
-                                    leading: item.image.hasValue()
-                                        ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.image.value)))
-                                        : item.tenant.image.hasValue()
-                                        ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.tenant.image.value)))
-                                        : const Icon(Icons.event, size: 40),
-                                    title: Text(item.name),
-                                    subtitle: Text(item.tenant.name),
-                                    trailing: item.startsAt.hasSeconds()
-                                        ? Text(dateTimeFormat(item.startsAt.toDateTime(toLocal: true)), style: Theme.of(context).textTheme.bodyMedium)
-                                        : null,
-                                    onTap: () async {
-                                      //await appModel.tenantRefresh(item.id);
-                                      if (!context.mounted) {
-                                        return;
-                                      }
-                                      context.go('/public/events/${item.id}');
-                                    },
-                                  );
-                                },
-                                separatorBuilder: (context, index) {
-                                  return const Divider();
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            FilledButton.tonal(
-                              onPressed: !appModel.isAuthenticated() ? null : () => state.eventInvite(),
-                              child: const Text('Enter an event invitation code'),
-                            ),
-                          ],
-                        ),
-                      ),
+      body: Container(
+        constraints: const BoxConstraints.expand(),
+        decoration: const BoxDecoration(
+          image: DecorationImage(fit: BoxFit.cover, image: AssetImage('assets/images/background.jpg')),
+        ),
+        child: Consumer<RefreshModel>(
+          builder: (context, model, child) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Opacity(
+                      opacity: 0.95,
+                      child: Card(child: Focus(autofocus: true, child: _HomeEvents())),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: Opacity(
-                    opacity: 0.95,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Clubs/Places', style: Theme.of(context).textTheme.bodyLarge),
-                            if (state.tenants.isEmpty) const Text("Your're not an administrator of any clubs/places."),
-                            if (state.tenants.isNotEmpty) const Text('Administer one of your clubs/places and its events.'),
-                            const SizedBox(height: 16),
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: state.tenants.length,
-                                itemBuilder: (context, index) {
-                                  final item = state.tenants.elementAt(index);
-                                  return ListTile(
-                                    leading: item.image.hasValue()
-                                        ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.image.value)))
-                                        : const Icon(Icons.place, size: 40),
-                                    title: Text(item.name),
-                                    onTap: () async {
-                                      await appModel.tenantRefresh(item.id);
-                                      if (!context.mounted) {
-                                        return;
-                                      }
-                                      context.go('/tenant-admin/events');
-                                    },
-                                  );
-                                },
-                                separatorBuilder: (context, index) {
-                                  return const Divider();
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            FilledButton.tonalIcon(
-                              icon: const Icon(Icons.add),
-                              label: const Text('Create a new club/place'),
-                              onPressed: null, // !appModel.isAuthenticated() ? null : () => context.go('/tenant-admin/tenant/add'),
-                            ),
-                            const SizedBox(height: 16),
-                            FilledButton.tonal(
-                              onPressed: !appModel.isAuthenticated() ? null : () => state.tenantInvite(),
-                              child: const Text('Enter a club/place invitation code'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  const SizedBox(width: 16),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: Opacity(opacity: 0.95, child: Card(child: _HomeTenants())),
                   ),
-                ),
-              ],
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: _HomeBottomNavigationBar(),
+      drawer: const AppDrawer(),
+    );
+  }
+}
+
+class _HomeSmall extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final state = context.findAncestorStateOfType<_HomeState>()!;
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(state.title),
+          flexibleSpace: const AppProgressIndicator(),
+          actions: [
+            Builder(
+              builder: (BuildContext context) =>
+                  IconButton(icon: const Icon(Icons.refresh), tooltip: 'F5 - Refresh', onPressed: Actions.handler<RefreshIntent>(context, RefreshIntent())),
             ),
-          );
-        },
+          ],
+          bottom: TabBar(
+            tabs: [
+              const Tab(text: "Events"),
+              const Tab(text: "Clubs/Places"),
+            ],
+          ),
+        ),
+
+        body: Consumer<RefreshModel>(
+          builder: (context, model, _) => TabBarView(
+            children: [
+              Focus(autofocus: true, child: _HomeEvents()),
+              _HomeTenants(),
+            ],
+          ),
+        ),
+      bottomNavigationBar: _HomeBottomNavigationBar(),
+      drawer: const AppDrawer(),
+
+      ),
+    );
+  }
+}
+
+class _HomeEvents extends StatelessWidget with DateFormatter {
+  @override
+  Widget build(BuildContext context) {
+    final appModel = Provider.of<AppModel>(context);
+    final state = context.findAncestorStateOfType<_HomeState>()!;
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!state.smallLayout) Text('Events', style: Theme.of(context).textTheme.bodyLarge),
+          if (state.events.isEmpty) const Text("There currently are no events available which you can view."),
+          if (state.events.isNotEmpty && !state.smallLayout) const Text('Select an event you want to view.'),
+          if (!state.smallLayout) const SizedBox(height: 16),
+          Expanded(
+            child: ListView.separated(
+              itemCount: state.events.length,
+              itemBuilder: (context, index) {
+                final item = state.events.elementAt(index);
+                return ListTile(
+                  leading: item.image.hasValue()
+                      ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.image.value)))
+                      : item.tenant.image.hasValue()
+                      ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.tenant.image.value)))
+                      : const Icon(Icons.event, size: 40),
+                  title: Text(item.name),
+                  subtitle: Text(item.tenant.name),
+                  trailing: item.startsAt.hasSeconds()
+                      ? Text(dateTimeFormat(item.startsAt.toDateTime(toLocal: true)), style: Theme.of(context).textTheme.bodyMedium)
+                      : null,
+                  onTap: () async {
+                    //await appModel.tenantRefresh(item.id);
+                    if (!context.mounted) {
+                      return;
+                    }
+                    context.go('/public/events/${item.id}');
+                  },
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonal(onPressed: !appModel.isAuthenticated() ? null : () => state.eventInvite(), child: const Text('Enter an event invitation code')),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeTenants extends StatelessWidget with DateFormatter {
+  @override
+  Widget build(BuildContext context) {
+    final appModel = Provider.of<AppModel>(context);
+    final state = context.findAncestorStateOfType<_HomeState>()!;
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!state.smallLayout) Text('Clubs/Places', style: Theme.of(context).textTheme.bodyLarge),
+          if (state.tenants.isEmpty) const Text("Your're not an administrator of any clubs/places."),
+          if (state.tenants.isNotEmpty  && !state.smallLayout) const Text('Administer one of your clubs/places and its events.'),
+          if (!state.smallLayout) const SizedBox(height: 16),
+          Expanded(
+            child: ListView.separated(
+              itemCount: state.tenants.length,
+              itemBuilder: (context, index) {
+                final item = state.tenants.elementAt(index);
+                return ListTile(
+                  leading: item.image.hasValue()
+                      ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.image.value)))
+                      : const Icon(Icons.place, size: 40),
+                  title: Text(item.name),
+                  onTap: () async {
+                    await appModel.tenantRefresh(item.id);
+                    if (!context.mounted) {
+                      return;
+                    }
+                    context.go('/tenant-admin/events');
+                  },
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const Divider();
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonalIcon(
+            icon: const Icon(Icons.add),
+            label: const Text('Create a new club/place'),
+            onPressed: null, // !appModel.isAuthenticated() ? null : () => context.go('/tenant-admin/tenant/add'),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonal(
+            onPressed: !appModel.isAuthenticated() ? null : () => state.tenantInvite(),
+            child: const Text('Enter a club/place invitation code'),
+          ),
+        ],
       ),
     );
   }

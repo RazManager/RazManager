@@ -222,7 +222,7 @@ class _TenantAdminTenantDetailBody extends StatelessWidget {
               SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+                  child: LayoutBuilder(builder: (context, constraints) {
                     if (constraints.maxWidth > 600) {
                       final formGroup = context.findAncestorStateOfType<_TenantAdminTenantState>()!.formGroup;
                       return Row(

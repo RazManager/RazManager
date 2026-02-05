@@ -109,7 +109,7 @@ class _TenantAdminCarDetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formGroup = context.findAncestorStateOfType<_TenantAdminCarState>()!.formGroup;
-    return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+    return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > 600) {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,

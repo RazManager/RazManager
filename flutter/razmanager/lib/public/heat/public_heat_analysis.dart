@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:razmanager/public/public_mixin.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../race/public_race.model.dart';
@@ -19,13 +20,20 @@ class PublicHeatAnalyses extends StatefulWidget {
   State<PublicHeatAnalyses> createState() => _PublicHeatAnalysesState();
 }
 
-class _PublicHeatAnalysesState extends State<PublicHeatAnalyses> {
+class _PublicHeatAnalysesState extends State<PublicHeatAnalyses> with PublicFormatter {
+  late double legendWidthName;
+
   @override
   didChangeDependencies() {
     super.didChangeDependencies();
 
     final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
     publicHeatChildState.heatAnalysisSubscribe();
+
+    var fontSize = Theme.of(context).textTheme.bodySmall!.fontSize!;
+    legendWidthName = publicHeatChildState.heatModel.heatProto!.heatIndicators
+        .map((x) => textWidth(publicHeatChildState.seriesName(indicatorId: x.indicatorId, useShortName: false), fontSize) + 10 + 15 + 20)
+        .reduce((value, element) => value + element);
   }
 
   @override
@@ -94,7 +102,7 @@ class _PublicHeatAnalysesPositionsChart extends StatefulWidget {
 }
 
 class _PublicHeatAnalysesPositionsChartState extends State<_PublicHeatAnalysesPositionsChart> with ExceptionMessage {
-  late final PublicHeatChildStateBase publicHeatAnalysesState;
+  late final PublicHeatChildStateBase publicHeatChildState;
   // ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
   //   zoomMode: ZoomMode.x,
   //   enablePinching: true,
@@ -107,12 +115,12 @@ class _PublicHeatAnalysesPositionsChartState extends State<_PublicHeatAnalysesPo
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    publicHeatAnalysesState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
+    publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
   }
 
   @override
   void dispose() {
-    for (var heatAnalysisPositionSerie in publicHeatAnalysesState.heatAnalysisPositionSeries.entries) {
+    for (var heatAnalysisPositionSerie in publicHeatChildState.heatAnalysisPositionSeries.entries) {
       heatAnalysisPositionSerie.value.chartSeriesController = null;
     }
 
@@ -128,61 +136,67 @@ class _PublicHeatAnalysesPositionsChartState extends State<_PublicHeatAnalysesPo
           if (model.loading) {
             return const Center(child: Loading());
           } else {
+            final publicHeatAnalysesState = context.findAncestorStateOfType<_PublicHeatAnalysesState>()!;
             return Stack(
               children: [
-                SfCartesianChart(
-                  key: UniqueKey(),
-                  primaryXAxis: NumericAxis(
-                    title: const AxisTitle(text: 'Lap'),
-                    //numberFormat: NumberFormat.decimalPatternDigits(decimalDigits: 0),
+                LayoutBuilder(
+                  builder: (context, constraints) => SfCartesianChart(
+                    key: UniqueKey(),
+                    primaryXAxis: NumericAxis(
+                      title: const AxisTitle(text: 'Lap'),
+                      //numberFormat: NumberFormat.decimalPatternDigits(decimalDigits: 0),
+                    ),
+                    primaryYAxis: NumericAxis(
+                      title: const AxisTitle(text: 'Position'),
+                      minimum: 1,
+                      maximum: heatModel.heatUsers.length.toDouble(),
+                      interval: 1,
+                      isInversed: true,
+                    ),
+                    legend: Legend(isVisible: true, toggleSeriesVisibility: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
+                    //zoomPanBehavior: zoomPanBehavior,
+                    zoomPanBehavior: ZoomPanBehavior(
+                      zoomMode: ZoomMode.x,
+                      enablePinching: true,
+                      enableSelectionZooming: true,
+                      enableMouseWheelZooming: true,
+                      enablePanning: true,
+                    ),
+                    series: publicHeatChildState.heatAnalysisPositionSeries.entries
+                        .map(
+                          (kv) => FastLineSeries<HeatAnalysisPositionData, int>(
+                            onRendererCreated: (controller) {
+                              Future.microtask(() {
+                                //debugPrint("_PublicHeatAnalysesPositionsChartState onRendererCreated microtask");
+                                kv.value.chartSeriesController = controller;
+                              });
+                            },
+                            dataSource: kv.value.data,
+                            xValueMapper: (data, _) => data.lap,
+                            yValueMapper: (data, _) => data.position,
+                            // dataLabelSettings: DataLabelSettings(
+                            //   isVisible: true,
+                            //   builder:
+                            //       (data, point, series, pointIndex, seriesIndex) {
+                            //     final d = data as HeatAnalysisPositionData;
+                            //     if (d.pitlanes > 0) {
+                            //       return Icon(Icons.car_repair);
+                            //     } else if (d.pitlanes > 0) {
+                            //       return Icon(Icons.car_crash);
+                            //     }
+                            //     return Text('');
+                            //   },
+                            // ),
+                            animationDuration: 0,
+                            name: publicHeatChildState.seriesName(
+                              indicatorId: kv.key,
+                              useShortName: publicHeatAnalysesState.legendWidthName > constraints.maxWidth,
+                            ),
+                            color: heatModel.heatIndicatorColors[kv.key],
+                          ),
+                        )
+                        .toList(),
                   ),
-                  primaryYAxis: NumericAxis(
-                    title: const AxisTitle(text: 'Position'),
-                    minimum: 1,
-                    maximum: heatModel.heatUsers.length.toDouble(),
-                    interval: 1,
-                    isInversed: true,
-                  ),
-                  legend: const Legend(isVisible: true, toggleSeriesVisibility: true),
-                  //zoomPanBehavior: zoomPanBehavior,
-                  zoomPanBehavior: ZoomPanBehavior(
-    zoomMode: ZoomMode.x,
-    enablePinching: true,
-    enableSelectionZooming: true,
-    enableMouseWheelZooming: true,
-    enablePanning: true,
-  ),
-                  series: publicHeatAnalysesState.heatAnalysisPositionSeries.entries
-                      .map(
-                        (kv) => FastLineSeries<HeatAnalysisPositionData, int>(
-                          onRendererCreated: (controller) {
-                            Future.microtask(() {
-                              //debugPrint("_PublicHeatAnalysesPositionsChartState onRendererCreated microtask");
-                              kv.value.chartSeriesController = controller;
-                            });
-                          },
-                          dataSource: kv.value.data,
-                          xValueMapper: (data, _) => data.lap,
-                          yValueMapper: (data, _) => data.position,
-                          // dataLabelSettings: DataLabelSettings(
-                          //   isVisible: true,
-                          //   builder:
-                          //       (data, point, series, pointIndex, seriesIndex) {
-                          //     final d = data as HeatAnalysisPositionData;
-                          //     if (d.pitlanes > 0) {
-                          //       return Icon(Icons.car_repair);
-                          //     } else if (d.pitlanes > 0) {
-                          //       return Icon(Icons.car_crash);
-                          //     }
-                          //     return Text('');
-                          //   },
-                          // ),
-                          animationDuration: 0,
-                          name: publicHeatAnalysesState.seriesName(kv.key),
-                          color: heatModel.heatIndicatorColors[kv.key],
-                        ),
-                      )
-                      .toList(),
                 ),
                 // Positioned(
                 //   right: 0,
@@ -236,8 +250,8 @@ class _PublicHeatAnalysesGapsChart extends StatefulWidget {
   State<_PublicHeatAnalysesGapsChart> createState() => _PublicHeatAnalysesGapsChartState();
 }
 
-class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsChart> with ExceptionMessage {
-  late final PublicHeatChildStateBase publicHeatAnalysesState;
+class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsChart> with ExceptionMessage, PublicFormatter {
+  late final PublicHeatChildStateBase publicHeatChildState;
   //ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true);
   bool dataLabelsVisible = false;
 
@@ -247,12 +261,12 @@ class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsCha
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    publicHeatAnalysesState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
+    publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
   }
 
   @override
   void dispose() {
-    publicHeatAnalysesState.heatAnalysisGapReset();
+    publicHeatChildState.heatAnalysisGapReset();
 
     super.dispose();
   }
@@ -260,7 +274,7 @@ class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsCha
   void setNewHeatUserKey(int value) {
     setState(() {
       heatUserKey = value;
-      publicHeatAnalysesState.heatAnalysisGapReset();
+      publicHeatChildState.heatAnalysisGapReset();
     });
   }
 
@@ -274,7 +288,7 @@ class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsCha
       builder: (context, heatModel, _) => Consumer<HeatAnnounceModel>(
         builder: (context, heatAnnounceModel, _) {
           final indicatorId = heatUserKey == 0 ? heatAnnounceModel.currentLeader?.indicatorId : heatUserKey;
-          publicHeatAnalysesState.heatAnalysisGapReset();
+          publicHeatChildState.heatAnalysisGapReset();
 
           String? currentLeaderHeatUserText;
           final currentLeaderIndicatorId = heatAnnounceModel.currentLeader?.indicatorId;
@@ -283,35 +297,69 @@ class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsCha
             currentLeaderHeatUserText = " (${currentLeaderHeatUser!.name.value})";
           }
 
+          var fontSize = Theme.of(context).textTheme.labelLarge!.fontSize!;
+          var choiceChipWidth =
+              textWidth("Current leader$currentLeaderHeatUserText", fontSize) +
+              publicHeatChildState.heatModel.heatProto!.heatIndicators
+                  .map((x) => textWidth(publicHeatChildState.seriesName(indicatorId: x.indicatorId, useShortName: false), fontSize) + 34 + 16)
+                  .reduce((value, element) => value + element) +
+              40;
+
           return Column(
             children: [
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: [
-                  ChoiceChip(
-                    label: Text("Current leader$currentLeaderHeatUserText"),
-                    selected: heatUserKey == 0,
-                    onSelected: (value) {
-                      setNewHeatUserKey(0);
-                    },
-                  ),
-                  ...heatModel.heatUsers.entries.map(
-                    (kv) => ChoiceChip(
-                      label: Text(publicHeatAnalysesState.seriesName(kv.key)),
-                      selected: heatUserKey == kv.key,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (choiceChipWidth > constraints.maxWidth) {
+                    return DropdownMenu<int>(
+                                  label: Text(publicHeatChildState.heatModel.teamHeat ?  "Team *" : 'Driver *'),
+                      inputDecorationTheme: InputDecorationTheme(enabledBorder: null),
+                      initialSelection: heatUserKey,
+                      dropdownMenuEntries: [
+                        DropdownMenuEntry(value: 0, label: "Current leader$currentLeaderHeatUserText"),
+                        ...heatModel.heatUsers.entries.map(
+                          (kv) => DropdownMenuEntry(
+                            value: kv.key,
+                            label: publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false),
+                          ),
+                        ),
+                      ],
                       onSelected: (value) {
-                        setState(() {
-                          if (value) {
-                            setNewHeatUserKey(kv.key);
-                          } else {
-                            setNewHeatUserKey(0);
-                          }
-                        });
+                        if (value != null) {
+                          setNewHeatUserKey(value);
+                        }
                       },
-                    ),
-                  ),
-                ],
+                    );
+                  } else {
+                    return Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      children: [
+                        ChoiceChip(
+                          label: Text("Current leader$currentLeaderHeatUserText"),
+                          selected: heatUserKey == 0,
+                          onSelected: (value) {
+                            setNewHeatUserKey(0);
+                          },
+                        ),
+                        ...heatModel.heatUsers.entries.map(
+                          (kv) => ChoiceChip(
+                            label: Text(publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false)),
+                            selected: heatUserKey == kv.key,
+                            onSelected: (value) {
+                              setState(() {
+                                if (value) {
+                                  setNewHeatUserKey(kv.key);
+                                } else {
+                                  setNewHeatUserKey(0);
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
               Expanded(
                 child: Consumer<HeatAnalysisLoadingModel>(
@@ -320,58 +368,70 @@ class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsCha
                       return const Center(child: Loading());
                     } else {
                       //zoomPanBehavior.reset();
+                      final publicHeatAnalysesState = context.findAncestorStateOfType<_PublicHeatAnalysesState>()!;
                       return Stack(
                         children: [
-                          SfCartesianChart(
-                            key: UniqueKey(),
-                            primaryXAxis: DateTimeAxis(
-                              title: const AxisTitle(text: 'Heat time'),
-                              dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
-                              isInversed: raceModel.isInversed,
-                              plotBands: publicHeatAnalysesState.heatAnalysisHeatStateTypes
-                                  .map(
-                                    (x) => PlotBand(
-                                      start: x.timerElapsed,
-                                      end: x.timerElapsed,
-                                      borderColor: switch (x.heatStateTypeId) {
-                                        HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
-                                        HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
-                                        HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
-                                        _ => Colors.white,
+                          LayoutBuilder(
+                            builder: (context, constraints) => SfCartesianChart(
+                              key: UniqueKey(),
+                              primaryXAxis: DateTimeAxis(
+                                title: const AxisTitle(text: 'Heat time'),
+                                dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
+                                isInversed: raceModel.isInversed,
+                                plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
+                                    .map(
+                                      (x) => PlotBand(
+                                        start: x.timerElapsed,
+                                        end: x.timerElapsed,
+                                        borderColor: switch (x.heatStateTypeId) {
+                                          HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
+                                          HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
+                                          HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
+                                          _ => Colors.white,
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                              primaryYAxis: NumericAxis(
+                                title: AxisTitle(text: 'Gap (s)'),
+                                plotBands: [PlotBand(start: 0, end: 0, borderColor: heatModel.heatIndicatorColors[indicatorId]!)],
+                              ),
+                              legend: const Legend(
+                                isVisible: true,
+                                toggleSeriesVisibility: true,
+                                position: LegendPosition.bottom,
+                                overflowMode: LegendItemOverflowMode.wrap,
+                              ),
+                              trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
+                              //zoomPanBehavior: zoomPanBehavior,
+                              zoomPanBehavior: ZoomPanBehavior(
+                                enablePinching: true,
+                                enableSelectionZooming: true,
+                                enableMouseWheelZooming: true,
+                                enablePanning: true,
+                              ),
+                              series: [
+                                if (indicatorId != null)
+                                  ...publicHeatChildState.heatAnalysisGapSeries[indicatorId]!.entries.map(
+                                    (kv) => FastLineSeries<HeatAnalysisGapData, DateTime>(
+                                      onRendererCreated: (controller) {
+                                        Future.microtask(() => kv.value.chartSeriesController = controller);
                                       },
+                                      dataSource: kv.value.data,
+                                      xValueMapper: (data, _) => data.timerElapsed,
+                                      yValueMapper: (data, _) => data.gap,
+                                      animationDuration: 0,
+                                      name: publicHeatChildState.seriesName(
+                                        indicatorId: kv.key,
+                                        useShortName: publicHeatAnalysesState.legendWidthName > constraints.maxWidth,
+                                      ),
+
+                                      color: heatModel.heatIndicatorColors[kv.key],
                                     ),
-                                  )
-                                  .toList(),
-                            ),
-                            primaryYAxis: NumericAxis(
-                              title: AxisTitle(text: 'Gap (s)'),
-                              plotBands: [PlotBand(start: 0, end: 0, borderColor: heatModel.heatIndicatorColors[indicatorId]!)],
-                            ),
-                            legend: const Legend(isVisible: true, toggleSeriesVisibility: true),
-                            trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
-                            //zoomPanBehavior: zoomPanBehavior,
-                            zoomPanBehavior: ZoomPanBehavior(
-                              enablePinching: true,
-                              enableSelectionZooming: true,
-                              enableMouseWheelZooming: true,
-                              enablePanning: true,
-                            ),
-                            series: [
-                              if (indicatorId != null)
-                                ...publicHeatAnalysesState.heatAnalysisGapSeries[indicatorId]!.entries.map(
-                                  (kv) => FastLineSeries<HeatAnalysisGapData, DateTime>(
-                                    onRendererCreated: (controller) {
-                                      Future.microtask(() => kv.value.chartSeriesController = controller);
-                                    },
-                                    dataSource: kv.value.data,
-                                    xValueMapper: (data, _) => data.timerElapsed,
-                                    yValueMapper: (data, _) => data.gap,
-                                    animationDuration: 0,
-                                    name: publicHeatAnalysesState.seriesName(kv.key),
-                                    color: heatModel.heatIndicatorColors[kv.key],
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
                           // Positioned(
                           //   right: 0,
@@ -463,96 +523,107 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
           if (model.loading) {
             return const Center(child: Loading());
           } else {
+            final publicHeatAnalysesState = context.findAncestorStateOfType<_PublicHeatAnalysesState>()!;
             return Stack(
               children: [
-                SfCartesianChart(
-                  key: UniqueKey(),
-                  primaryXAxis: DateTimeAxis(
-                    title: const AxisTitle(text: 'Heat time'),
-                    dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
-                    isInversed: raceModel.isInversed,
-                    plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
-                        .map(
-                          (x) => PlotBand(
-                            start: x.timerElapsed,
-                            end: x.timerElapsed,
-                            borderColor: switch (x.heatStateTypeId) {
-                              HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
-                              HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
-                              HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
-                              _ => Colors.white,
+                LayoutBuilder(
+                  builder: (context, constraints) => SfCartesianChart(
+                    key: UniqueKey(),
+                    primaryXAxis: DateTimeAxis(
+                      title: const AxisTitle(text: 'Heat time'),
+                      dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
+                      isInversed: raceModel.isInversed,
+                      plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
+                          .map(
+                            (x) => PlotBand(
+                              start: x.timerElapsed,
+                              end: x.timerElapsed,
+                              borderColor: switch (x.heatStateTypeId) {
+                                HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
+                                HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
+                                HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
+                                _ => Colors.white,
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
+                    legend: const Legend(
+                      isVisible: true,
+                      toggleSeriesVisibility: true,
+                      position: LegendPosition.bottom,
+                      overflowMode: LegendItemOverflowMode.wrap,
+                    ),
+                    trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
+                    //zoomPanBehavior: zoomPanBehavior,
+                    zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
+                    // onZoomEnd: (zoomPanArgs) {
+                    //   if (zoomPanArgs.axis?.isVertical ?? false) {
+                    //     debugPrint(
+                    //         "onZoomEnd zoomingInProgress=${zoomPanArgs.axis?.zoomingInProgress} currentZoomPosition=${zoomPanArgs.currentZoomPosition} previousZoomPosition=${zoomPanArgs.previousZoomPosition}");
+                    //     if (zoomPanArgs.axis?.isInversed ?? false) {
+                    //      zoomPanArgs.currentZoomPosition = 1 - zoomPanArgs.currentZoomPosition ;
+                    //     }
+                    //     zoomPanArgs.currentZoomPosition = 0;
+                    //     zoomPanArgs.axis!.initialZoomPosition = 0;
+                    //   }
+                    // },
+                    // onZoomEnd: (zoomPanArgs) {
+                    //   if (zoomPanArgs.axis?.isVertical ?? false) {
+                    //     debugPrint(
+                    //         "onZoomEnd zoomingInProgress=${zoomPanArgs.axis?.zoomingInProgress}");
+                    //   }
+                    // },
+                    // onActualRangeChanged: (rangeChangedArgs) {
+                    //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
+                    //     final change = rangeChangedArgs.visibleMin %
+                    //         rangeChangedArgs.visibleInterval /
+                    //         rangeChangedArgs.visibleInterval;
+                    //     debugPrint(
+                    //         "onActualRangeChanged ${rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval / rangeChangedArgs.visibleInterval}");
+
+                    //     if (change < 0.5) {
+                    //       debugPrint("onActualRangeChanged snap!");
+                    //       rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin -
+                    //           (rangeChangedArgs.visibleMin %
+                    //               rangeChangedArgs.visibleInterval);
+                    //     }
+                    //   }
+                    // },
+                    series: [
+                      ...publicHeatChildState.heatAnalysisLapSeries.entries.map(
+                        (kv) => FastLineSeries<HeatAnalysisLapData, DateTime>(
+                          onRendererCreated: (controller) {
+                            Future.microtask(() => kv.value.chartSeriesController = controller);
+                          },
+                          dataSource: kv.value.data,
+                          xValueMapper: (data, _) => data.timerElapsed,
+                          yValueMapper: (data, _) => data.lapTime,
+                          dataLabelSettings: DataLabelSettings(
+                            isVisible: dataLabelsVisible,
+                            builder: (data, point, series, pointIndex, seriesIndex) {
+                              final d = data as HeatAnalysisLapData;
+                              if (d.pitlanes > 0) {
+                                return Icon(Icons.car_repair);
+                              } else if (d.pitlanes > 0) {
+                                return Icon(Icons.car_crash);
+                              } else if (dataLabelsVisible) {
+                                return Text('${d.lap}');
+                              }
+                              return Text('');
                             },
                           ),
-                        )
-                        .toList(),
-                  ),
-                  primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
-                  legend: const Legend(isVisible: true, toggleSeriesVisibility: true),
-                  trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
-                  //zoomPanBehavior: zoomPanBehavior,
-                  zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
-                  // onZoomEnd: (zoomPanArgs) {
-                  //   if (zoomPanArgs.axis?.isVertical ?? false) {
-                  //     debugPrint(
-                  //         "onZoomEnd zoomingInProgress=${zoomPanArgs.axis?.zoomingInProgress} currentZoomPosition=${zoomPanArgs.currentZoomPosition} previousZoomPosition=${zoomPanArgs.previousZoomPosition}");
-                  //     if (zoomPanArgs.axis?.isInversed ?? false) {
-                  //      zoomPanArgs.currentZoomPosition = 1 - zoomPanArgs.currentZoomPosition ;
-                  //     }
-                  //     zoomPanArgs.currentZoomPosition = 0;
-                  //     zoomPanArgs.axis!.initialZoomPosition = 0;
-                  //   }
-                  // },
-                  // onZoomEnd: (zoomPanArgs) {
-                  //   if (zoomPanArgs.axis?.isVertical ?? false) {
-                  //     debugPrint(
-                  //         "onZoomEnd zoomingInProgress=${zoomPanArgs.axis?.zoomingInProgress}");
-                  //   }
-                  // },
-                  // onActualRangeChanged: (rangeChangedArgs) {
-                  //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
-                  //     final change = rangeChangedArgs.visibleMin %
-                  //         rangeChangedArgs.visibleInterval /
-                  //         rangeChangedArgs.visibleInterval;
-                  //     debugPrint(
-                  //         "onActualRangeChanged ${rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval / rangeChangedArgs.visibleInterval}");
-
-                  //     if (change < 0.5) {
-                  //       debugPrint("onActualRangeChanged snap!");
-                  //       rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin -
-                  //           (rangeChangedArgs.visibleMin %
-                  //               rangeChangedArgs.visibleInterval);
-                  //     }
-                  //   }
-                  // },
-                  series: [
-                    ...publicHeatChildState.heatAnalysisLapSeries.entries.map(
-                      (kv) => FastLineSeries<HeatAnalysisLapData, DateTime>(
-                        onRendererCreated: (controller) {
-                          Future.microtask(() => kv.value.chartSeriesController = controller);
-                        },
-                        dataSource: kv.value.data,
-                        xValueMapper: (data, _) => data.timerElapsed,
-                        yValueMapper: (data, _) => data.lapTime,
-                        dataLabelSettings: DataLabelSettings(
-                          isVisible: dataLabelsVisible,
-                          builder: (data, point, series, pointIndex, seriesIndex) {
-                            final d = data as HeatAnalysisLapData;
-                            if (d.pitlanes > 0) {
-                              return Icon(Icons.car_repair);
-                            } else if (d.pitlanes > 0) {
-                              return Icon(Icons.car_crash);
-                            } else if (dataLabelsVisible) {
-                              return Text('${d.lap}');
-                            }
-                            return Text('');
-                          },
+                          animationDuration: 0,
+                          name: publicHeatChildState.seriesName(
+                            indicatorId: kv.key,
+                            useShortName: publicHeatAnalysesState.legendWidthName > constraints.maxWidth,
+                          ),
+                          color: heatModel.heatIndicatorColors[kv.key],
                         ),
-                        animationDuration: 0,
-                        name: publicHeatChildState.seriesName(kv.key),
-                        color: heatModel.heatIndicatorColors[kv.key],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Positioned(
                   right: 0,

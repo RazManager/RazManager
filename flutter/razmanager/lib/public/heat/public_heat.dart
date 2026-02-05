@@ -124,10 +124,10 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
               ),
             },
             child: DefaultTabController(
-              length: 6,
-              child: Scaffold(
+              length: 5,
+              child:  LayoutBuilder(builder: (context, constraints) => Scaffold(
                 appBar: AppBar(
-                  title: Text("${eventModel.eventProto!.name} - ${heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!)}"),
+                  title: Text( constraints.maxWidth > 800 ?     "${eventModel.eventProto!.name} - ${heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!)}" : heatDisplayName(race: raceModel.raceProto, heat: heatModel!.heatProto!)),
                   flexibleSpace: const AppProgressIndicator(),
                   actions: [
                     IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
@@ -166,14 +166,14 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
                       },
                     ),
                   ],
-                  bottom: const TabBar(
+                  bottom:  TabBar(
                     tabs: [
-                      Tab(text: 'Heat leaderboard'),
-                      Tab(text: 'Heat driverboard'),
-                      Tab(text: 'Heat analysis'),
-                      Tab(text: 'Stint analysis'),
-                      Tab(text: 'Heat summary'),
-                      Tab(text: 'Heat leaderboard stream'),
+                      Tab(text: constraints.maxWidth > 800 ? 'Heat leaderboard' : 'Leaderboard'),
+                      Tab(text: constraints.maxWidth > 800 ? 'Heat driverboard' : 'Driverboard'),
+                      Tab(text:  constraints.maxWidth > 800 ? 'Heat analysis' :  'Analysis'),
+                      Tab(text: constraints.maxWidth > 800 ? 'Stint analysis' : 'Stints'),
+                      Tab(text: constraints.maxWidth > 800 ? 'Heat summary' : 'Summary' ),
+                      //Tab(text: 'Heat leaderboard stream'),
                     ],
                   ),
                 ),
@@ -186,10 +186,10 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
                       PublicHeatAnalyses(),
                       PublicHeatStint(),
                       const Text('Heat summary...'),
-                      PublicHeatLeaderboardStream(),
+                      //PublicHeatLeaderboardStream(),
                     ],
                   ),
-                ),
+                ),),
               ),
             ),
           );
