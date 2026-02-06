@@ -55,7 +55,7 @@ class PublicHeatState extends State<PublicHeat> {
                   create: (context) => HeatStintAnalysisLoadingModel(),
                   child: ChangeNotifierProvider(
                     create: (context) => HeatStintAnalysisListModel(),
-                    child: PublicHeatChild(id: id),
+                    child: SafeArea(child: PublicHeatChild(id: id)),
                   ),
                 ),
               ),
@@ -189,7 +189,18 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
                         PublicHeatDriverboard(),
                         PublicHeatAnalyses(),
                         PublicHeatStint(),
-                        const Text('Heat summary...'),
+                                              Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("This space will be used by the heat summary, i.e. a live textual summary of the heat."),
+                            const SizedBox(height: 16),
+                            Expanded(child: const Placeholder()),
+                          ],
+                        ),
+                      ),
+
                         //PublicHeatLeaderboardStream(),
                       ],
                     ),

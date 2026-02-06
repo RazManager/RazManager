@@ -86,7 +86,17 @@ class _PublicEventState extends State<PublicEvent> with ExceptionMessage {
               ],
               bottom: const TabBar(tabs: [Tab(text: 'Races'), Tab(text: 'Event leaderboard')]),
             ),
-            body: TabBarView(children: [_PublicEventRaces(), const Text('Event leaderboard...')]),
+            body: TabBarView(children: [_PublicEventRaces(), Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("This space will be used by the event leaderboard, i.e. a summary of all races (not heats/segments) for an event. You might have awarded points to the drivers/teams for each race, and a summary of that will be shown here."),
+                  const SizedBox(height: 16),
+                  Expanded(child: const Placeholder())
+                ],
+              ),
+            )]),
             drawer: const AppDrawer(),
           ),
         );

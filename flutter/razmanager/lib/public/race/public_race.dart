@@ -82,63 +82,100 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<RaceModel>(builder: (context, raceModel, __) {
-      if (raceModel.raceProto != null) {
-        return Actions(
-          actions: {
-            CloseIntent: CallbackAction<CloseIntent>(onInvoke: (intent) {
-              context.pop();
-              return;
-            }),
-          },
-          child: DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text(raceDisplayName(event: _eventModel.eventProto, race: raceModel.raceProto!)),
-                flexibleSpace: const AppProgressIndicator(),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.settings),
-                    tooltip: 'Settings',
-                    onPressed: () => context.push('/public/event-settings'),
-                  ),
-                  Consumer<EventModel>(builder: (context, model, _) {
-                    if (!model.soundEnabled) {
-                      return IconButton(
-                          icon: const Icon(Icons.volume_off),
-                          tooltip: 'Sound on',
-                          onPressed: !model.soundEnabledToggleEnabled
-                              ? null
-                              : () async {
-                                  await model.soundEnabledNotify(true);
-                                });
-                    } else {
-                      return IconButton(
-                          tooltip: 'Sound off',
-                          icon: const Icon(Icons.volume_mute),
-                          onPressed: () async {
-                            await model.soundEnabledNotify(false);
-                          });
-                    }
-                  }),
-                ],
-                bottom: const TabBar(tabs: [Tab(text: 'Heats'), Tab(text: 'Race leaderboard'), Tab(text: 'Race summary')]),
+    return Consumer<RaceModel>(
+      builder: (context, raceModel, __) {
+        if (raceModel.raceProto != null) {
+          return Actions(
+            actions: {
+              CloseIntent: CallbackAction<CloseIntent>(
+                onInvoke: (intent) {
+                  context.pop();
+                  return;
+                },
               ),
-              body: Focus(autofocus: true, child: TabBarView(children: [_PublicRaceHeats(), const Text('Race leaderboard...'), const Text('Race summary...')])),
-              bottomNavigationBar: raceModel.raceCommandPermissions.isNotEmpty ? _RaceBottomNavigationBar() : null,
+            },
+            child: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(raceDisplayName(event: _eventModel.eventProto, race: raceModel.raceProto!)),
+                  flexibleSpace: const AppProgressIndicator(),
+                  actions: [
+                    IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
+                    Consumer<EventModel>(
+                      builder: (context, model, _) {
+                        if (!model.soundEnabled) {
+                          return IconButton(
+                            icon: const Icon(Icons.volume_off),
+                            tooltip: 'Sound on',
+                            onPressed: !model.soundEnabledToggleEnabled
+                                ? null
+                                : () async {
+                                    await model.soundEnabledNotify(true);
+                                  },
+                          );
+                        } else {
+                          return IconButton(
+                            tooltip: 'Sound off',
+                            icon: const Icon(Icons.volume_mute),
+                            onPressed: () async {
+                              await model.soundEnabledNotify(false);
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                  bottom: const TabBar(
+                    tabs: [
+                      Tab(text: 'Heats'),
+                      Tab(text: 'Race leaderboard'),
+                      Tab(text: 'Race summary'),
+                    ],
+                  ),
+                ),
+                body: Focus(
+                  autofocus: true,
+                  child: TabBarView(
+                    children: [
+                      _PublicRaceHeats(),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("This space will be used by the race leaderboard, i.e. a live leaderbaord summary of all heats/segments for a race."),
+                            const SizedBox(height: 16),
+                            Expanded(child: const Placeholder()),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("This space will be used by the race summary, i.e. a live textual summary of all heats/segments for a race."),
+                            const SizedBox(height: 16),
+                            Expanded(child: const Placeholder()),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                bottomNavigationBar: raceModel.raceCommandPermissions.isNotEmpty ? _RaceBottomNavigationBar() : null,
+              ),
             ),
-          ),
-        );
-      } else {
-        return Scaffold(
-          appBar: AppBar(
-            flexibleSpace: const AppProgressIndicator(),
-          ),
-          body: const Center(child: Loading()),
-        );
-      }
-    });
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(flexibleSpace: const AppProgressIndicator()),
+            body: const Center(child: Loading()),
+          );
+        }
+      },
+    );
   }
 }
 
@@ -159,28 +196,22 @@ class _PublicRaceHeatsState extends State<_PublicRaceHeats> with ExceptionMessag
           final item = publicRaceState._raceModel.raceProto!.heats.elementAt(index);
           return ListTile(
             title: Text(heatDisplayName(heat: item)),
-            subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(item.heatStateType.name),
-              SizedBox(height: 8),
-              ...item.heatIndicators.map((x) {
-                final eventUser = publicRaceState._eventModel.eventProto!.eventUsers.where((eventUser) => eventUser.id == x.eventUserId).singleOrNull;
-                return Row(
-                  children: [
-                    Text(x.indicatorId.toString()),
-                    const SizedBox(width: 16),
-                    Text(eventUser?.name.value ?? '?'),
-                  ],
-                );
-              })
-            ]),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.heatStateType.name),
+                SizedBox(height: 8),
+                ...item.heatIndicators.map((x) {
+                  final eventUser = publicRaceState._eventModel.eventProto!.eventUsers.where((eventUser) => eventUser.id == x.eventUserId).singleOrNull;
+                  return Row(children: [Text(x.indicatorId.toString()), const SizedBox(width: 16), Text(eventUser?.name.value ?? '?')]);
+                }),
+              ],
+            ),
             onTap: () => context.push('/public/heats/${item.id}'),
           );
         },
         separatorBuilder: (context, index) {
-          return const Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Divider(),
-          );
+          return const Padding(padding: EdgeInsets.only(left: 16, right: 16), child: Divider());
         },
       ),
     );
@@ -193,27 +224,30 @@ class _RaceBottomNavigationBar extends StatelessWidget {
     final publicRaceState = context.findAncestorStateOfType<_PublicRaceState>()!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        IconButton.filledTonal(
-          icon: const Icon(Icons.play_arrow),
-          onPressed: publicRaceState.raceCommandStartEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_START) : null,
-        ),
-        const SizedBox(width: 16),
-        IconButton.filledTonal(
-          icon: const Icon(Icons.pause),
-          onPressed: publicRaceState.raceCommandPauseEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_PAUSE) : null,
-        ),
-        const SizedBox(width: 16),
-        IconButton.filledTonal(
-          icon: const Icon(Icons.done),
-          onPressed: publicRaceState.raceCommandEndEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_END) : null,
-        ),
-        const SizedBox(width: 16),
-        IconButton.filledTonal(
-          icon: const Icon(Icons.replay),
-          onPressed: publicRaceState.raceCommandResetEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_RESET) : null,
-        ),
-      ]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton.filledTonal(
+            icon: const Icon(Icons.play_arrow),
+            onPressed: publicRaceState.raceCommandStartEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_START) : null,
+          ),
+          const SizedBox(width: 16),
+          IconButton.filledTonal(
+            icon: const Icon(Icons.pause),
+            onPressed: publicRaceState.raceCommandPauseEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_PAUSE) : null,
+          ),
+          const SizedBox(width: 16),
+          IconButton.filledTonal(
+            icon: const Icon(Icons.done),
+            onPressed: publicRaceState.raceCommandEndEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_END) : null,
+          ),
+          const SizedBox(width: 16),
+          IconButton.filledTonal(
+            icon: const Icon(Icons.replay),
+            onPressed: publicRaceState.raceCommandResetEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_RESET) : null,
+          ),
+        ],
+      ),
     );
   }
 }

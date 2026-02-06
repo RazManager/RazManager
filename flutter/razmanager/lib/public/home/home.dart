@@ -583,9 +583,8 @@ class _HomeSmall extends StatelessWidget {
             ],
           ),
         ),
-      bottomNavigationBar: _HomeBottomNavigationBar(),
-      drawer: const AppDrawer(),
-
+        bottomNavigationBar: _HomeBottomNavigationBar(),
+        drawer: const AppDrawer(),
       ),
     );
   }
@@ -655,7 +654,7 @@ class _HomeTenants extends StatelessWidget with DateFormatter {
         children: [
           if (!state.smallLayout) Text('Clubs/Places', style: Theme.of(context).textTheme.bodyLarge),
           if (state.tenants.isEmpty) const Text("Your're not an administrator of any clubs/places."),
-          if (state.tenants.isNotEmpty  && !state.smallLayout) const Text('Administer one of your clubs/places and its events.'),
+          if (state.tenants.isNotEmpty && !state.smallLayout) const Text('Administer one of your clubs/places and its events.'),
           if (!state.smallLayout) const SizedBox(height: 16),
           Expanded(
             child: ListView.separated(
@@ -704,23 +703,23 @@ class _HomeBottomNavigationBar extends StatelessWidget {
     final state = context.findAncestorStateOfType<_HomeState>()!;
     return BottomAppBar(
       child: Consumer<AppModel>(
-        builder: (context, model, child) {
-          return Row(
+        builder: (context, model, child) => LayoutBuilder(
+          builder: (context, constraints) => Row(
             children: [
               FilledButton.tonalIcon(
-                icon: const Icon(Icons.person),
+                icon: constraints.maxWidth > 400 ? const Icon(Icons.person) : null,
                 label: const Text('Sign-in'),
                 onPressed: model.isAuthenticated() ? null : () => context.push('/public/sign-in', extra: state.refreshCallback),
               ),
               const SizedBox(width: 16),
               FilledButton.tonalIcon(
-                icon: const Icon(Icons.person_add),
+                icon: constraints.maxWidth > 400 ? const Icon(Icons.person_add) : null,
                 label: const Text('Sign-up'),
                 onPressed: model.isAuthenticated() ? null : () => context.push('/public/sign-up', extra: state.refreshCallback),
               ),
               const SizedBox(width: 16),
               FilledButton.tonalIcon(
-                icon: const Icon(Icons.person_off),
+                icon: constraints.maxWidth > 400 ? const Icon(Icons.person_off) : null,
                 label: const Text('Sign-out'),
                 onPressed: !model.isAuthenticated()
                     ? null
@@ -730,8 +729,8 @@ class _HomeBottomNavigationBar extends StatelessWidget {
                       },
               ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
   }

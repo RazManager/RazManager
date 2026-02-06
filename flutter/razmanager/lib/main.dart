@@ -51,7 +51,7 @@ class App extends StatelessWidget {
                   },
                   child: Consumer<SettingsModel>(
                     builder: (context, model, child) => MaterialApp.router(
-                      debugShowCheckedModeBanner: false,
+                      //debugShowCheckedModeBanner: false,
                       title: 'RazManager',
                       theme: ThemeData(
                         useMaterial3: true,

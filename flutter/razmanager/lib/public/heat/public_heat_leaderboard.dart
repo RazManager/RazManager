@@ -65,7 +65,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
       {
         _PublicHeatLeaderboardColumnKey.position: _PublicHeatLeaderboardColumnValue(
           text: "Pos",
-          width: textWidth("Pos ${showIndicators ? '' : ' '}", fontSize),
+          width: textWidth("Pos  ${showIndicators ? '' : ' '}", fontSize),
         ),
       }.entries,
     );
@@ -84,7 +84,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
       {
         _PublicHeatLeaderboardColumnKey.teamOrDriver: _PublicHeatLeaderboardColumnValue(
           text: teamHeat ? "Team" : "Driver",
-          width: [textWidth(teamHeat ? "Team  " : "Driver  ", fontSize), heatUsersTeamOrDriversMaxWidth].reduce(max),
+          width: [textWidth(teamHeat ? "Team   " : "Driver  ", fontSize), heatUsersTeamOrDriversMaxWidth].reduce(max),
         ),
       }.entries,
     );
