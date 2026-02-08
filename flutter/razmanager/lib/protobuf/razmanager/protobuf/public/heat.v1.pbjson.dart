@@ -646,7 +646,7 @@ const HeatAnalysisLap$json = {
       '10': 'time'
     },
     {'1': 'pitlanes', '3': 4, '4': 1, '5': 13, '10': 'pitlanes'},
-    {'1': 'car_off_tracks', '3': 5, '4': 1, '5': 13, '10': 'carOffTracks'},
+    {'1': 'deslots', '3': 5, '4': 1, '5': 13, '10': 'deslots'},
   ],
 };
 
@@ -654,8 +654,8 @@ const HeatAnalysisLap$json = {
 final $typed_data.Uint8List heatAnalysisLapDescriptor = $convert.base64Decode(
     'Cg9IZWF0QW5hbHlzaXNMYXASGgoIcG9zaXRpb24YASABKA1SCHBvc2l0aW9uEhAKA2xhcBgCIA'
     'EoDVIDbGFwEjAKBHRpbWUYAyABKAsyHC5nb29nbGUucHJvdG9idWYuRG91YmxlVmFsdWVSBHRp'
-    'bWUSGgoIcGl0bGFuZXMYBCABKA1SCHBpdGxhbmVzEiQKDmNhcl9vZmZfdHJhY2tzGAUgASgNUg'
-    'xjYXJPZmZUcmFja3M=');
+    'bWUSGgoIcGl0bGFuZXMYBCABKA1SCHBpdGxhbmVzEhgKB2Rlc2xvdHMYBSABKA1SB2Rlc2xvdH'
+    'M=');
 
 @$core.Deprecated('Use heatAnalysisGapDescriptor instead')
 const HeatAnalysisGap$json = {
@@ -829,7 +829,7 @@ const HeatStintAnalysisIndicatorStintLap$json = {
       '10': 'time'
     },
     {'1': 'pitlanes', '3': 5, '4': 1, '5': 13, '10': 'pitlanes'},
-    {'1': 'car_off_tracks', '3': 6, '4': 1, '5': 13, '10': 'carOffTracks'},
+    {'1': 'deslots', '3': 6, '4': 1, '5': 13, '10': 'deslots'},
   ],
 };
 
@@ -840,4 +840,4 @@ final $typed_data.Uint8List heatStintAnalysisIndicatorStintLapDescriptor =
         'EoDVILaW5kaWNhdG9ySWQSEAoDbGFwGAIgASgNUgNsYXASPgoNdGltZXJfZWxhcHNlZBgDIAEo'
         'CzIZLmdvb2dsZS5wcm90b2J1Zi5EdXJhdGlvblIMdGltZXJFbGFwc2VkEjAKBHRpbWUYBCABKA'
         'syHC5nb29nbGUucHJvdG9idWYuRG91YmxlVmFsdWVSBHRpbWUSGgoIcGl0bGFuZXMYBSABKA1S'
-        'CHBpdGxhbmVzEiQKDmNhcl9vZmZfdHJhY2tzGAYgASgNUgxjYXJPZmZUcmFja3M=');
+        'CHBpdGxhbmVzEhgKB2Rlc2xvdHMYBiABKA1SB2Rlc2xvdHM=');

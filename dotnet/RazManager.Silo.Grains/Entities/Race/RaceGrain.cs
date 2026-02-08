@@ -32,14 +32,20 @@ namespace RazManager.Silo.Grains.Entities.Race
         {
             _race = await _serviceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
 
+            var tasks = _race.Heats.Select(heat => GrainFactory.GetGrain<Heat.IHeatGrain>(new Guid(heat.Id)).ReadAsync());
+            var results = await Task.WhenAll(tasks);
+
             foreach (var heat in _race.Heats)
             {
-                var heatProto = await GrainFactory.GetGrain<Heat.IHeatGrain>(new Guid(heat.Id)).ReadAsync();
-                heat.HeatStateType = heatProto.HeatStateType;
-
-                if (heat.HeatStateType.Id != HeatStateTypeId.Pending && heat.HeatStateType.Id != HeatStateTypeId.Closed)
+                var result = results.SingleOrDefault(x => x.Id == heat.Id);
+                if (result is not null)
                 {
-                    _heatId = new Guid(heat.Id);
+                    heat.HeatStateType = result.HeatStateType;
+
+                    if (heat.HeatStateType.Id != HeatStateTypeId.Pending && heat.HeatStateType.Id != HeatStateTypeId.Closed)
+                    {
+                        _heatId = new Guid(heat.Id);
+                    }
                 }
             }
 

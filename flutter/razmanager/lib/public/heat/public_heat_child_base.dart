@@ -45,6 +45,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   Map<int, HeatAnalysisPositionSerie> heatAnalysisPositionSeries = {};
   Map<int, Map<int, HeatAnalysisGapSerie>> heatAnalysisGapSeries = {};
   Map<int, HeatAnalysisLapSerie> heatAnalysisLapSeries = {};
+  Map<int, HeatAnalysisLapFlagSerie> heatAnalysisLapFlagSeries = {};
   Map<int, Queue<HeatAnalysisLapTimeLapData>> heatAnalysisLapTimeLapQueues = {};
   List<HeatAnalysisHeatStateType> heatAnalysisHeatStateTypes = [];
   List<HeatStintAnalysisIndicatorStint> heatStintAnalysisIndicatorStints = [];
@@ -133,6 +134,9 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
 
     heatAnalysisLapSeries.clear();
     heatAnalysisLapSeries.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, HeatAnalysisLapSerie())));
+
+    heatAnalysisLapFlagSeries.clear();
+    heatAnalysisLapFlagSeries.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, HeatAnalysisLapFlagSerie())));
 
     heatAnalysisLapTimeLapQueues.clear();
     heatAnalysisLapTimeLapQueues.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, Queue<HeatAnalysisLapTimeLapData>())));
@@ -248,7 +252,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     lap: item.lap.lap,
                     position: item.lap.position,
                     pitlanes: item.lap.pitlanes,
-                    carOffTracks: item.lap.carOffTracks,
+                    deslots: item.lap.deslots,
                   );
 
                   bool updateLast = false;
@@ -259,10 +263,10 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     updateLast =
                         lastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position &&
                         lastHeatAnalysisPositionData.pitlanes == newHeatAnalysisPositionData.pitlanes &&
-                        lastHeatAnalysisPositionData.carOffTracks == newHeatAnalysisPositionData.carOffTracks &&
+                        lastHeatAnalysisPositionData.deslots == newHeatAnalysisPositionData.deslots &&
                         secondLastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position &&
                         secondLastHeatAnalysisPositionData.pitlanes == newHeatAnalysisPositionData.pitlanes &&
-                        secondLastHeatAnalysisPositionData.carOffTracks == newHeatAnalysisPositionData.carOffTracks;
+                        secondLastHeatAnalysisPositionData.deslots == newHeatAnalysisPositionData.deslots;
                   }
 
                   if (updateLast) {
@@ -270,12 +274,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     heatAnalysisPositionSerie.updatedDataIndexes.add(heatAnalysisPositionSerie.data.length - 1);
                   } else {
                     heatAnalysisPositionSerie.data.add(
-                      HeatAnalysisPositionData(
-                        lap: item.lap.lap,
-                        position: item.lap.position,
-                        pitlanes: item.lap.pitlanes,
-                        carOffTracks: item.lap.carOffTracks,
-                      ),
+                      HeatAnalysisPositionData(lap: item.lap.lap, position: item.lap.position, pitlanes: item.lap.pitlanes, deslots: item.lap.deslots),
                     );
 
                     heatAnalysisPositionSerie.addedDataIndexes.add(heatAnalysisPositionSerie.data.length - 1);
@@ -289,10 +288,24 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                         lap: item.lap.lap,
                         lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
                         pitlanes: item.lap.pitlanes,
-                        carOffTracks: item.lap.carOffTracks,
+                        deslots: item.lap.deslots,
                       ),
                     );
                     heatAnalysisLapSerie.addedDataIndexes.add(heatAnalysisLapSerie.data.length - 1);
+
+                    if (item.lap.pitlanes > 0 || item.lap.deslots > 0) {
+                      final heatAnalysisLapFlagSerie = heatAnalysisLapFlagSeries[item.indicatorId.value];
+                      heatAnalysisLapFlagSerie!.data.add(
+                        HeatAnalysisLapData(
+                          timerElapsed: timerElapsed,
+                          lap: item.lap.lap,
+                          lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
+                          pitlanes: item.lap.pitlanes,
+                          deslots: item.lap.deslots,
+                        ),
+                      );
+                      heatAnalysisLapFlagSerie.addedDataIndexes.add(heatAnalysisLapFlagSerie.data.length - 1);
+                    }
 
                     final heatAnalysisLapTimeLapQueue = heatAnalysisLapTimeLapQueues[item.indicatorId.value];
                     heatAnalysisLapTimeLapQueue!.addLast(
@@ -300,7 +313,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                         lap: item.lap.lap,
                         lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
                         pitlanes: item.lap.pitlanes,
-                        carOffTracks: item.lap.carOffTracks,
+                        deslots: item.lap.deslots,
                       ),
                     );
                     while (heatAnalysisLapTimeLapQueue.length >= 20) {
@@ -339,6 +352,15 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
             }
 
             for (var item in heatAnalysisLapSeries.entries) {
+              if (item.value.addedDataIndexes.isNotEmpty) {
+                // debugPrint(
+                //     'heatAnalysisLapSeries item.value.chartSeriesController:  ${item.key}  ${item.value.chartSeriesController} ${item.value.addedDataIndexes.length}');
+                item.value.chartSeriesController?.updateDataSource(addedDataIndexes: item.value.addedDataIndexes);
+                item.value.addedDataIndexes = [];
+              }
+            }
+
+            for (var item in heatAnalysisLapFlagSeries.entries) {
               if (item.value.addedDataIndexes.isNotEmpty) {
                 // debugPrint(
                 //     'heatAnalysisLapSeries item.value.chartSeriesController:  ${item.key}  ${item.value.chartSeriesController} ${item.value.addedDataIndexes.length}');
@@ -623,11 +645,11 @@ class HeatAnalysisPositionSerie {
 }
 
 class HeatAnalysisPositionData {
-  const HeatAnalysisPositionData({required this.lap, required this.position, required this.pitlanes, required this.carOffTracks});
+  const HeatAnalysisPositionData({required this.lap, required this.position, required this.pitlanes, required this.deslots});
   final int lap;
   final int position;
   final int pitlanes;
-  final int carOffTracks;
+  final int deslots;
 }
 
 class HeatAnalysisGapSerie {
@@ -648,21 +670,27 @@ class HeatAnalysisLapSerie {
   List<int> addedDataIndexes = [];
 }
 
+class HeatAnalysisLapFlagSerie {
+  ChartSeriesController<HeatAnalysisLapData, DateTime>? chartSeriesController;
+  final List<HeatAnalysisLapData> data = [];
+  List<int> addedDataIndexes = [];
+}
+
 class HeatAnalysisLapData {
-  const HeatAnalysisLapData({required this.timerElapsed, required this.lap, required this.lapTime, required this.pitlanes, required this.carOffTracks});
+  const HeatAnalysisLapData({required this.timerElapsed, required this.lap, required this.lapTime, required this.pitlanes, required this.deslots});
   final DateTime timerElapsed;
   final int lap;
   final double? lapTime;
   final int pitlanes;
-  final int carOffTracks;
+  final int deslots;
 }
 
 class HeatAnalysisLapTimeLapData {
-  const HeatAnalysisLapTimeLapData({required this.lap, required this.lapTime, required this.pitlanes, required this.carOffTracks});
+  const HeatAnalysisLapTimeLapData({required this.lap, required this.lapTime, required this.pitlanes, required this.deslots});
   final int lap;
   final double? lapTime;
   final int pitlanes;
-  final int carOffTracks;
+  final int deslots;
 }
 
 class HeatStintAnalysisLapSerie {

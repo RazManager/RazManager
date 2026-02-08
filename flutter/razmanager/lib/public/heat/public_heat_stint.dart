@@ -435,7 +435,7 @@ class StintsDataSource extends DataGridSource {
               DataGridCell(columnName: 'average', value: x.averageTime.hasValue() ? x.averageTime.value.toString() : ""),
               DataGridCell(
                 columnName: 'deslots',
-                value: x.laps.isEmpty ? "" : x.laps.map((x) => x.carOffTracks).reduce((value, element) => value + element).toString(),
+                value: x.laps.isEmpty ? "" : x.laps.map((x) => x.deslots).reduce((value, element) => value + element).toString(),
               ),
               DataGridCell(columnName: 'startedAt', value: x.laps.firstOrNull != null ? formatTimer(x.laps.firstOrNull!.timerElapsed) : ""),
               DataGridCell(columnName: 'duration', value: formatTimer(x.duration)),

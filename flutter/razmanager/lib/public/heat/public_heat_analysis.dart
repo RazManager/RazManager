@@ -491,8 +491,11 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
 
   @override
   void dispose() {
-    for (var heatAnalysisLapSerie in publicHeatChildState.heatAnalysisLapSeries.entries) {
-      heatAnalysisLapSerie.value.chartSeriesController = null;
+    for (var serie in publicHeatChildState.heatAnalysisLapSeries.entries) {
+      serie.value.chartSeriesController = null;
+    }
+    for (var serie in publicHeatChildState.heatAnalysisLapFlagSeries.entries) {
+      serie.value.chartSeriesController = null;
     }
 
     super.dispose();
@@ -569,7 +572,7 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                       //         rangeChangedArgs.visibleInterval;
                       //     debugPrint(
                       //         "onActualRangeChanged ${rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval / rangeChangedArgs.visibleInterval}");
-                  
+
                       //     if (change < 0.5) {
                       //       debugPrint("onActualRangeChanged snap!");
                       //       rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin -
@@ -609,6 +612,43 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                             color: heatModel.heatIndicatorColors[kv.key],
                           ),
                         ),
+                        // ...publicHeatChildState.heatAnalysisLapFlagSeries.entries.map(
+                        //   (kv) => ScatterSeries<HeatAnalysisLapData, DateTime>(
+                        //     onRendererCreated: (controller) {
+                        //       Future.microtask(() => kv.value.chartSeriesController = controller);
+                        //     },
+                        //     dataSource: kv.value.data,
+                        //     xValueMapper: (data, _) => data.timerElapsed,
+                        //     yValueMapper: (data, _) => data.lapTime,
+                        //     markerSettings: MarkerSettings(
+                        //       height: 15,
+                        //       width: 15,
+                        //       // Scatter will render in diamond shape
+                        //       shape: DataMarkerType.image,
+                        //       image: Icons.abc
+                        //     ),
+                        //     // dataLabelSettings: DataLabelSettings(
+                        //     //   isVisible: dataLabelsVisible,
+                        //     //   builder: (data, point, series, pointIndex, seriesIndex) {
+                        //     //     final d = data as HeatAnalysisLapData;
+                        //     //     if (d.pitlanes > 0) {
+                        //     //       return Icon(Icons.car_repair);
+                        //     //     } else if (d.pitlanes > 0) {
+                        //     //       return Icon(Icons.car_crash);
+                        //     //     } else if (dataLabelsVisible) {
+                        //     //       return Text('${d.lap}');
+                        //     //     }
+                        //     //     return Text('');
+                        //     //   },
+                        //     // ),
+                        //     animationDuration: 0,
+                        //     name: publicHeatChildState.seriesName(
+                        //       indicatorId: kv.key,
+                        //       useShortName: publicHeatAnalysesState.legendWidthName > constraints.maxWidth,
+                        //     ),
+                        //     color: heatModel.heatIndicatorColors[kv.key],
+                        //   ),
+                        //),
                       ],
                     ),
                   ),

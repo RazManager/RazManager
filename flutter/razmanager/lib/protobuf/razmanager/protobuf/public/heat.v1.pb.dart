@@ -1244,14 +1244,14 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
     $core.int? lap,
     $0.DoubleValue? time,
     $core.int? pitlanes,
-    $core.int? carOffTracks,
+    $core.int? deslots,
   }) {
     final result = create();
     if (position != null) result.position = position;
     if (lap != null) result.lap = lap;
     if (time != null) result.time = time;
     if (pitlanes != null) result.pitlanes = pitlanes;
-    if (carOffTracks != null) result.carOffTracks = carOffTracks;
+    if (deslots != null) result.deslots = deslots;
     return result;
   }
 
@@ -1274,8 +1274,7 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
     ..aOM<$0.DoubleValue>(3, _omitFieldNames ? '' : 'time',
         subBuilder: $0.DoubleValue.create)
     ..aI(4, _omitFieldNames ? '' : 'pitlanes', fieldType: $pb.PbFieldType.OU3)
-    ..aI(5, _omitFieldNames ? '' : 'carOffTracks',
-        fieldType: $pb.PbFieldType.OU3)
+    ..aI(5, _omitFieldNames ? '' : 'deslots', fieldType: $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1336,13 +1335,13 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
   void clearPitlanes() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $core.int get carOffTracks => $_getIZ(4);
+  $core.int get deslots => $_getIZ(4);
   @$pb.TagNumber(5)
-  set carOffTracks($core.int value) => $_setUnsignedInt32(4, value);
+  set deslots($core.int value) => $_setUnsignedInt32(4, value);
   @$pb.TagNumber(5)
-  $core.bool hasCarOffTracks() => $_has(4);
+  $core.bool hasDeslots() => $_has(4);
   @$pb.TagNumber(5)
-  void clearCarOffTracks() => $_clearField(5);
+  void clearDeslots() => $_clearField(5);
 }
 
 class HeatAnalysisGap extends $pb.GeneratedMessage {
@@ -1755,7 +1754,7 @@ class HeatStintAnalysisIndicatorStintLap extends $pb.GeneratedMessage {
     $1.Duration? timerElapsed,
     $0.DoubleValue? time,
     $core.int? pitlanes,
-    $core.int? carOffTracks,
+    $core.int? deslots,
   }) {
     final result = create();
     if (indicatorId != null) result.indicatorId = indicatorId;
@@ -1763,7 +1762,7 @@ class HeatStintAnalysisIndicatorStintLap extends $pb.GeneratedMessage {
     if (timerElapsed != null) result.timerElapsed = timerElapsed;
     if (time != null) result.time = time;
     if (pitlanes != null) result.pitlanes = pitlanes;
-    if (carOffTracks != null) result.carOffTracks = carOffTracks;
+    if (deslots != null) result.deslots = deslots;
     return result;
   }
 
@@ -1790,8 +1789,7 @@ class HeatStintAnalysisIndicatorStintLap extends $pb.GeneratedMessage {
     ..aOM<$0.DoubleValue>(4, _omitFieldNames ? '' : 'time',
         subBuilder: $0.DoubleValue.create)
     ..aI(5, _omitFieldNames ? '' : 'pitlanes', fieldType: $pb.PbFieldType.OU3)
-    ..aI(6, _omitFieldNames ? '' : 'carOffTracks',
-        fieldType: $pb.PbFieldType.OU3)
+    ..aI(6, _omitFieldNames ? '' : 'deslots', fieldType: $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1867,13 +1865,13 @@ class HeatStintAnalysisIndicatorStintLap extends $pb.GeneratedMessage {
   void clearPitlanes() => $_clearField(5);
 
   @$pb.TagNumber(6)
-  $core.int get carOffTracks => $_getIZ(5);
+  $core.int get deslots => $_getIZ(5);
   @$pb.TagNumber(6)
-  set carOffTracks($core.int value) => $_setUnsignedInt32(5, value);
+  set deslots($core.int value) => $_setUnsignedInt32(5, value);
   @$pb.TagNumber(6)
-  $core.bool hasCarOffTracks() => $_has(5);
+  $core.bool hasDeslots() => $_has(5);
   @$pb.TagNumber(6)
-  void clearCarOffTracks() => $_clearField(6);
+  void clearDeslots() => $_clearField(6);
 }
 
 const $core.bool _omitFieldNames =

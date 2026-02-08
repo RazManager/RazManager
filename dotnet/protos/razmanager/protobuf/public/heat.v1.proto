@@ -183,7 +183,7 @@ message HeatAnalysisLap {
   uint32 lap = 2;
   google.protobuf.DoubleValue time = 3;
   uint32 pitlanes = 4;
-  uint32 car_off_tracks = 5;
+  uint32 deslots = 5;
 }
 
 message HeatAnalysisGap {
@@ -225,5 +225,5 @@ message HeatStintAnalysisIndicatorStintLap {
   google.protobuf.Duration timer_elapsed = 3;
   google.protobuf.DoubleValue time = 4;
   uint32 pitlanes = 5;
-  uint32 car_off_tracks = 6;
+  uint32 deslots = 6;
 }
