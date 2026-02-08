@@ -277,7 +277,10 @@ class EventModel extends ChangeNotifier with GrpcClient {
         .listen(
           (data) {
             _audioPlayer ??= AudioPlayer();
-            _audioPlayer!.play(BytesSource(Uint8List.fromList(data.speech.value)));
+
+            // https://github.com/bluefireteam/audioplayers/issues/1269
+            _audioPlayer!.play(UrlSource(Uri.dataFromBytes(Uint8List.fromList(data.speech.value), mimeType: "audio/mpeg").toString()));
+            //_audioPlayer!.play(BytesSource(Uint8List.fromList(data.speech.value)));
           },
           onDone: () => debugPrint('_eventSpeechSubscribe done'),
           onError: (exception) async {
