@@ -1,22 +1,16 @@
 syntax = "proto3";
 
+import "razmanager/protobuf/public/event_speech_type_id.v1.proto";
 
 package razmanager.protobuf.internal.silo.user_services.event;
 
-enum EventSpeechTypeId {
-  EVENT_SPEECH_TYPE_ID_UNDEFINED = 0;
-  EVENT_SPEECH_TYPE_ID_FASTER = 1;
-  EVENT_SPEECH_TYPE_ID_FASTEST = 2;
-  EVENT_SPEECH_TYPE_ID_POSITION_LEADER = 3;
-  EVENT_SPEECH_TYPE_ID_POSITION_GAINED = 4;
-  EVENT_SPEECH_TYPE_ID_POSITION_LOST = 5;
-  EVENT_SPEECH_TYPE_ID_GAP_AFTER = 6;
-  EVENT_SPEECH_TYPE_ID_GAP_BEFORE = 7;
-  EVENT_SPEECH_TYPE_ID_BAD_LAP = 8;
+
+message EventSpeechTexts {
+  repeated EventSpeechText items = 1;
 }
 
-
-message EventSpeechData {
-  EventSpeechTypeId event_speech_type_id = 1;
+message EventSpeechText {
+  public.v1.EventSpeechTypeId event_speech_type_id = 1;
   string text = 2;
+  bool slow = 3;
 }

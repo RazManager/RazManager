@@ -12,7 +12,7 @@ namespace RazManager.Silo.Grains.Entities.Event
         private Razmanager.Protobuf.Public.V1.EventState? _eventState;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.Event>? _eventStream;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.EventState>? _eventStateStream;
-        private Dictionary<Guid, IAsyncStream<EventSpeechData>?> _eventUserSpeechDataStreams = [];
+        private Dictionary<Guid, IAsyncStream<EventSpeechTexts>?> _eventSpeechTextsStreams = [];
 
 
         public EventGrain(Razmanager.Protobuf.Internal.Repository.SystemServices.Event.EventService.EventServiceClient serviceClient)
@@ -77,16 +77,16 @@ namespace RazManager.Silo.Grains.Entities.Event
         }
 
 
-        public async Task EventUserSpeechData(Guid eventUserId, EventSpeechTypeId eventSpeechTypeId, string text)
+        public async Task EventSpeechTexts(Guid eventUserId, EventSpeechTexts texts)
         {
-            if (!_eventUserSpeechDataStreams.TryGetValue(eventUserId, out var stream))
+            if (!_eventSpeechTextsStreams.TryGetValue(eventUserId, out var stream))
             {
                 var streamProvider = this.GetStreamProvider(Constants.StreamProvider);
-                stream = streamProvider.GetStream<EventSpeechData>(Constants.StreamName.EventSpeechData.ToString(), $"{this.GetPrimaryKey()}:{eventUserId}");
-                _eventUserSpeechDataStreams.Add(eventUserId, stream);
+                stream = streamProvider.GetStream<EventSpeechTexts>(Constants.StreamName.EventSpeechTexts.ToString(), $"{this.GetPrimaryKey()}:{eventUserId}");
+                _eventSpeechTextsStreams.Add(eventUserId, stream);
             }
 
-            await stream!.OnNextAsync(new EventSpeechData { EventSpeechTypeId = eventSpeechTypeId, Text = text });
+            await stream!.OnNextAsync(texts);
         }
     }
 }

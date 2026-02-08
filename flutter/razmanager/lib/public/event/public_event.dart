@@ -50,66 +50,78 @@ class _PublicEventState extends State<PublicEvent> with ExceptionMessage {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventModel>(builder: (context, _, __) {
-      if (eventModel.eventProto != null) {
-        return DefaultTabController(
-          length: 2,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(eventModel.eventProto!.name),
-              flexibleSpace: const AppProgressIndicator(),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.settings),
-                  tooltip: 'Settings',
-                  onPressed: () => context.push('/public/event-settings'),
+    return Consumer<EventModel>(
+      builder: (context, _, __) {
+        if (eventModel.eventProto != null) {
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(eventModel.eventProto!.name),
+                flexibleSpace: const AppProgressIndicator(),
+                actions: [
+                  IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
+                  Consumer<EventModel>(
+                    builder: (context, model, _) {
+                      if (!model.soundEnabled) {
+                        return IconButton(
+                          icon: const Icon(Icons.volume_off),
+                          tooltip: 'Sound on',
+                          onPressed: !model.soundEnabledToggleEnabled
+                              ? null
+                              : () async {
+                                  await model.soundEnabledNotify(true);
+                                },
+                        );
+                      } else {
+                        return IconButton(
+                          tooltip: 'Sound off',
+                          icon: const Icon(Icons.volume_mute),
+                          onPressed: () async {
+                            await model.soundEnabledNotify(false);
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ],
+                bottom: const TabBar(
+                  tabs: [
+                    Tab(text: 'Races'),
+                    Tab(text: 'Event leaderboard'),
+                  ],
                 ),
-                Consumer<EventModel>(builder: (context, model, _) {
-                  if (!model.soundEnabled) {
-                    return IconButton(
-                        icon: const Icon(Icons.volume_off),
-                        tooltip: 'Sound on',
-                        onPressed: !model.soundEnabledToggleEnabled
-                            ? null
-                            : () async {
-                                await model.soundEnabledNotify(true);
-                              });
-                  } else {
-                    return IconButton(
-                        tooltip: 'Sound off',
-                        icon: const Icon(Icons.volume_mute),
-                        onPressed: () async {
-                          await model.soundEnabledNotify(false);
-                        });
-                  }
-                }),
-              ],
-              bottom: const TabBar(tabs: [Tab(text: 'Races'), Tab(text: 'Event leaderboard')]),
-            ),
-            body: TabBarView(children: [_PublicEventRaces(), Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              body: TabBarView(
                 children: [
-                  const Text("This space will be used by the event leaderboard, i.e. a summary of all races (not heats/segments) for an event. You might have awarded points to the drivers/teams for each race, and a summary of that will be shown here."),
-                  const SizedBox(height: 16),
-                  Expanded(child: const Placeholder())
+                  _PublicEventRaces(),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "This space will be used by the event leaderboard, i.e. a summary of all races (not heats/segments) for an event. You might have awarded points to the drivers/teams for each race, and a summary of that will be shown here.",
+                        ),
+                        const SizedBox(height: 16),
+                        Expanded(child: const Placeholder()),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            )]),
+              drawer: const AppDrawer(),
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(flexibleSpace: const AppProgressIndicator()),
+            body: const Center(child: Loading()),
             drawer: const AppDrawer(),
-          ),
-        );
-      } else {
-        return Scaffold(
-          appBar: AppBar(
-            flexibleSpace: const AppProgressIndicator(),
-          ),
-          body: const Center(child: Loading()),
-          drawer: const AppDrawer(),
-        );
-      }
-    });
+          );
+        }
+      },
+    );
   }
 }
 
@@ -135,10 +147,7 @@ class _PublicEventRacesState extends State<_PublicEventRaces> with ExceptionMess
           );
         },
         separatorBuilder: (context, index) {
-          return const Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Divider(),
-          );
+          return const Padding(padding: EdgeInsets.only(left: 16, right: 16), child: Divider());
         },
       ),
     );

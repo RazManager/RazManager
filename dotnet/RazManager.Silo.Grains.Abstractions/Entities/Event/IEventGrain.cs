@@ -11,6 +11,6 @@ namespace RazManager.Silo.Grains.Entities.Event
         Task RefreshAsync(bool publish);
         Task<Razmanager.Protobuf.Public.V1.Event> ReadAsync();
         Task<Razmanager.Protobuf.Public.V1.EventState> ReadEventStateAsync();
-        Task EventUserSpeechData(Guid eventUserId, EventSpeechTypeId eventSpeechTypeId, string text);
+        Task EventSpeechTexts(Guid eventUserId, EventSpeechTexts texts);
     }
 }

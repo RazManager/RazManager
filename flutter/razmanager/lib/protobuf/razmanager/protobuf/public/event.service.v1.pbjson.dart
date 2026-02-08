@@ -15,44 +15,6 @@ import 'dart:convert' as $convert;
 import 'dart:core' as $core;
 import 'dart:typed_data' as $typed_data;
 
-@$core.Deprecated('Use eventSpeechDescriptor instead')
-const EventSpeech$json = {
-  '1': 'EventSpeech',
-  '2': [
-    {
-      '1': 'speech',
-      '3': 1,
-      '4': 1,
-      '5': 11,
-      '6': '.google.protobuf.BytesValue',
-      '10': 'speech'
-    },
-  ],
-};
-
-/// Descriptor for `EventSpeech`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List eventSpeechDescriptor = $convert.base64Decode(
-    'CgtFdmVudFNwZWVjaBIzCgZzcGVlY2gYASABKAsyGy5nb29nbGUucHJvdG9idWYuQnl0ZXNWYW'
-    'x1ZVIGc3BlZWNo');
-
-@$core.Deprecated('Use eventUserSpeechSubscribeRequestDescriptor instead')
-const EventUserSpeechSubscribeRequest$json = {
-  '1': 'EventUserSpeechSubscribeRequest',
-  '2': [
-    {'1': 'event_id', '3': 1, '4': 1, '5': 9, '10': 'eventId'},
-    {'1': 'event_user_id', '3': 2, '4': 1, '5': 9, '10': 'eventUserId'},
-    {'1': 'locale', '3': 3, '4': 1, '5': 9, '10': 'locale'},
-    {'1': 'local_name', '3': 4, '4': 1, '5': 9, '10': 'localName'},
-  ],
-};
-
-/// Descriptor for `EventUserSpeechSubscribeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List eventUserSpeechSubscribeRequestDescriptor =
-    $convert.base64Decode(
-        'Ch9FdmVudFVzZXJTcGVlY2hTdWJzY3JpYmVSZXF1ZXN0EhkKCGV2ZW50X2lkGAEgASgJUgdldm'
-        'VudElkEiIKDWV2ZW50X3VzZXJfaWQYAiABKAlSC2V2ZW50VXNlcklkEhYKBmxvY2FsZRgDIAEo'
-        'CVIGbG9jYWxlEh0KCmxvY2FsX25hbWUYBCABKAlSCWxvY2FsTmFtZQ==');
-
 @$core.Deprecated('Use eventSpeechSettingsRequestDescriptor instead')
 const EventSpeechSettingsRequest$json = {
   '1': 'EventSpeechSettingsRequest',
@@ -101,3 +63,80 @@ const EventSpeechSettings$json = {
 final $typed_data.Uint8List eventSpeechSettingsDescriptor = $convert.base64Decode(
     'ChNFdmVudFNwZWVjaFNldHRpbmdzEhYKBmxvY2FsZRgBIAEoCVIGbG9jYWxlEh8KC2xvY2FsZV'
     '9uYW1lGAIgASgJUgpsb2NhbGVOYW1lEh0KCmxvY2FsX25hbWUYAyABKAlSCWxvY2FsTmFtZQ==');
+
+@$core.Deprecated('Use eventSpeechDescriptor instead')
+const EventSpeech$json = {
+  '1': 'EventSpeech',
+  '2': [
+    {
+      '1': 'speech',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.BytesValue',
+      '10': 'speech'
+    },
+  ],
+};
+
+/// Descriptor for `EventSpeech`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List eventSpeechDescriptor = $convert.base64Decode(
+    'CgtFdmVudFNwZWVjaBIzCgZzcGVlY2gYASABKAsyGy5nb29nbGUucHJvdG9idWYuQnl0ZXNWYW'
+    'x1ZVIGc3BlZWNo');
+
+@$core.Deprecated('Use eventSpeechSubscribeRequestDescriptor instead')
+const EventSpeechSubscribeRequest$json = {
+  '1': 'EventSpeechSubscribeRequest',
+  '2': [
+    {'1': 'event_id', '3': 1, '4': 1, '5': 9, '10': 'eventId'},
+    {'1': 'event_user_id', '3': 2, '4': 1, '5': 9, '10': 'eventUserId'},
+    {'1': 'locale', '3': 3, '4': 1, '5': 9, '10': 'locale'},
+    {'1': 'local_name', '3': 4, '4': 1, '5': 9, '10': 'localName'},
+    {
+      '1': 'event_speech_type_options',
+      '3': 5,
+      '4': 3,
+      '5': 11,
+      '6': '.razmanager.protobuf.public.v1.EventSpeechTypeOption',
+      '10': 'eventSpeechTypeOptions'
+    },
+  ],
+};
+
+/// Descriptor for `EventSpeechSubscribeRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List eventSpeechSubscribeRequestDescriptor = $convert.base64Decode(
+    'ChtFdmVudFNwZWVjaFN1YnNjcmliZVJlcXVlc3QSGQoIZXZlbnRfaWQYASABKAlSB2V2ZW50SW'
+    'QSIgoNZXZlbnRfdXNlcl9pZBgCIAEoCVILZXZlbnRVc2VySWQSFgoGbG9jYWxlGAMgASgJUgZs'
+    'b2NhbGUSHQoKbG9jYWxfbmFtZRgEIAEoCVIJbG9jYWxOYW1lEm8KGWV2ZW50X3NwZWVjaF90eX'
+    'BlX29wdGlvbnMYBSADKAsyNC5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5FdmVudFNw'
+    'ZWVjaFR5cGVPcHRpb25SFmV2ZW50U3BlZWNoVHlwZU9wdGlvbnM=');
+
+@$core.Deprecated('Use eventSpeechTypeOptionDescriptor instead')
+const EventSpeechTypeOption$json = {
+  '1': 'EventSpeechTypeOption',
+  '2': [
+    {
+      '1': 'event_speech_type_id',
+      '3': 1,
+      '4': 1,
+      '5': 14,
+      '6': '.razmanager.protobuf.public.v1.EventSpeechTypeId',
+      '10': 'eventSpeechTypeId'
+    },
+    {
+      '1': 'laps',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.UInt32Value',
+      '10': 'laps'
+    },
+  ],
+};
+
+/// Descriptor for `EventSpeechTypeOption`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List eventSpeechTypeOptionDescriptor = $convert.base64Decode(
+    'ChVFdmVudFNwZWVjaFR5cGVPcHRpb24SYQoUZXZlbnRfc3BlZWNoX3R5cGVfaWQYASABKA4yMC'
+    '5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5FdmVudFNwZWVjaFR5cGVJZFIRZXZlbnRT'
+    'cGVlY2hUeXBlSWQSMAoEbGFwcxgCIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5VSW50MzJWYWx1ZV'
+    'IEbGFwcw==');

@@ -33,6 +33,7 @@ protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../D
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto
 protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/event.service.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/event.v1.proto
+protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/event_speech_type_id.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/event_user_type_id.v1.proto
 protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/heat.service.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/heat.v1.proto

@@ -189,17 +189,17 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
                         PublicHeatDriverboard(),
                         PublicHeatAnalyses(),
                         PublicHeatStint(),
-                                              Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("This space will be used by the heat summary, i.e. a live textual summary of the heat."),
-                            const SizedBox(height: 16),
-                            Expanded(child: const Placeholder()),
-                          ],
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("This space will be used by the heat summary, i.e. a live textual summary of the heat."),
+                              const SizedBox(height: 16),
+                              Expanded(child: const Placeholder()),
+                            ],
+                          ),
                         ),
-                      ),
 
                         //PublicHeatLeaderboardStream(),
                       ],

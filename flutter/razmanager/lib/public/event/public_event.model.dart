@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 import '../../app_model.dart';
+import '../../protobuf/razmanager/protobuf/public/event_speech_type_id.v1.pbenum.dart';
 import '../../utilities/grpc_client.dart';
 import '../../protobuf/razmanager/protobuf/public/event.service.v1.pbgrpc.dart';
 import '../../protobuf/razmanager/protobuf/public/event.v1.pb.dart';
@@ -33,6 +34,9 @@ class EventModel extends ChangeNotifier with GrpcClient {
   late Iterable<EventSpeechSettings> eventSpeechSettings;
   EventSpeechSettings? eventSpeechSetting;
   bool soundEnabled = false;
+  List<(bool, EventSpeechTypeOption)> eventSpeechTypeOptions = [];
+
+
   AudioPlayer? _audioPlayer;
 
   String? followEventUserId;
@@ -85,6 +89,17 @@ class EventModel extends ChangeNotifier with GrpcClient {
     // if (sharedPreferenceEventUserIds != null) {
     //   eventUserIds = sharedPreferenceEventUserIds;
     // }
+
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER, laps: null)));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED, laps: null)));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST, laps: null)));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST, laps: null)));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER, laps: null)));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_AFTER, laps: UInt32Value(value: 3))));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_BEFORE, laps: UInt32Value(value: 3))));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_NEAREST, laps: UInt32Value(value: 3))));
+    eventSpeechTypeOptions.add((false, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_AVERAGE_LAP, laps: UInt32Value(value: 5))));
+    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_LAP, laps: UInt32Value(value: 5))));
   }
 
   EventServiceClient eventServiceClient() {
@@ -248,13 +263,15 @@ class EventModel extends ChangeNotifier with GrpcClient {
     if (_eventSpeechStreamSubscription != null) {
       await _eventSpeechStreamSubscription!.cancel();
     }
+
     _eventSpeechStreamSubscription = eventServiceClient()
-        .eventUserSpeechSubscribe(
-          EventUserSpeechSubscribeRequest(
+        .eventSpeechSubscribe(
+          EventSpeechSubscribeRequest(
             eventId: eventProto!.id,
             eventUserId: followEventUserId,
             locale: eventSpeechSetting!.locale,
             localName: eventSpeechSetting!.localName,
+            eventSpeechTypeOptions: eventSpeechTypeOptions.where((x) => x.$1).map((x)  => EventSpeechTypeOption(eventSpeechTypeId: x.$2.eventSpeechTypeId, laps: x.$2.hasLaps() ? UInt32Value(value:  x.$2.laps.value ): null))
           ),
         )
         .listen(

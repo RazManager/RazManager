@@ -18,7 +18,7 @@ namespace RazManager.Silo.Grains
             DeviceConfigurationOutputs,
             Event,
             EventState,
-            EventSpeechData,
+            EventSpeechTexts,
             Race,
             Heat,
             HeatState,

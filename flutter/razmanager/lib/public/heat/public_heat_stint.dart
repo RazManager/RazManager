@@ -92,13 +92,13 @@ class _PublicHeatStintState extends State<PublicHeatStint> {
     builder: (context, constraints) {
       smallLayout = constraints.maxWidth < 1000 && heatModel.teamHeat;
       return DefaultTabController(
-        length: 3 + (heatModel.teamHeat ? 1 : 0), // + (smallLayout ? 1 : 0)
+        length: 2 + (heatModel.teamHeat ? 2 : 0), // + (smallLayout ? 1 : 0)
         child: Column(
           children: [
             TabBar.secondary(
               tabs: [
                 Tab(text: 'Stints'),
-                Tab(text: smallLayout ? 'Percentages' : 'Driver percentages'),
+                if (heatModel.teamHeat) Tab(text: smallLayout ? 'Percentages' : 'Driver percentages'),
                 Tab(text: 'Lap times'),
                 if (heatModel.teamHeat) Tab(text: smallLayout ? 'Averages' : 'Driver averages'),
               ],
@@ -110,7 +110,7 @@ class _PublicHeatStintState extends State<PublicHeatStint> {
                   children: [
                     _PublicHeatStintStints(),
                     //if (smallLayout) _PublicHeatStintDriverPercentages(),
-                    _PublicHeatStintDriverPercentages(),
+                    if (heatModel.teamHeat) _PublicHeatStintDriverPercentages(),
                     _PublicHeatStintLaps(),
                     if (heatModel.teamHeat) _PublicHeatStintCompare(),
                   ],
@@ -651,121 +651,115 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
 
         // reset legends...
         //zoomPanBehavior.reset();
-        return Stack(
+        return Row(
           children: [
-            SfCartesianChart(
-              key: UniqueKey(),
-              primaryXAxis: DateTimeAxis(
-                title: const AxisTitle(text: 'Heat time'),
-                dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
-                isInversed: raceModel.isInversed,
-                plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
-                    .map(
-                      (x) => PlotBand(
-                        start: x.timerElapsed,
-                        end: x.timerElapsed,
-                        borderColor: switch (x.heatStateTypeId) {
-                          HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
-                          HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
-                          HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
-                          _ => Colors.white,
+            Expanded(
+              child: SfCartesianChart(
+                key: UniqueKey(),
+                primaryXAxis: DateTimeAxis(
+                  title: const AxisTitle(text: 'Heat time'),
+                  dateFormat: DateFormat(DateFormat.HOUR24_MINUTE_SECOND),
+                  isInversed: raceModel.isInversed,
+                  plotBands: publicHeatChildState.heatAnalysisHeatStateTypes
+                      .map(
+                        (x) => PlotBand(
+                          start: x.timerElapsed,
+                          end: x.timerElapsed,
+                          borderColor: switch (x.heatStateTypeId) {
+                            HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING => Colors.greenAccent,
+                            HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW => Colors.yellowAccent,
+                            HeatStateTypeId.HEAT_STATE_TYPE_ID_RED => Colors.redAccent,
+                            _ => Colors.white,
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+                primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
+                legend: const Legend(isVisible: true, toggleSeriesVisibility: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
+                trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
+                zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
+                //onZooming: (zoomingArgs) => debugPrint("onZooming: ${zoomingArgs.currentZoomFactor}"),
+                // onActualRangeChanged: (rangeChangedArgs) {
+                //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
+                //     rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin - (rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval);
+                //   }
+                // },
+                series: [
+                  ...publicHeatChildState.heatStintAnalysisIndicatorStints.indexed.map(
+                    (item) => FastLineSeries<HeatStintAnalysisIndicatorStintLap, DateTime>(
+                      onRendererCreated: (controller) {
+                        final heatAnalysisLapSerie = publicHeatChildState.heatStintAnalysisLapSeries[item.$2.id];
+                        //debugPrint("heatAnalysisLapSerie ${item.$2.id} ${publicHeatChildState.heatStintAnalysisLapSeries.length} $heatAnalysisLapSerie");
+                        // if (heatAnalysisLapSerie == null) {
+                        //   for (var element in publicHeatChildState.heatStintAnalysisLapSeries.entries) {
+                        //     debugPrint("element ${element.key} ${element.value} ");
+                        //   }
+                        // }
+                        Future.microtask(() => heatAnalysisLapSerie!.chartSeriesController = controller);
+                      },
+                      dataSource: item.$2.laps,
+                      xValueMapper: (data, _) => dateTimeFromProtobufDuration(data.timerElapsed),
+                      yValueMapper: (data, _) => data.time.hasValue() ? data.time.value : null,
+                      dataLabelSettings: DataLabelSettings(
+                        isVisible: dataLabelsVisible,
+                        builder: (data, point, series, pointIndex, seriesIndex) {
+                          final d = data as HeatStintAnalysisIndicatorStintLap;
+                          if (d.pitlanes > 0) {
+                            return Icon(Icons.car_repair);
+                          } else if (d.pitlanes > 0) {
+                            return Icon(Icons.car_crash);
+                          } else if (dataLabelsVisible) {
+                            return Text('${d.lap}');
+                          }
+                          return Text('');
                         },
                       ),
-                    )
-                    .toList(),
-              ),
-              primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
-              legend: const Legend(isVisible: true, toggleSeriesVisibility: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
-              trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
-              zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
-              //onZooming: (zoomingArgs) => debugPrint("onZooming: ${zoomingArgs.currentZoomFactor}"),
-              // onActualRangeChanged: (rangeChangedArgs) {
-              //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
-              //     rangeChangedArgs.visibleMin = rangeChangedArgs.visibleMin - (rangeChangedArgs.visibleMin % rangeChangedArgs.visibleInterval);
-              //   }
-              // },
-              series: [
-                ...publicHeatChildState.heatStintAnalysisIndicatorStints.indexed.map(
-                  (item) => FastLineSeries<HeatStintAnalysisIndicatorStintLap, DateTime>(
-                    onRendererCreated: (controller) {
-                      final heatAnalysisLapSerie = publicHeatChildState.heatStintAnalysisLapSeries[item.$2.id];
-                      //debugPrint("heatAnalysisLapSerie ${item.$2.id} ${publicHeatChildState.heatStintAnalysisLapSeries.length} $heatAnalysisLapSerie");
-                      // if (heatAnalysisLapSerie == null) {
-                      //   for (var element in publicHeatChildState.heatStintAnalysisLapSeries.entries) {
-                      //     debugPrint("element ${element.key} ${element.value} ");
-                      //   }
-                      // }
-                      Future.microtask(() => heatAnalysisLapSerie!.chartSeriesController = controller);
-                    },
-                    dataSource: item.$2.laps,
-                    xValueMapper: (data, _) => dateTimeFromProtobufDuration(data.timerElapsed),
-                    yValueMapper: (data, _) => data.time.hasValue() ? data.time.value : null,
-                    dataLabelSettings: DataLabelSettings(
-                      isVisible: dataLabelsVisible,
-                      builder: (data, point, series, pointIndex, seriesIndex) {
-                        final d = data as HeatStintAnalysisIndicatorStintLap;
-                        if (d.pitlanes > 0) {
-                          return Icon(Icons.car_repair);
-                        } else if (d.pitlanes > 0) {
-                          return Icon(Icons.car_crash);
-                        } else if (dataLabelsVisible) {
-                          return Text('${d.lap}');
-                        }
-                        return Text('');
-                      },
+                      trendlines: [
+                        Trendline(
+                          //width: 1,
+                          dashArray: [2, 2],
+                          type: TrendlineType.movingAverage,
+                          period: 5,
+                          color: Theme.of(context).colorScheme.secondary,
+                          isVisibleInLegend: false,
+                        ),
+                      ],
+                      animationDuration: 0,
+                      name: legend(model, item.$2),
                     ),
-                    trendlines: [
-                      Trendline(
-                        //width: 1,
-                        dashArray: [2, 2],
-                        type: TrendlineType.movingAverage,
-                        period: 5,
-                        color: Theme.of(context).colorScheme.secondary,
-                        isVisibleInLegend: false,
-                      ),
-                    ],
-                    animationDuration: 0,
-                    name: legend(model, item.$2),
                   ),
-                ),
-              ],
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(dataLabelsVisible ? Icons.cancel : Icons.numbers),
-                    tooltip: "Show lap number",
-                    onPressed: () {
-                      dataLabelsVisible = !dataLabelsVisible;
-                      setState(() {});
-                    },
-                  ),
-                  // IconButton(
-                  //   icon: const Icon(Icons.zoom_in),
-                  //   tooltip: "Zoom in",
-                  //   onPressed: () {
-                  //     zoomPanBehavior.zoomIn();
-                  //   },
-                  // ),
-                  // IconButton(
-                  //   icon: const Icon(Icons.zoom_out),
-                  //   tooltip: "Zoom out",
-                  //   onPressed: () {
-                  //     zoomPanBehavior.zoomOut();
-                  //   },
-                  // ),
-                  // IconButton(
-                  //   icon: const Icon(Icons.undo),
-                  //   tooltip: "Reset zoom",
-                  //   onPressed: () {
-                  //     zoomPanBehavior.reset();
-                  //   },
-                  // ),
                 ],
               ),
+            ),
+
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.zoom_in),
+                  tooltip: "Zoom in",
+                  onPressed: null, // () { zoomPanBehavior.zoomIn(); },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.zoom_out),
+                  tooltip: "Zoom out",
+                  onPressed: null, // () { zoomPanBehavior.zoomOut(); },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.undo),
+                  tooltip: "Reset zoom",
+                  onPressed: null, // () { zoomPanBehavior.reset(); },
+                ),
+                IconButton(
+                  icon: Icon(dataLabelsVisible ? Icons.cancel : Icons.numbers),
+                  tooltip: "Show lap number",
+                  onPressed: () {
+                    dataLabelsVisible = !dataLabelsVisible;
+                    setState(() {});
+                  },
+                ),
+              ],
             ),
           ],
         );

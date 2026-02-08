@@ -7,6 +7,6 @@ namespace RazManager.Utilities.Speech
     {
         Task<IEnumerable<(string locale, string localeName, string localName)>> GetSettingsAsync(string locale);
         Task<string?> GetNameAsync(string locale, string localName);
-        Task<byte[]?> SpeekAsync(string locale, string name, string text, SpeechStyle speechStyle);
+        Task<byte[]?> SpeekAsync(string locale, string name, string text, SpeechStyle speechStyle, bool slow);
     }
 }

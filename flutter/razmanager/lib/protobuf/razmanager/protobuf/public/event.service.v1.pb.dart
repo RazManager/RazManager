@@ -16,160 +16,9 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import 'package:protobuf/well_known_types/google/protobuf/wrappers.pb.dart'
     as $0;
 
+import 'event_speech_type_id.v1.pbenum.dart' as $3;
+
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
-
-class EventSpeech extends $pb.GeneratedMessage {
-  factory EventSpeech({
-    $0.BytesValue? speech,
-  }) {
-    final result = create();
-    if (speech != null) result.speech = speech;
-    return result;
-  }
-
-  EventSpeech._();
-
-  factory EventSpeech.fromBuffer($core.List<$core.int> data,
-          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(data, registry);
-  factory EventSpeech.fromJson($core.String json,
-          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(json, registry);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'EventSpeech',
-      package: const $pb.PackageName(
-          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
-      createEmptyInstance: create)
-    ..aOM<$0.BytesValue>(1, _omitFieldNames ? '' : 'speech',
-        subBuilder: $0.BytesValue.create)
-    ..hasRequiredFields = false;
-
-  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  EventSpeech clone() => deepCopy();
-  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  EventSpeech copyWith(void Function(EventSpeech) updates) =>
-      super.copyWith((message) => updates(message as EventSpeech))
-          as EventSpeech;
-
-  @$core.override
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static EventSpeech create() => EventSpeech._();
-  @$core.override
-  EventSpeech createEmptyInstance() => create();
-  @$core.pragma('dart2js:noInline')
-  static EventSpeech getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<EventSpeech>(create);
-  static EventSpeech? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $0.BytesValue get speech => $_getN(0);
-  @$pb.TagNumber(1)
-  set speech($0.BytesValue value) => $_setField(1, value);
-  @$pb.TagNumber(1)
-  $core.bool hasSpeech() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearSpeech() => $_clearField(1);
-  @$pb.TagNumber(1)
-  $0.BytesValue ensureSpeech() => $_ensure(0);
-}
-
-class EventUserSpeechSubscribeRequest extends $pb.GeneratedMessage {
-  factory EventUserSpeechSubscribeRequest({
-    $core.String? eventId,
-    $core.String? eventUserId,
-    $core.String? locale,
-    $core.String? localName,
-  }) {
-    final result = create();
-    if (eventId != null) result.eventId = eventId;
-    if (eventUserId != null) result.eventUserId = eventUserId;
-    if (locale != null) result.locale = locale;
-    if (localName != null) result.localName = localName;
-    return result;
-  }
-
-  EventUserSpeechSubscribeRequest._();
-
-  factory EventUserSpeechSubscribeRequest.fromBuffer($core.List<$core.int> data,
-          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(data, registry);
-  factory EventUserSpeechSubscribeRequest.fromJson($core.String json,
-          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(json, registry);
-
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'EventUserSpeechSubscribeRequest',
-      package: const $pb.PackageName(
-          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
-      createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'eventId')
-    ..aOS(2, _omitFieldNames ? '' : 'eventUserId')
-    ..aOS(3, _omitFieldNames ? '' : 'locale')
-    ..aOS(4, _omitFieldNames ? '' : 'localName')
-    ..hasRequiredFields = false;
-
-  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  EventUserSpeechSubscribeRequest clone() => deepCopy();
-  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  EventUserSpeechSubscribeRequest copyWith(
-          void Function(EventUserSpeechSubscribeRequest) updates) =>
-      super.copyWith(
-              (message) => updates(message as EventUserSpeechSubscribeRequest))
-          as EventUserSpeechSubscribeRequest;
-
-  @$core.override
-  $pb.BuilderInfo get info_ => _i;
-
-  @$core.pragma('dart2js:noInline')
-  static EventUserSpeechSubscribeRequest create() =>
-      EventUserSpeechSubscribeRequest._();
-  @$core.override
-  EventUserSpeechSubscribeRequest createEmptyInstance() => create();
-  @$core.pragma('dart2js:noInline')
-  static EventUserSpeechSubscribeRequest getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<EventUserSpeechSubscribeRequest>(
-          create);
-  static EventUserSpeechSubscribeRequest? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get eventId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set eventId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasEventId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearEventId() => $_clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get eventUserId => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set eventUserId($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasEventUserId() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearEventUserId() => $_clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.String get locale => $_getSZ(2);
-  @$pb.TagNumber(3)
-  set locale($core.String value) => $_setString(2, value);
-  @$pb.TagNumber(3)
-  $core.bool hasLocale() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearLocale() => $_clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.String get localName => $_getSZ(3);
-  @$pb.TagNumber(4)
-  set localName($core.String value) => $_setString(3, value);
-  @$pb.TagNumber(4)
-  $core.bool hasLocalName() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearLocalName() => $_clearField(4);
-}
 
 class EventSpeechSettingsRequest extends $pb.GeneratedMessage {
   factory EventSpeechSettingsRequest({
@@ -357,6 +206,239 @@ class EventSpeechSettings extends $pb.GeneratedMessage {
   $core.bool hasLocalName() => $_has(2);
   @$pb.TagNumber(3)
   void clearLocalName() => $_clearField(3);
+}
+
+class EventSpeech extends $pb.GeneratedMessage {
+  factory EventSpeech({
+    $0.BytesValue? speech,
+  }) {
+    final result = create();
+    if (speech != null) result.speech = speech;
+    return result;
+  }
+
+  EventSpeech._();
+
+  factory EventSpeech.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory EventSpeech.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'EventSpeech',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aOM<$0.BytesValue>(1, _omitFieldNames ? '' : 'speech',
+        subBuilder: $0.BytesValue.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EventSpeech clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EventSpeech copyWith(void Function(EventSpeech) updates) =>
+      super.copyWith((message) => updates(message as EventSpeech))
+          as EventSpeech;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static EventSpeech create() => EventSpeech._();
+  @$core.override
+  EventSpeech createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static EventSpeech getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<EventSpeech>(create);
+  static EventSpeech? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $0.BytesValue get speech => $_getN(0);
+  @$pb.TagNumber(1)
+  set speech($0.BytesValue value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasSpeech() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSpeech() => $_clearField(1);
+  @$pb.TagNumber(1)
+  $0.BytesValue ensureSpeech() => $_ensure(0);
+}
+
+class EventSpeechSubscribeRequest extends $pb.GeneratedMessage {
+  factory EventSpeechSubscribeRequest({
+    $core.String? eventId,
+    $core.String? eventUserId,
+    $core.String? locale,
+    $core.String? localName,
+    $core.Iterable<EventSpeechTypeOption>? eventSpeechTypeOptions,
+  }) {
+    final result = create();
+    if (eventId != null) result.eventId = eventId;
+    if (eventUserId != null) result.eventUserId = eventUserId;
+    if (locale != null) result.locale = locale;
+    if (localName != null) result.localName = localName;
+    if (eventSpeechTypeOptions != null)
+      result.eventSpeechTypeOptions.addAll(eventSpeechTypeOptions);
+    return result;
+  }
+
+  EventSpeechSubscribeRequest._();
+
+  factory EventSpeechSubscribeRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory EventSpeechSubscribeRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'EventSpeechSubscribeRequest',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'eventId')
+    ..aOS(2, _omitFieldNames ? '' : 'eventUserId')
+    ..aOS(3, _omitFieldNames ? '' : 'locale')
+    ..aOS(4, _omitFieldNames ? '' : 'localName')
+    ..pPM<EventSpeechTypeOption>(
+        5, _omitFieldNames ? '' : 'eventSpeechTypeOptions',
+        subBuilder: EventSpeechTypeOption.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EventSpeechSubscribeRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EventSpeechSubscribeRequest copyWith(
+          void Function(EventSpeechSubscribeRequest) updates) =>
+      super.copyWith(
+              (message) => updates(message as EventSpeechSubscribeRequest))
+          as EventSpeechSubscribeRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static EventSpeechSubscribeRequest create() =>
+      EventSpeechSubscribeRequest._();
+  @$core.override
+  EventSpeechSubscribeRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static EventSpeechSubscribeRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<EventSpeechSubscribeRequest>(create);
+  static EventSpeechSubscribeRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get eventId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set eventId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasEventId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearEventId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get eventUserId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set eventUserId($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasEventUserId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearEventUserId() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get locale => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set locale($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasLocale() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearLocale() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get localName => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set localName($core.String value) => $_setString(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasLocalName() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearLocalName() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  $pb.PbList<EventSpeechTypeOption> get eventSpeechTypeOptions => $_getList(4);
+}
+
+class EventSpeechTypeOption extends $pb.GeneratedMessage {
+  factory EventSpeechTypeOption({
+    $3.EventSpeechTypeId? eventSpeechTypeId,
+    $0.UInt32Value? laps,
+  }) {
+    final result = create();
+    if (eventSpeechTypeId != null) result.eventSpeechTypeId = eventSpeechTypeId;
+    if (laps != null) result.laps = laps;
+    return result;
+  }
+
+  EventSpeechTypeOption._();
+
+  factory EventSpeechTypeOption.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory EventSpeechTypeOption.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'EventSpeechTypeOption',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aE<$3.EventSpeechTypeId>(1, _omitFieldNames ? '' : 'eventSpeechTypeId',
+        enumValues: $3.EventSpeechTypeId.values)
+    ..aOM<$0.UInt32Value>(2, _omitFieldNames ? '' : 'laps',
+        subBuilder: $0.UInt32Value.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EventSpeechTypeOption clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  EventSpeechTypeOption copyWith(
+          void Function(EventSpeechTypeOption) updates) =>
+      super.copyWith((message) => updates(message as EventSpeechTypeOption))
+          as EventSpeechTypeOption;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static EventSpeechTypeOption create() => EventSpeechTypeOption._();
+  @$core.override
+  EventSpeechTypeOption createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static EventSpeechTypeOption getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<EventSpeechTypeOption>(create);
+  static EventSpeechTypeOption? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $3.EventSpeechTypeId get eventSpeechTypeId => $_getN(0);
+  @$pb.TagNumber(1)
+  set eventSpeechTypeId($3.EventSpeechTypeId value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasEventSpeechTypeId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearEventSpeechTypeId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $0.UInt32Value get laps => $_getN(1);
+  @$pb.TagNumber(2)
+  set laps($0.UInt32Value value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasLaps() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearLaps() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $0.UInt32Value ensureLaps() => $_ensure(1);
 }
 
 const $core.bool _omitFieldNames =

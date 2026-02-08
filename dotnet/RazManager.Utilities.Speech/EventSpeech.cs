@@ -19,7 +19,6 @@ namespace RazManager.Utilities.Speech
         PositionLost,
         GapAfter,
         GapBefore,
-        BadLap
     }
 
     public class EventSpeech : IEventSpeech
@@ -62,7 +61,7 @@ namespace RazManager.Utilities.Speech
         }
 
 
-        public async Task<byte[]?> SpeekAsync(string locale, string name, string text, SpeechStyle speechStyle)
+        public async Task<byte[]?> SpeekAsync(string locale, string name, string text, SpeechStyle speechStyle, bool slow)
         {
             if (locale.Contains("en"))
             {
@@ -90,13 +89,15 @@ namespace RazManager.Utilities.Speech
                     style = styles[new Random().Next(styles.Length)];
                     break;
 
-                case SpeechStyle.BadLap:
-                    styles = ["sad"];
-                    style = styles[new Random().Next(styles.Length)];
-                    break;
-
                 default:
-                    styles = ["chat", "friendly", "hopeful"];
+                    if (slow)
+                    {
+                        styles = ["sad"];
+                    }
+                    else
+                    {
+                        styles = ["chat", "friendly", "hopeful"];
+                    }
                     style = styles[new Random().Next(styles.Length)];
                     break;
             }

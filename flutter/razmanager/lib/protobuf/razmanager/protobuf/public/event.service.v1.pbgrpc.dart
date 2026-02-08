@@ -53,20 +53,20 @@ class EventServiceClient extends $grpc.Client {
         options: options);
   }
 
-  $grpc.ResponseStream<$2.EventSpeech> eventUserSpeechSubscribe(
-    $2.EventUserSpeechSubscribeRequest request, {
-    $grpc.CallOptions? options,
-  }) {
-    return $createStreamingCall(
-        _$eventUserSpeechSubscribe, $async.Stream.fromIterable([request]),
-        options: options);
-  }
-
   $grpc.ResponseFuture<$2.EventSpeechSettingsReponse> eventSpeechSettings(
     $2.EventSpeechSettingsRequest request, {
     $grpc.CallOptions? options,
   }) {
     return $createUnaryCall(_$eventSpeechSettings, request, options: options);
+  }
+
+  $grpc.ResponseStream<$2.EventSpeech> eventSpeechSubscribe(
+    $2.EventSpeechSubscribeRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createStreamingCall(
+        _$eventSpeechSubscribe, $async.Stream.fromIterable([request]),
+        options: options);
   }
 
   // method descriptors
@@ -80,16 +80,16 @@ class EventServiceClient extends $grpc.Client {
           '/razmanager.protobuf.public.v1.EventService/EventStateSubscribe',
           ($0.StringValue value) => value.writeToBuffer(),
           $1.EventState.fromBuffer);
-  static final _$eventUserSpeechSubscribe = $grpc.ClientMethod<
-          $2.EventUserSpeechSubscribeRequest, $2.EventSpeech>(
-      '/razmanager.protobuf.public.v1.EventService/EventUserSpeechSubscribe',
-      ($2.EventUserSpeechSubscribeRequest value) => value.writeToBuffer(),
-      $2.EventSpeech.fromBuffer);
   static final _$eventSpeechSettings = $grpc.ClientMethod<
           $2.EventSpeechSettingsRequest, $2.EventSpeechSettingsReponse>(
       '/razmanager.protobuf.public.v1.EventService/EventSpeechSettings',
       ($2.EventSpeechSettingsRequest value) => value.writeToBuffer(),
       $2.EventSpeechSettingsReponse.fromBuffer);
+  static final _$eventSpeechSubscribe =
+      $grpc.ClientMethod<$2.EventSpeechSubscribeRequest, $2.EventSpeech>(
+          '/razmanager.protobuf.public.v1.EventService/EventSpeechSubscribe',
+          ($2.EventSpeechSubscribeRequest value) => value.writeToBuffer(),
+          $2.EventSpeech.fromBuffer);
 }
 
 @$pb.GrpcServiceName('razmanager.protobuf.public.v1.EventService')
@@ -111,15 +111,6 @@ abstract class EventServiceBase extends $grpc.Service {
         true,
         ($core.List<$core.int> value) => $0.StringValue.fromBuffer(value),
         ($1.EventState value) => value.writeToBuffer()));
-    $addMethod(
-        $grpc.ServiceMethod<$2.EventUserSpeechSubscribeRequest, $2.EventSpeech>(
-            'EventUserSpeechSubscribe',
-            eventUserSpeechSubscribe_Pre,
-            false,
-            true,
-            ($core.List<$core.int> value) =>
-                $2.EventUserSpeechSubscribeRequest.fromBuffer(value),
-            ($2.EventSpeech value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$2.EventSpeechSettingsRequest,
             $2.EventSpeechSettingsReponse>(
         'EventSpeechSettings',
@@ -129,6 +120,15 @@ abstract class EventServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $2.EventSpeechSettingsRequest.fromBuffer(value),
         ($2.EventSpeechSettingsReponse value) => value.writeToBuffer()));
+    $addMethod(
+        $grpc.ServiceMethod<$2.EventSpeechSubscribeRequest, $2.EventSpeech>(
+            'EventSpeechSubscribe',
+            eventSpeechSubscribe_Pre,
+            false,
+            true,
+            ($core.List<$core.int> value) =>
+                $2.EventSpeechSubscribeRequest.fromBuffer(value),
+            ($2.EventSpeech value) => value.writeToBuffer()));
   }
 
   $async.Stream<$1.Event> subscribe_Pre(
@@ -147,15 +147,6 @@ abstract class EventServiceBase extends $grpc.Service {
   $async.Stream<$1.EventState> eventStateSubscribe(
       $grpc.ServiceCall call, $0.StringValue request);
 
-  $async.Stream<$2.EventSpeech> eventUserSpeechSubscribe_Pre(
-      $grpc.ServiceCall $call,
-      $async.Future<$2.EventUserSpeechSubscribeRequest> $request) async* {
-    yield* eventUserSpeechSubscribe($call, await $request);
-  }
-
-  $async.Stream<$2.EventSpeech> eventUserSpeechSubscribe(
-      $grpc.ServiceCall call, $2.EventUserSpeechSubscribeRequest request);
-
   $async.Future<$2.EventSpeechSettingsReponse> eventSpeechSettings_Pre(
       $grpc.ServiceCall $call,
       $async.Future<$2.EventSpeechSettingsRequest> $request) async {
@@ -164,4 +155,13 @@ abstract class EventServiceBase extends $grpc.Service {
 
   $async.Future<$2.EventSpeechSettingsReponse> eventSpeechSettings(
       $grpc.ServiceCall call, $2.EventSpeechSettingsRequest request);
+
+  $async.Stream<$2.EventSpeech> eventSpeechSubscribe_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$2.EventSpeechSubscribeRequest> $request) async* {
+    yield* eventSpeechSubscribe($call, await $request);
+  }
+
+  $async.Stream<$2.EventSpeech> eventSpeechSubscribe(
+      $grpc.ServiceCall call, $2.EventSpeechSubscribeRequest request);
 }

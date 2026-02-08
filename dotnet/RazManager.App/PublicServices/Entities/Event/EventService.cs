@@ -1,11 +1,11 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Streams;
 using Razmanager.Protobuf.Public.V1;
 using RazManager.Utilities.Speech;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -115,11 +115,28 @@ namespace RazManager.App.PublicServices.Entities.Event
         }
 
 
-        public override async Task EventUserSpeechSubscribe(Razmanager.Protobuf.Public.V1.EventUserSpeechSubscribeRequest request, IServerStreamWriter<Razmanager.Protobuf.Public.V1.EventSpeech> responseStream, ServerCallContext context)
+        public override async Task EventSpeechSubscribe(Razmanager.Protobuf.Public.V1.EventSpeechSubscribeRequest request, IServerStreamWriter<Razmanager.Protobuf.Public.V1.EventSpeech> responseStream, ServerCallContext context)
         {
             // TODO: Validate permissions
 
-            StreamSubscriptionHandle<Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechData>? subscriptionHandle = null;
+            // Define the desired order
+            var eventSpeechTypeIdOrder = new Dictionary<EventSpeechTypeId, int>
+            {
+                [EventSpeechTypeId.PositionLeader] = 1,
+                [EventSpeechTypeId.PositionGained] = 2,
+                [EventSpeechTypeId.PositionLost] = 3,
+                [EventSpeechTypeId.Fastest] = 4,
+                [EventSpeechTypeId.Faster] = 5,
+                [EventSpeechTypeId.GapAfter] = 6,
+                [EventSpeechTypeId.GapBefore] = 7,
+                [EventSpeechTypeId.GapNearest] = 8,
+                [EventSpeechTypeId.AverageLap] = 9,
+                [EventSpeechTypeId.Lap] = 10,
+            };
+
+            Dictionary<EventSpeechTypeId, eventSpeechTypeLap> eventSpeechTypes = request.EventSpeechTypeOptions.ToDictionary(x => x.EventSpeechTypeId, x => new eventSpeechTypeLap { LapThreshold = x.Laps, LapCount = Convert.ToUInt32(0) });
+
+            StreamSubscriptionHandle<Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTexts>? subscriptionHandle = null;
             try
             {
                 var name = await _eventSpeech.GetNameAsync(request.Locale, request.LocalName);
@@ -129,55 +146,70 @@ namespace RazManager.App.PublicServices.Entities.Event
                 }
 
                 var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
-                var stream = streamProvider.GetStream<Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechData>(RazManager.Silo.Grains.Constants.StreamName.EventSpeechData.ToString(), $"{request.EventId}:{request.EventUserId}");
+                var stream = streamProvider.GetStream<Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTexts>(RazManager.Silo.Grains.Constants.StreamName.EventSpeechTexts.ToString(), $"{request.EventId}:{request.EventUserId}");
                 subscriptionHandle = await stream.SubscribeAsync(async sequentialItemList =>
                 {
+                    bool spooken = false;
                     await foreach (var sequentialItem in sequentialItemList.ToAsyncEnumerable().WithCancellation(context.CancellationToken))
                     {
-                        SpeechStyle speechStyle;
-                        switch (sequentialItem.Item.EventSpeechTypeId)
+                        foreach (var eventSpeechText in sequentialItem.Item.Items.OrderBy(item => eventSpeechTypeIdOrder[item.EventSpeechTypeId]))                       
                         {
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.Faster:
-                                speechStyle = SpeechStyle.Faster;
-                                break;
+                            if (eventSpeechTypes.TryGetValue(eventSpeechText.EventSpeechTypeId, out var eventSpeechTypeLap))
+                            {
+                                if (!spooken && (!eventSpeechTypeLap.LapThreshold.HasValue || eventSpeechTypeLap.LapThreshold.Value <= eventSpeechTypeLap.LapCount))
+                                {
+                                    SpeechStyle speechStyle;
+                                    var slow = false;
+                                    switch (eventSpeechText.EventSpeechTypeId)
+                                    {
+                                        case EventSpeechTypeId.Faster:
+                                            speechStyle = SpeechStyle.Faster;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.Fastest:
-                                speechStyle = SpeechStyle.Fastest;
-                                break;
+                                        case EventSpeechTypeId.Fastest:
+                                            speechStyle = SpeechStyle.Fastest;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.PositionLeader:
-                                speechStyle = SpeechStyle.PositionLeader;
-                                break;
+                                        case EventSpeechTypeId.PositionLeader:
+                                            speechStyle = SpeechStyle.PositionLeader;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.PositionGained:
-                                speechStyle = SpeechStyle.PositionGained;
-                                break;
+                                        case EventSpeechTypeId.PositionGained:
+                                            speechStyle = SpeechStyle.PositionGained;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.PositionLost:
-                                speechStyle = SpeechStyle.PositionLost;
-                                break;
+                                        case EventSpeechTypeId.PositionLost:
+                                            speechStyle = SpeechStyle.PositionLost;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.GapAfter:
-                                speechStyle = SpeechStyle.GapAfter;
-                                break;
+                                        case EventSpeechTypeId.GapAfter:
+                                            speechStyle = SpeechStyle.GapAfter;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.GapBefore:
-                                speechStyle = SpeechStyle.GapBefore;
-                                break;
+                                        case EventSpeechTypeId.GapBefore:
+                                            speechStyle = SpeechStyle.GapBefore;
+                                            break;
 
-                            case Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTypeId.BadLap:
-                                speechStyle = SpeechStyle.BadLap;
-                                break;
+                                        default:
+                                            speechStyle = SpeechStyle.Normal;
+                                            slow = eventSpeechText.Slow;
+                                            break;
+                                    }
 
-                            default:
-                                speechStyle = SpeechStyle.Normal;
-                                break;
-                        }
+                                    var bytes = await _eventSpeech.SpeekAsync(request.Locale, name, eventSpeechText.Text, speechStyle, slow);
+                                    if (bytes is not null)
+                                    {
+                                        await responseStream.WriteAsync(new Razmanager.Protobuf.Public.V1.EventSpeech { Speech = Google.Protobuf.ByteString.CopyFrom(bytes) });
+                                    }
 
-                        var bytes = await _eventSpeech.SpeekAsync(request.Locale, name, sequentialItem.Item.Text, speechStyle);
-                        if (bytes is not null)
-                        {
-                            await responseStream.WriteAsync(new Razmanager.Protobuf.Public.V1.EventSpeech { Speech = Google.Protobuf.ByteString.CopyFrom(bytes)});
+                                    spooken = true;
+                                    eventSpeechTypeLap.LapCount = 0;
+                                }
+                                else
+                                {
+                                    eventSpeechTypeLap.LapCount++;
+                                }
+                            }
                         }
                     }
                 });
@@ -198,6 +230,12 @@ namespace RazManager.App.PublicServices.Entities.Event
                 }
                 System.GC.Collect();
             }
+        }
+
+        class eventSpeechTypeLap
+        {
+            public uint? LapThreshold { get; set; }
+            public uint LapCount { get; set; }
         }
 
 

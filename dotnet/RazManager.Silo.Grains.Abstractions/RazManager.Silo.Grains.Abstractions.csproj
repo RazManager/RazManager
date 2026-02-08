@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.33.4" />
-    <PackageReference Include="Grpc.Tools" Version="2.76.0">
+    <PackageReference Include="Google.Protobuf" Version="3.33.5" />
+    <PackageReference Include="Grpc.Tools" Version="2.78.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +53,10 @@
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/event.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/event.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/event_speech_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/event_speech_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/event_user_type_id.v1.proto" GrpcServices="None">

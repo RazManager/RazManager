@@ -6,6 +6,7 @@ using Razmanager.Protobuf.Public.V1;
 using System.Diagnostics;
 using System.Globalization;
 using System.Resources;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace RazManager.Silo.Grains.Entities.Heat
@@ -942,6 +943,9 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                 heatStateIndicator.Finished = true;
                             }
 
+
+                            var eventUsersEventSpeechTexts = new Dictionary<Guid, EventSpeechTexts>();
+
                             HeatStateIndicator? leaderIndicator = null;
                             HeatStateIndicator? intervalIndicator = null;
 
@@ -960,35 +964,46 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                     var eventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == item.indicatorKv.Value.Id)?.EventUserId;
                                     if (eventUserId is not null)
                                     {
-                                        EventSpeechTypeId eventSpeechTypeId;
-                                        string text;
+                                        if (!eventUsersEventSpeechTexts.TryGetValue(new Guid(eventUserId), out var eventSpeechTexts))
+                                        {
+                                            eventSpeechTexts = new EventSpeechTexts();
+                                            eventUsersEventSpeechTexts.Add(new Guid(eventUserId), eventSpeechTexts);
+                                        }
 
                                         if (item.indicatorKv.Value.Position == 1)
                                         {
-                                            eventSpeechTypeId = EventSpeechTypeId.PositionLeader;
-                                            text = $"You are now in the lead";
+                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            {
+                                                EventSpeechTypeId = EventSpeechTypeId.PositionLeader,
+                                                Text = $"You are now in the lead"
+                                            });
                                         }
                                         else if (item.indicatorKv.Value.Position < previousPosition)
                                         {
-                                            eventSpeechTypeId = EventSpeechTypeId.PositionGained;
-                                            text = $"You have gained {previousPosition - item.indicatorKv.Value.Position} position";
+                                            var text = $"You have gained {previousPosition - item.indicatorKv.Value.Position} position";
                                             if (previousPosition - item.indicatorKv.Value.Position >= 2)
                                             {
                                                 text += "s";
                                             }
+                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            {
+                                                EventSpeechTypeId = EventSpeechTypeId.PositionGained,
+                                                Text = text
+                                            });
                                         }
                                         else
                                         {
-                                            eventSpeechTypeId = EventSpeechTypeId.PositionLost;
-                                            text = $"You have lost {item.indicatorKv.Value.Position - previousPosition} position";
+                                            var text = $"You have lost {item.indicatorKv.Value.Position - previousPosition} position";
                                             if (item.indicatorKv.Value.Position - previousPosition >= 2)
                                             {
                                                 text += "s";
                                             }
+                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            {
+                                                EventSpeechTypeId = EventSpeechTypeId.PositionLost,
+                                                Text = text
+                                            });
                                         }
-
-                                        _ = GrainFactory.GetGrain<Event.IEventGrain>(new Guid(_race.EventId)).EventUserSpeechData(new Guid(eventUserId), eventSpeechTypeId, text);
-                                        item.indicatorKv.Value.Speech = true;
                                     }
                                 }
 
@@ -1208,54 +1223,53 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                 heatStateIndicator.LastEnergyTimestamp = deviceConfigurationInput.Timestamp;
 
 
-                                if (!replay && !heatStateIndicator.Speech && heatStateIndicator.Position > 0 && (heatStateIndicator.GapIntervalTime.HasValue || heatStateIndicator.GapIntervalLaps.HasValue))
+                                if (!replay && heatStateIndicator.Position > 0 && (heatStateIndicator.GapIntervalTime.HasValue || heatStateIndicator.GapIntervalLaps.HasValue))
                                 {
-                                    if (heatStateIndicator.GapIntervalCount <= 5)
+                                    var eventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == heatStateIndicator.Id)?.EventUserId;
+                                    if (eventUserId is not null)
                                     {
-                                        heatStateIndicator.GapIntervalCount++;
-                                    }
-                                    else
-                                    {
-                                        heatStateIndicator.GapIntervalCount = 0;
-
-                                        var eventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == heatStateIndicator.Id)?.EventUserId;
-                                        if (eventUserId is not null)
+                                        if (!eventUsersEventSpeechTexts.TryGetValue(new Guid(eventUserId), out var eventSpeechTexts))
                                         {
-                                            EventSpeechTypeId eventSpeechTypeId;
-                                            string text;
+                                            eventSpeechTexts = new EventSpeechTexts();
+                                            eventUsersEventSpeechTexts.Add(new Guid(eventUserId), eventSpeechTexts);
+                                        }
 
-                                            if (heatStateIndicator.GapIntervalLaps.HasValue && heatStateIndicator.GapIntervalLaps.Value >= 1)
+                                        if (heatStateIndicator.GapIntervalLaps.HasValue && heatStateIndicator.GapIntervalLaps.Value >= 1)
+                                        {
+                                            var text = $"You are {heatStateIndicator.GapIntervalLaps.Value} lap";
+                                            if (heatStateIndicator.GapIntervalLaps.Value >= 2)
                                             {
-                                                eventSpeechTypeId = EventSpeechTypeId.GapAfter;
-                                                text = $"You are {heatStateIndicator.GapIntervalLaps.Value} lap";
-                                                if (heatStateIndicator.GapIntervalLaps.Value >= 2)
-                                                {
-                                                    text += "s";
-                                                }
-                                                text += " behind";
+                                                text += "s";
                                             }
-                                            else
-                                            {
-                                                var gapSeconds = Math.Round(heatStateIndicator.GapIntervalTime.Value, 0);
-                                                eventSpeechTypeId = EventSpeechTypeId.GapAfter;
-                                                text = $"You are {gapSeconds} second";
-                                                if (gapSeconds != 1)
-                                                {
-                                                    text += "s";
-                                                }
-                                                text += " behind";
-                                            }
+                                            text += " behind";
 
-                                            _ = GrainFactory.GetGrain<Event.IEventGrain>(new Guid(_race.EventId)).EventUserSpeechData(new Guid(eventUserId), eventSpeechTypeId, text);
-                                            heatStateIndicator.Speech = true;
+                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            {
+                                                EventSpeechTypeId = EventSpeechTypeId.GapAfter,
+                                                Text = text
+                                            });
+                                        }
+                                        else
+                                        {
+                                            var gapSeconds = Math.Round(heatStateIndicator.GapIntervalTime.Value, 0);
+                                            var text = $"You are {gapSeconds} second";
+                                            if (gapSeconds != 1)
+                                            {
+                                                text += "s";
+                                            }
+                                            text += " behind";
+
+                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            {
+                                                EventSpeechTypeId = EventSpeechTypeId.GapAfter,
+                                                Text = text
+                                            });
                                         }
                                     }
                                 }
 
 
-
-
-                                if (!replay && !heatStateIndicator.Speech && heatStateIndicatorTimeDisplay.HasValue && heatStateIndicatorTimeDisplay!.Value > 0)
+                                if (!replay &&  heatStateIndicatorTimeDisplay.HasValue && heatStateIndicatorTimeDisplay!.Value > 0)
                                 {
                                     var eventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == heatStateIndicator.Id)?.EventUserId;
                                     if (eventUserId is not null)
@@ -1263,38 +1277,60 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                         var latestTimeTypeTimeLap = heatStateIndicator.LatestTimeTypeTimes.SingleOrDefault(x => x.Key == HeatIndicatorTimeTypeId.Lap).Value;
                                         if (latestTimeTypeTimeLap is not null && heatStateIndicatorTimeDisplay.HasValue)
                                         {
-                                            EventSpeechTypeId eventSpeechTypeId;
-                                            string text;
+                                            if (!eventUsersEventSpeechTexts.TryGetValue(new Guid(eventUserId), out var eventSpeechTexts))
+                                            {
+                                                eventSpeechTexts = new EventSpeechTexts();
+                                                eventUsersEventSpeechTexts.Add(new Guid(eventUserId), eventSpeechTexts);
+                                            }
+
                                             switch (latestTimeTypeTimeLap.FastestTimeTypeId)
                                             {
                                                 case HeatIndicatorFastestTimeTypeId.Indicator:
-                                                    eventSpeechTypeId = EventSpeechTypeId.Fastest;
-                                                    text = $"You set a new personal fastest lap  {heatStateIndicatorTimeDisplay}";
+                                                    eventSpeechTexts.Items.Add(new EventSpeechText
+                                                    {
+                                                        EventSpeechTypeId = EventSpeechTypeId.Faster,
+                                                        Text = $"You set a new personal fastest lap  {heatStateIndicatorTimeDisplay}"
+                                                    });
                                                     break;
+
                                                 case HeatIndicatorFastestTimeTypeId.AllIndicators:
-                                                    eventSpeechTypeId = EventSpeechTypeId.Faster;
-                                                    text = $"You set the new overall fastest lap  {heatStateIndicatorTimeDisplay}";
+                                                    eventSpeechTexts.Items.Add(new EventSpeechText
+                                                    {
+                                                        EventSpeechTypeId = EventSpeechTypeId.Fastest,
+                                                        Text = $"You set the new overall fastest lap  {heatStateIndicatorTimeDisplay}"
+                                                    });
                                                     break;
 
                                                 default:
-                                                    if (heatStateIndicatorTimePrevious.HasValue && heatStateIndicatorTimeDisplay.Value - heatStateIndicatorTimePrevious.Value < -1)
+                                                    if (heatStateIndicatorTimePrevious.HasValue && heatStateIndicatorTimeDisplay.Value - heatStateIndicatorTimePrevious.Value > 1)
                                                     {
-                                                        eventSpeechTypeId = EventSpeechTypeId.BadLap;
+                                                        eventSpeechTexts.Items.Add(new EventSpeechText
+                                                        {
+                                                            EventSpeechTypeId = EventSpeechTypeId.Lap,
+                                                            Text = heatStateIndicatorTimeDisplay.Value.ToString(),
+                                                            Slow = true
+                                                        });
+
                                                     }
                                                     else
                                                     {
-                                                        eventSpeechTypeId = EventSpeechTypeId.Undefined;
+                                                        eventSpeechTexts.Items.Add(new EventSpeechText
+                                                        {
+                                                            EventSpeechTypeId = EventSpeechTypeId.Lap,
+                                                            Text = heatStateIndicatorTimeDisplay.Value.ToString()
+                                                        });
                                                     }
-                                                    text = heatStateIndicatorTimeDisplay.Value.ToString();
                                                     break;
                                             }
-                                            _ = GrainFactory.GetGrain<Event.IEventGrain>(new Guid(_race.EventId)).EventUserSpeechData(new Guid(eventUserId), eventSpeechTypeId, text);
                                         }
                                     }
                                 }
                             }
 
-                            heatStateIndicator.Speech = false;
+                            foreach (var eventUserEventSpeechTexts in eventUsersEventSpeechTexts)
+                            {
+                                _ = GrainFactory.GetGrain<Event.IEventGrain>(new Guid(_race.EventId)).EventSpeechTexts(eventUserEventSpeechTexts.Key, eventUserEventSpeechTexts.Value);
+                            }
 
                             if (heatStateIndicator.Finished && !_heatJournalState.Ended && !replay)
                             {
@@ -1849,7 +1885,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
             public short? GapLeaderLaps { get; set; }
             public double? GapIntervalTime { get; set; }
             public short? GapIntervalLaps { get; set; }
-            public double GapIntervalCount { get; set; }
             public bool Finished { get; set; }
             public bool LapWarning { get; set; }
             public bool Pitlane { get; set; }
@@ -1857,7 +1892,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
             public bool CarOffTrack { get; set; }
             public ushort LapCarOffTracks { get; set; }
             public bool IgnoreLapTime { get; set; } = true;
-            public bool Speech { get; set; }
             public Dictionary<HeatIndicatorTimeTypeId, HeatIndicatorTimeTypeTime> LatestTimeTypeTimes = [];
             public Dictionary<HeatIndicatorTimeTypeId, List<HeatStateIndicatorTime>> AllTimeTypeTimes = [];
             public List<DeviceConfigurationInput> DeviceConfigurationInputs { get; set; } = [];
