@@ -103,7 +103,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                   columns = 1;
                 } else {
                   var size = sqrt(constraints.maxHeight * constraints.maxWidth / indicatorsLength);
-                  rows = (constraints.maxHeight / size).ceil();
+                  rows = (constraints.maxHeight * 0.8 / size).ceil();
                   columns = (indicatorsLength / rows).ceil();
                   size = constraints.maxHeight / rows;
                 }
@@ -128,7 +128,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: LayoutBuilder(builder: (context, constraints) {
-                                final nameFontSize = min(refFontSize * constraints.maxWidth / refHeatUsersTeamOrDriversMaxWidth,
+                                final nameFontSize = min(refFontSize * (constraints.maxWidth - 10) / refHeatUsersTeamOrDriversMaxWidth,
                                     Theme.of(context).textTheme.headlineLarge!.fontSize!);
                                 return Column(
                                   children: [
@@ -159,6 +159,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                   ],
                                                   Text(
                                                     heatUser?.name.value ?? '?',
+                                                    overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(fontSize: nameFontSize),
                                                   ),
                                                 ],

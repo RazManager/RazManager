@@ -65,7 +65,8 @@ class RaceModel extends ChangeNotifier with GrpcClient {
         (data) {
           raceProto = data;
           isInversed = raceProto!.raceHeatEndTypeId == HeatEndTypeId.HEAT_END_TYPE_ID_DURATION;
-          showIndicators = raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_LANE_BASED_ID).isNotEmpty;
+          //showIndicators = raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_LANE_BASED_ID).isNotEmpty;
+          showIndicators = raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_CONTROLLER_BASED_ID).isEmpty;
           motorSimulation = raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_ENERGY).isNotEmpty;
 
           notifyListeners();

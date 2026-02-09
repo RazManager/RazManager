@@ -59,18 +59,16 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
     final raceModel = context.read<RaceModel>();
     final heatModel = context.read<HeatModel>();
 
-    var showIndicators = raceModel.raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_LANE_BASED_ID).isNotEmpty;
-
     result.addEntries(
       {
         _PublicHeatLeaderboardColumnKey.position: _PublicHeatLeaderboardColumnValue(
           text: "Pos",
-          width: textWidth("Pos  ${showIndicators ? '' : ' '}", fontSize),
+          width: textWidth("Pos  ${publicHeatChildState.raceModel.showIndicators ? '' : ' '}", fontSize),
         ),
       }.entries,
     );
 
-    if (showIndicators) {
+    if (publicHeatChildState.raceModel.showIndicators) {
       result.addEntries({_PublicHeatLeaderboardColumnKey.indicator: _PublicHeatLeaderboardColumnValue(text: "#", width: fontSize * 1.5)}.entries);
     }
 
