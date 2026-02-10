@@ -45,7 +45,6 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   Map<int, HeatAnalysisPositionSerie> heatAnalysisPositionSeries = {};
   Map<int, Map<int, HeatAnalysisGapSerie>> heatAnalysisGapSeries = {};
   Map<int, HeatAnalysisLapSerie> heatAnalysisLapSeries = {};
-  Map<int, HeatAnalysisLapFlagSerie> heatAnalysisLapFlagSeries = {};
   Map<int, Queue<HeatAnalysisLapTimeLapData>> heatAnalysisLapTimeLapQueues = {};
   List<HeatAnalysisHeatStateType> heatAnalysisHeatStateTypes = [];
   List<HeatStintAnalysisIndicatorStint> heatStintAnalysisIndicatorStints = [];
@@ -134,9 +133,6 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
 
     heatAnalysisLapSeries.clear();
     heatAnalysisLapSeries.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, HeatAnalysisLapSerie())));
-
-    heatAnalysisLapFlagSeries.clear();
-    heatAnalysisLapFlagSeries.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, HeatAnalysisLapFlagSerie())));
 
     heatAnalysisLapTimeLapQueues.clear();
     heatAnalysisLapTimeLapQueues.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, Queue<HeatAnalysisLapTimeLapData>())));
@@ -251,8 +247,6 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                   final newHeatAnalysisPositionData = HeatAnalysisPositionData(
                     lap: item.lap.lap,
                     position: item.lap.position,
-                    pitlanes: item.lap.pitlanes,
-                    deslots: item.lap.deslots,
                   );
 
                   bool updateLast = false;
@@ -262,21 +256,14 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     final secondLastHeatAnalysisPositionData = heatAnalysisPositionSerie.data[heatAnalysisPositionSerie.data.length - 2];
                     updateLast =
                         lastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position &&
-                        lastHeatAnalysisPositionData.pitlanes == newHeatAnalysisPositionData.pitlanes &&
-                        lastHeatAnalysisPositionData.deslots == newHeatAnalysisPositionData.deslots &&
-                        secondLastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position &&
-                        secondLastHeatAnalysisPositionData.pitlanes == newHeatAnalysisPositionData.pitlanes &&
-                        secondLastHeatAnalysisPositionData.deslots == newHeatAnalysisPositionData.deslots;
+                        secondLastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position;
                   }
 
                   if (updateLast) {
                     heatAnalysisPositionSerie.data[heatAnalysisPositionSerie.data.length - 1] = newHeatAnalysisPositionData;
                     heatAnalysisPositionSerie.updatedDataIndexes.add(heatAnalysisPositionSerie.data.length - 1);
                   } else {
-                    heatAnalysisPositionSerie.data.add(
-                      HeatAnalysisPositionData(lap: item.lap.lap, position: item.lap.position, pitlanes: item.lap.pitlanes, deslots: item.lap.deslots),
-                    );
-
+                    heatAnalysisPositionSerie.data.add(newHeatAnalysisPositionData);
                     heatAnalysisPositionSerie.addedDataIndexes.add(heatAnalysisPositionSerie.data.length - 1);
                   }
 
@@ -292,20 +279,6 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                       ),
                     );
                     heatAnalysisLapSerie.addedDataIndexes.add(heatAnalysisLapSerie.data.length - 1);
-
-                    if (item.lap.pitlanes > 0 || item.lap.deslots > 0) {
-                      final heatAnalysisLapFlagSerie = heatAnalysisLapFlagSeries[item.indicatorId.value];
-                      heatAnalysisLapFlagSerie!.data.add(
-                        HeatAnalysisLapData(
-                          timerElapsed: timerElapsed,
-                          lap: item.lap.lap,
-                          lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
-                          pitlanes: item.lap.pitlanes,
-                          deslots: item.lap.deslots,
-                        ),
-                      );
-                      heatAnalysisLapFlagSerie.addedDataIndexes.add(heatAnalysisLapFlagSerie.data.length - 1);
-                    }
 
                     final heatAnalysisLapTimeLapQueue = heatAnalysisLapTimeLapQueues[item.indicatorId.value];
                     heatAnalysisLapTimeLapQueue!.addLast(
@@ -352,15 +325,6 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
             }
 
             for (var item in heatAnalysisLapSeries.entries) {
-              if (item.value.addedDataIndexes.isNotEmpty) {
-                // debugPrint(
-                //     'heatAnalysisLapSeries item.value.chartSeriesController:  ${item.key}  ${item.value.chartSeriesController} ${item.value.addedDataIndexes.length}');
-                item.value.chartSeriesController?.updateDataSource(addedDataIndexes: item.value.addedDataIndexes);
-                item.value.addedDataIndexes = [];
-              }
-            }
-
-            for (var item in heatAnalysisLapFlagSeries.entries) {
               if (item.value.addedDataIndexes.isNotEmpty) {
                 // debugPrint(
                 //     'heatAnalysisLapSeries item.value.chartSeriesController:  ${item.key}  ${item.value.chartSeriesController} ${item.value.addedDataIndexes.length}');
@@ -645,11 +609,9 @@ class HeatAnalysisPositionSerie {
 }
 
 class HeatAnalysisPositionData {
-  const HeatAnalysisPositionData({required this.lap, required this.position, required this.pitlanes, required this.deslots});
+  const HeatAnalysisPositionData({required this.lap, required this.position});
   final int lap;
   final int position;
-  final int pitlanes;
-  final int deslots;
 }
 
 class HeatAnalysisGapSerie {

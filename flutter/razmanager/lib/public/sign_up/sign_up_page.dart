@@ -134,6 +134,7 @@ class _SignUpBodyMain extends StatelessWidget {
           keyboardType: TextInputType.emailAddress,
           decoration: const InputDecoration(
             labelText: 'E-mail',
+            helperText: 'E-mail is not required, and only used to if you want to get help with resetting your password.'
           ),
           validationMessages: {ValidationMessage.email: (error) => 'Please enter a valid e-mail address.'},
         ),

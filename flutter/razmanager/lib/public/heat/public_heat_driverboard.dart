@@ -449,7 +449,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                             final d = data as HeatAnalysisLapTimeLapData;
                                                             if (d.pitlanes > 0) {
                                                               return Icon(Icons.car_repair);
-                                                            } else if (d.pitlanes > 0) {
+                                                            } else if (d.deslots > 0) {
                                                               return Icon(Icons.car_crash);
                                                             }
                                                             return Text(d.lapTime != null ? d.lapTime.toString() : '');

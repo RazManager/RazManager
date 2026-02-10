@@ -707,12 +707,10 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
                           final d = data as HeatStintAnalysisIndicatorStintLap;
                           if (d.pitlanes > 0) {
                             return Icon(Icons.car_repair);
-                          } else if (d.pitlanes > 0) {
+                          } else if (d.deslots > 0) {
                             return Icon(Icons.car_crash);
-                          } else if (dataLabelsVisible) {
-                            return Text('${d.lap}');
                           }
-                          return Text('');
+                          return Text('${d.lap}');
                         },
                       ),
                       trendlines: [
@@ -752,8 +750,8 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
                   onPressed: null, // () { zoomPanBehavior.reset(); },
                 ),
                 IconButton(
-                  icon: Icon(dataLabelsVisible ? Icons.cancel : Icons.numbers),
-                  tooltip: "Show lap number",
+                  icon: Icon(dataLabelsVisible ? Icons.clear : Icons.info),
+                  tooltip: "Show pit stops, deslots, and lap numbers",
                   onPressed: () {
                     dataLabelsVisible = !dataLabelsVisible;
                     setState(() {});
@@ -834,21 +832,6 @@ class _PublicHeatStintCompareChartState extends State<_PublicHeatStintCompareCha
             color: ColorDefinitions.ordered.elementAt(item.$1),
             dataLabelMapper: (data, _) => data.$2.lap.toString(),
             dataLabelSettings: DataLabelSettings(isVisible: true),
-            //dataLabelMapper: (data, _) => data.flags,
-            // dataLabelSettings: DataLabelSettings(
-            //   isVisible: true,
-            //   labelAlignment: ChartDataLabelAlignment.top,
-            //   builder: (data, point, series, pointIndex, seriesIndex) {
-            //     final d = data as _HeatAnalysisLap;
-            //     if (d.flags.isEmpty) {
-            //       return Text('${d.lap}');
-            //     } else {
-            //       return Icon(Icons.warning,
-            //           color: publicHeatChildState
-            //               .heatIndicatorColors[kv.key]);
-            //     }
-            //   },
-            // ),
             animationDuration: 0,
             name: legend(model, item.$2.value.first.$2.eventUserId),
           ),

@@ -175,19 +175,6 @@ class _PublicHeatAnalysesPositionsChartState extends State<_PublicHeatAnalysesPo
                               dataSource: kv.value.data,
                               xValueMapper: (data, _) => data.lap,
                               yValueMapper: (data, _) => data.position,
-                              // dataLabelSettings: DataLabelSettings(
-                              //   isVisible: true,
-                              //   builder:
-                              //       (data, point, series, pointIndex, seriesIndex) {
-                              //     final d = data as HeatAnalysisPositionData;
-                              //     if (d.pitlanes > 0) {
-                              //       return Icon(Icons.car_repair);
-                              //     } else if (d.pitlanes > 0) {
-                              //       return Icon(Icons.car_crash);
-                              //     }
-                              //     return Text('');
-                              //   },
-                              // ),
                               animationDuration: 0,
                               name: publicHeatChildState.seriesName(
                                 indicatorId: kv.key,
@@ -494,9 +481,6 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
     for (var serie in publicHeatChildState.heatAnalysisLapSeries.entries) {
       serie.value.chartSeriesController = null;
     }
-    for (var serie in publicHeatChildState.heatAnalysisLapFlagSeries.entries) {
-      serie.value.chartSeriesController = null;
-    }
 
     super.dispose();
   }
@@ -595,13 +579,11 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                               builder: (data, point, series, pointIndex, seriesIndex) {
                                 final d = data as HeatAnalysisLapData;
                                 if (d.pitlanes > 0) {
-                                  return Icon(Icons.car_repair);
-                                } else if (d.pitlanes > 0) {
-                                  return Icon(Icons.car_crash);
-                                } else if (dataLabelsVisible) {
-                                  return Text('${d.lap}');
+                                  return Icon(Icons.car_repair, color: heatModel.heatIndicatorColors[kv.key]);
+                                } else if (d.deslots > 0) {
+                                  return Icon(Icons.car_crash, color: heatModel.heatIndicatorColors[kv.key]);
                                 }
-                                return Text('');
+                                return Text('${d.lap}');
                               },
                             ),
                             animationDuration: 0,
@@ -612,43 +594,6 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                             color: heatModel.heatIndicatorColors[kv.key],
                           ),
                         ),
-                        // ...publicHeatChildState.heatAnalysisLapFlagSeries.entries.map(
-                        //   (kv) => ScatterSeries<HeatAnalysisLapData, DateTime>(
-                        //     onRendererCreated: (controller) {
-                        //       Future.microtask(() => kv.value.chartSeriesController = controller);
-                        //     },
-                        //     dataSource: kv.value.data,
-                        //     xValueMapper: (data, _) => data.timerElapsed,
-                        //     yValueMapper: (data, _) => data.lapTime,
-                        //     markerSettings: MarkerSettings(
-                        //       height: 15,
-                        //       width: 15,
-                        //       // Scatter will render in diamond shape
-                        //       shape: DataMarkerType.image,
-                        //       image: Icons.abc
-                        //     ),
-                        //     // dataLabelSettings: DataLabelSettings(
-                        //     //   isVisible: dataLabelsVisible,
-                        //     //   builder: (data, point, series, pointIndex, seriesIndex) {
-                        //     //     final d = data as HeatAnalysisLapData;
-                        //     //     if (d.pitlanes > 0) {
-                        //     //       return Icon(Icons.car_repair);
-                        //     //     } else if (d.pitlanes > 0) {
-                        //     //       return Icon(Icons.car_crash);
-                        //     //     } else if (dataLabelsVisible) {
-                        //     //       return Text('${d.lap}');
-                        //     //     }
-                        //     //     return Text('');
-                        //     //   },
-                        //     // ),
-                        //     animationDuration: 0,
-                        //     name: publicHeatChildState.seriesName(
-                        //       indicatorId: kv.key,
-                        //       useShortName: publicHeatAnalysesState.legendWidthName > constraints.maxWidth,
-                        //     ),
-                        //     color: heatModel.heatIndicatorColors[kv.key],
-                        //   ),
-                        //),
                       ],
                     ),
                   ),
@@ -672,8 +617,8 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                       onPressed: null, // () { zoomPanBehavior.reset(); },
                     ),
                     IconButton(
-                      icon: Icon(dataLabelsVisible ? Icons.cancel : Icons.numbers),
-                      tooltip: "Show lap number",
+                      icon: Icon(dataLabelsVisible ? Icons.clear : Icons.info),
+                      tooltip: "Show driver changes, pit stops, deslots, and lap numbers",
                       onPressed: () {
                         dataLabelsVisible = !dataLabelsVisible;
                         setState(() {});
