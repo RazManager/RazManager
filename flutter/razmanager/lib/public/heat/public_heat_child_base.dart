@@ -45,7 +45,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   Map<int, HeatAnalysisPositionSerie> heatAnalysisPositionSeries = {};
   Map<int, Map<int, HeatAnalysisGapSerie>> heatAnalysisGapSeries = {};
   Map<int, HeatAnalysisLapSerie> heatAnalysisLapSeries = {};
-  Map<int, Queue<HeatAnalysisLapTimeLapData>> heatAnalysisLapTimeLapQueues = {};
+  Map<int, HeatAnalysisLapTimeLapSerie> heatAnalysisLapTimeLapSeries = {};
   List<HeatAnalysisHeatStateType> heatAnalysisHeatStateTypes = [];
   List<HeatStintAnalysisIndicatorStint> heatStintAnalysisIndicatorStints = [];
   Map<String, HeatStintAnalysisLapSerie> heatStintAnalysisLapSeries = {};
@@ -134,8 +134,8 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
     heatAnalysisLapSeries.clear();
     heatAnalysisLapSeries.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, HeatAnalysisLapSerie())));
 
-    heatAnalysisLapTimeLapQueues.clear();
-    heatAnalysisLapTimeLapQueues.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, Queue<HeatAnalysisLapTimeLapData>())));
+    heatAnalysisLapTimeLapSeries.clear();
+    heatAnalysisLapTimeLapSeries.addEntries(heatModel.heatProto!.heatIndicators.map((x) => MapEntry(x.indicatorId, HeatAnalysisLapTimeLapSerie())));
 
     // Cannot be cleared
     //heatStintAnalysisIndicatorStints = [];
@@ -280,17 +280,22 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     );
                     heatAnalysisLapSerie.addedDataIndexes.add(heatAnalysisLapSerie.data.length - 1);
 
-                    final heatAnalysisLapTimeLapQueue = heatAnalysisLapTimeLapQueues[item.indicatorId.value];
-                    heatAnalysisLapTimeLapQueue!.addLast(
-                      HeatAnalysisLapTimeLapData(
+                    final heatAnalysisLapTimeLapSerie = heatAnalysisLapTimeLapSeries[item.indicatorId.value];
+                    final heatAnalysisLapTimeLapData = HeatAnalysisLapTimeLapData(
                         lap: item.lap.lap,
                         lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
                         pitlanes: item.lap.pitlanes,
                         deslots: item.lap.deslots,
-                      ),
-                    );
-                    while (heatAnalysisLapTimeLapQueue.length >= 20) {
-                      heatAnalysisLapTimeLapQueue.removeFirst();
+                      );
+                    heatAnalysisLapTimeLapSerie!.data.add(heatAnalysisLapTimeLapData);
+                    final index = heatAnalysisLapTimeLapSerie!.data.indexOf(heatAnalysisLapTimeLapData);
+                    heatAnalysisLapTimeLapSerie.addedDataIndexes.add(index);
+
+                    while (heatAnalysisLapTimeLapSerie.data.length > 20) {
+                      final heatAnalysisLapTimeLapDataRemove = heatAnalysisLapTimeLapSerie.data.first;
+                      final indexRemove = heatAnalysisLapTimeLapSerie!.data.indexOf(heatAnalysisLapTimeLapDataRemove);
+                      heatAnalysisLapTimeLapSerie.data.removeAt(indexRemove);
+                      heatAnalysisLapTimeLapSerie.deletedDataIndexes.add(index);
                     }
                   }
                 }
@@ -632,11 +637,6 @@ class HeatAnalysisLapSerie {
   List<int> addedDataIndexes = [];
 }
 
-class HeatAnalysisLapFlagSerie {
-  ChartSeriesController<HeatAnalysisLapData, DateTime>? chartSeriesController;
-  final List<HeatAnalysisLapData> data = [];
-  List<int> addedDataIndexes = [];
-}
 
 class HeatAnalysisLapData {
   const HeatAnalysisLapData({required this.timerElapsed, required this.lap, required this.lapTime, required this.pitlanes, required this.deslots});
@@ -645,6 +645,14 @@ class HeatAnalysisLapData {
   final double? lapTime;
   final int pitlanes;
   final int deslots;
+}
+
+
+class HeatAnalysisLapTimeLapSerie {
+  ChartSeriesController<HeatAnalysisLapTimeLapData, int>? chartSeriesController;
+  final List<HeatAnalysisLapTimeLapData> data = [];
+  List<int> addedDataIndexes = [];
+  List<int> deletedDataIndexes = [];
 }
 
 class HeatAnalysisLapTimeLapData {

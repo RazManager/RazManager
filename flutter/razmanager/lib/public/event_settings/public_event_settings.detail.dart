@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../protobuf/razmanager/protobuf/public/event_speech_type_id.v1.pbenum.dart';
+import '../../protobuf/razmanager/protobuf/public/session_type_id.v1.pbenum.dart';
 import '../../utilities/intent.dart';
 import '../event/public_event.model.dart';
 
@@ -95,6 +96,34 @@ class _PublicEventSettingsDetailFollow extends StatelessWidget {
 class _PublicEventSettingsDetailSound extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      initialIndex: 2, 
+      child: Column(
+        children: [
+          const TabBar.secondary(
+            tabs: [
+              Tab(text: 'Practice'),
+              Tab(text: 'Qualifying'),
+              Tab(text: 'Race'),
+            ],
+          ),
+          Expanded(child: TabBarView(children: [_PublicEventSettingsDetailSoundSessionPractice(), _PublicEventSettingsDetailSoundSessionQualifying(), _PublicEventSettingsDetailSoundSessionRace()])),
+        ],
+      ),
+    );
+  }
+}
+
+
+abstract class _PublicEventSettingsDetailSoundSessionBase extends StatelessWidget {
+  const _PublicEventSettingsDetailSoundSessionBase({required this.sessionTypeId});
+
+  final SessionTypeId sessionTypeId;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = sessionTypeId;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -282,6 +311,19 @@ class _PublicEventSettingsDetailSound extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _PublicEventSettingsDetailSoundSessionPractice extends  _PublicEventSettingsDetailSoundSessionBase {
+  const _PublicEventSettingsDetailSoundSessionPractice() : super(sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE);
+}
+
+class _PublicEventSettingsDetailSoundSessionQualifying extends  _PublicEventSettingsDetailSoundSessionBase {
+  const _PublicEventSettingsDetailSoundSessionQualifying() : super(sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING);
+}
+
+class _PublicEventSettingsDetailSoundSessionRace extends  _PublicEventSettingsDetailSoundSessionBase {
+  const _PublicEventSettingsDetailSoundSessionRace() : super(sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE);
 }
 
 class _PublicEventSettingsDetailDriverBoard extends StatelessWidget {
