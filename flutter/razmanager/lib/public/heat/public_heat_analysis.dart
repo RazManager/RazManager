@@ -70,13 +70,10 @@ abstract class _PublicHeatAnalysesTabStateBase extends PublicHeatStateDetailStat
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Opacity(opacity: 0.95, child: Card(child: PublicHeatHeatStateHeader())),
+            Card(child: PublicHeatHeatStateHeader()),
             Expanded(
-              child: Opacity(
-                opacity: 0.95,
-                child: Card(
-                  child: Padding(padding: const EdgeInsets.all(16.0), child: child),
-                ),
+              child: Card(
+                child: Padding(padding: const EdgeInsets.all(16.0), child: child),
               ),
             ),
             if (heatModel.heatCommandPermissions.isNotEmpty) PublicHeatBottomNavigationBar(),

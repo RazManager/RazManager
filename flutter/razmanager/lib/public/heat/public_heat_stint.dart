@@ -153,77 +153,74 @@ abstract class _PublicHeatStintTabStateBase extends PublicHeatStateDetailStateBa
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Opacity(opacity: 0.95, child: Card(child: PublicHeatHeatStateHeader())),
+            Card(child: PublicHeatHeatStateHeader()),
             Expanded(
-              child: Opacity(
-                opacity: 0.95,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Consumer<PublicHeatStintModel>(
-                      builder: (context, model, _) => Column(
-                        children: [
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              if (choiceChipWidth > constraints.maxWidth) {
-                                return DropdownMenu<int>(
-                                  label: Text(publicHeatChildState.heatModel.teamHeat ? "Team *" : 'Driver *'),
-                                  inputDecorationTheme: InputDecorationTheme(enabledBorder: null),
-                                  initialSelection: model.heatUserKey,
-                                  dropdownMenuEntries: heatModel.heatUsers.entries
-                                      .map(
-                                        (kv) => DropdownMenuEntry(
-                                          value: kv.key,
-                                          label: publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onSelected: (value) {
-                                    if (value != null) {
-                                      model.notify(value);
-                                    }
-                                  },
-                                );
-                              } else {
-                                return Wrap(
-                                  spacing: 16,
-                                  runSpacing: 16,
-                                  children: [
-                                    ...heatModel.heatUsers.entries.map(
-                                      (x) => ChoiceChip(
-                                        label: Text(heatModel.heatUsers[x.key]?.name.value ?? '?'),
-                                        selected: model.heatUserKey == x.key,
-                                        onSelected: (value) {
-                                          if (value) {
-                                            model.notify(x.key);
-                                          } else {
-                                            model.notify(null);
-                                          }
-                                        },
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Consumer<PublicHeatStintModel>(
+                    builder: (context, model, _) => Column(
+                      children: [
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (choiceChipWidth > constraints.maxWidth) {
+                              return DropdownMenu<int>(
+                                label: Text(publicHeatChildState.heatModel.teamHeat ? "Team *" : 'Driver *'),
+                                inputDecorationTheme: InputDecorationTheme(enabledBorder: null),
+                                initialSelection: model.heatUserKey,
+                                dropdownMenuEntries: heatModel.heatUsers.entries
+                                    .map(
+                                      (kv) => DropdownMenuEntry(
+                                        value: kv.key,
+                                        label: publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          if (model.heatUserKey == null)
-                            Row(children: [Text("Please select a ${heatModel.teamHeat ? 'team' : 'driver'}.")])
-                          else
-                            Expanded(
-                              child: Consumer<HeatStintAnalysisLoadingModel>(
-                                builder: (context, model, _) {
-                                  if (model.loading) {
-                                    return const Center(child: Loading());
-                                  } else {
-                                    return child;
+                                    )
+                                    .toList(),
+                                onSelected: (value) {
+                                  if (value != null) {
+                                    model.notify(value);
                                   }
                                 },
-                              ),
+                              );
+                            } else {
+                              return Wrap(
+                                spacing: 16,
+                                runSpacing: 16,
+                                children: [
+                                  ...heatModel.heatUsers.entries.map(
+                                    (x) => ChoiceChip(
+                                      label: Text(heatModel.heatUsers[x.key]?.name.value ?? '?'),
+                                      selected: model.heatUserKey == x.key,
+                                      onSelected: (value) {
+                                        if (value) {
+                                          model.notify(x.key);
+                                        } else {
+                                          model.notify(null);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        if (model.heatUserKey == null)
+                          Row(children: [Text("Please select a ${heatModel.teamHeat ? 'team' : 'driver'}.")])
+                        else
+                          Expanded(
+                            child: Consumer<HeatStintAnalysisLoadingModel>(
+                              builder: (context, model, _) {
+                                if (model.loading) {
+                                  return const Center(child: Loading());
+                                } else {
+                                  return child;
+                                }
+                              },
                             ),
-                        ],
-                      ),
+                          ),
+                      ],
                     ),
                   ),
                 ),

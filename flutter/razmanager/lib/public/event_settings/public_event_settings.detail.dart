@@ -48,7 +48,7 @@ class PublicEventSettingsDetail extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("This space will be used by the configuration of the leaderboard."),
+                  const Text("This space will be used for configuration of the leaderboard."),
                   const SizedBox(height: 16),
                   Expanded(child: const Placeholder())
                 ],

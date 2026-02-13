@@ -291,7 +291,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     final index = heatAnalysisLapTimeLapSerie!.data.indexOf(heatAnalysisLapTimeLapData);
                     heatAnalysisLapTimeLapSerie.addedDataIndexes.add(index);
 
-                    while (heatAnalysisLapTimeLapSerie.data.length > 20) {
+                    while (heatAnalysisLapTimeLapSerie.data.length > 10) {
                       final heatAnalysisLapTimeLapDataRemove = heatAnalysisLapTimeLapSerie.data.first;
                       final indexRemove = heatAnalysisLapTimeLapSerie!.data.indexOf(heatAnalysisLapTimeLapDataRemove);
                       heatAnalysisLapTimeLapSerie.data.removeAt(indexRemove);
