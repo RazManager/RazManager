@@ -97,7 +97,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
         _PublicHeatLeaderboardColumnKey.laps: _PublicHeatLeaderboardColumnValue(text: "Laps", width: textWidth("  Laps", fontSize)),
         _PublicHeatLeaderboardColumnKey.lapTime: _PublicHeatLeaderboardColumnValue(text: "Last lap", width: textWidth("   Last lap", fontSize)),
         _PublicHeatLeaderboardColumnKey.lapFastestTime: _PublicHeatLeaderboardColumnValue(text: "Fastest", width: textWidth("   Fastest", fontSize)),
-        _PublicHeatLeaderboardColumnKey.gapInterval: _PublicHeatLeaderboardColumnValue(text: "Gap", width: textWidth("00000", fontSize)),
+        _PublicHeatLeaderboardColumnKey.gapInterval: _PublicHeatLeaderboardColumnValue(text: "Gap", width: textWidth("000000", fontSize)),
         _PublicHeatLeaderboardColumnKey.gapLeader: _PublicHeatLeaderboardColumnValue(text: "Leader", width: textWidth("  Leader", fontSize)),
       }.entries,
     );
