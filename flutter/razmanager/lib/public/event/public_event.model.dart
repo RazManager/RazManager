@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:protobuf/well_known_types/google/protobuf/wrappers.pb.dart';
+import 'package:razmanager/protobuf/razmanager/protobuf/public/session_type_id.v1.pb.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:provider/provider.dart';
@@ -28,18 +29,20 @@ class EventModel extends ChangeNotifier with GrpcClient {
   final connectionStreamController = StreamController<bool>.broadcast();
   late String eventId;
   Event? eventProto;
+  final SessionTypeId sessionTypeId2 = SessionTypeId.SESSION_TYPE_ID_RACE;
   StreamSubscription<Event>? _eventStreamSubscription;
   StreamSubscription<EventSpeech>? _eventSpeechStreamSubscription;
 
   late Iterable<EventSpeechSettings> eventSpeechSettings;
-  EventSpeechSettings? eventSpeechSetting;
-  bool soundEnabled = false;
-  List<(bool, EventSpeechTypeOption)> eventSpeechTypeOptions = [];
 
+  List<SessionTypeSoundSetting> sessionTypeSoundSettings = [];
+  List<SessionTypeEventSpeechSettingSetting> sessionTypeEventSpeechSettingSettings = [];
+  List<SessionTypeEventSpeechTypeSetting> sessionTypeEventSpeechTypeSettings = [];
 
   AudioPlayer? _audioPlayer;
 
-  String? followEventUserId;
+  String followEventUserId = "";
+  List<String> followEventUserIds = [];
   List<String> eventUserIds = [];
 
   DriverBoardSelection driverBoardSelection = DriverBoardSelection.all;
@@ -90,16 +93,289 @@ class EventModel extends ChangeNotifier with GrpcClient {
     //   eventUserIds = sharedPreferenceEventUserIds;
     // }
 
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER, laps: null)));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED, laps: null)));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST, laps: null)));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST, laps: null)));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER, laps: null)));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_AFTER, laps: UInt32Value(value: 3))));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_BEFORE, laps: UInt32Value(value: 3))));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_NEAREST, laps: UInt32Value(value: 3))));
-    eventSpeechTypeOptions.add((false, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_AVERAGE_LAP, laps: UInt32Value(value: 5))));
-    eventSpeechTypeOptions.add((true, EventSpeechTypeOption(eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_LAP, laps: UInt32Value(value: 5))));
+    sessionTypeSoundSettings.add(
+      _getSessionTypeSoundSetting(sharedPreferences: sharedPreferences, sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE, enabledDefault: false),
+    );
+
+    sessionTypeSoundSettings.add(
+      _getSessionTypeSoundSetting(sharedPreferences: sharedPreferences, sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING, enabledDefault: false),
+    );
+
+    sessionTypeSoundSettings.add(
+      _getSessionTypeSoundSetting(sharedPreferences: sharedPreferences, sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE, enabledDefault: false),
+    );
+
+    final eventSpeechSettingsResponse = await eventServiceClient().eventSpeechSettings(
+      EventSpeechSettingsRequest(locale: _appModel!.locale.replaceAll('_', '-')),
+    );
+    eventSpeechSettings = eventSpeechSettingsResponse.items;
+
+    sessionTypeEventSpeechSettingSettings.add(
+      _getSessionTypeEventSpeechSettingSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechSettingDefault: eventSpeechSettings.first,
+      ),
+    );
+
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_AFTER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_BEFORE,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_NEAREST,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_AVERAGE_LAP,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_PRACTICE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_LAP,
+        lapsDefault: 1,
+      ),
+    );
+
+    sessionTypeEventSpeechSettingSettings.add(
+      _getSessionTypeEventSpeechSettingSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechSettingDefault: eventSpeechSettings.first,
+      ),
+    );
+
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_AFTER,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_BEFORE,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_NEAREST,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_AVERAGE_LAP,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_QUALIFYING,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_LAP,
+        lapsDefault: 1,
+      ),
+    );
+
+    sessionTypeEventSpeechSettingSettings.add(
+      _getSessionTypeEventSpeechSettingSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechSettingDefault: eventSpeechSettings.first,
+      ),
+    );
+
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER,
+        lapsDefault: -1,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_AFTER,
+        lapsDefault: 3,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_BEFORE,
+        lapsDefault: 3,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_NEAREST,
+        lapsDefault: 0,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_AVERAGE_LAP,
+        lapsDefault: 5,
+      ),
+    );
+    sessionTypeEventSpeechTypeSettings.add(
+      _getSessionTypeEventSpeechTypeSetting(
+        sharedPreferences: sharedPreferences,
+        sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE,
+        eventSpeechTypeId: EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_LAP,
+        lapsDefault: 0,
+      ),
+    );
   }
 
   EventServiceClient eventServiceClient() {
@@ -119,10 +395,8 @@ class EventModel extends ChangeNotifier with GrpcClient {
       (connectionState) {
         debugPrint('clientChannel $connectionState');
         if (connectionState == grpc.ConnectionState.ready) {
-
           connectionStreamController.add(true);
-        }
-        else if (connectionState == grpc.ConnectionState.idle) {
+        } else if (connectionState == grpc.ConnectionState.idle) {
           connectionStreamController.add(false);
         }
       },
@@ -134,30 +408,13 @@ class EventModel extends ChangeNotifier with GrpcClient {
 
     eventId = id;
 
-    if (eventSpeechSetting == null) {
-      final sharedPreferences = await SharedPreferences.getInstance();
-      final eventSpeechLocale = sharedPreferences.getString('eventSpeechLocale');
-      final eventSpeechLocalName = sharedPreferences.getString('eventSpeechLocalName');
-
-      final eventSpeechSettingsResponse = await eventServiceClient().eventSpeechSettings(
-        EventSpeechSettingsRequest(locale: _appModel!.locale.replaceAll('_', '-')),
-      );
-      eventSpeechSettings = eventSpeechSettingsResponse.items;
-
-      final eventSpeechSettingRefreshed = eventSpeechSettings.where((x) => x.locale == eventSpeechLocale && x.localName == eventSpeechLocalName).singleOrNull;
-      if (eventSpeechSettingRefreshed != null) {
-        eventSpeechSetting = eventSpeechSettingRefreshed;
-      } else {
-        eventSpeechSetting ??= eventSpeechSettings.first;
-      }
-    }
-
     await eventSubscribe();
   }
 
   Future<void> releaseEvent() async {
     eventProto = null;
-    followEventUserId = null;
+    followEventUserId = "";
+    followEventUserIds = [];
     eventUserIds = [];
 
     if (_audioPlayer != null) {
@@ -202,8 +459,14 @@ class EventModel extends ChangeNotifier with GrpcClient {
 
   Future<void> followEventUserIdNotify(String eventUserId) async {
     followEventUserId = eventUserId;
-    if (soundEnabled && soundEnabledToggleEnabled) {
-      await _eventSpeechSubscribe();
+    followEventUserIds = [];
+    if (eventUserId == "") {
+      await _eventSpeechUnsubscribe();
+    } else {
+      followEventUserIds = [eventUserId];
+      if (sessionTypeSoundSettings.where((x) => x.sessionTypeId == sessionTypeId2).singleOrNull!.enabled && soundToggleEnabled) {
+        await _eventSpeechSubscribe();
+      }
     }
     notifyListeners();
   }
@@ -229,58 +492,51 @@ class EventModel extends ChangeNotifier with GrpcClient {
     notifyListeners();
   }
 
-  Future<void> soundEnabledNotify(bool enabled) async {
-    soundEnabled = enabled;
-
-    if (enabled) {
-      if (soundEnabledToggleEnabled) {
-        await _eventSpeechSubscribe();
-      }
-    } else {
-      await _eventSpeechUnsubscribe();
-    }
-
-    notifyListeners();
-  }
-
-  bool get soundEnabledToggleEnabled {
-    return eventSpeechSetting != null && followEventUserId != null;
-  }
-
-  Future<void> eventSpeechSettingsNotify(EventSpeechSettings eventSpeechSetting) async {
-    this.eventSpeechSetting = eventSpeechSetting;
-
-    final sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setString('eventSpeechLocale', eventSpeechSetting.locale);
-    sharedPreferences.setString('eventSpeechLocalName', eventSpeechSetting.localName);
-    if (soundEnabled && soundEnabledToggleEnabled) {
-      await _eventSpeechSubscribe();
-    }
+  bool get soundToggleEnabled {
+    return followEventUserId != "";
   }
 
   Future<void> _eventSpeechSubscribe() async {
     debugPrint("eventSpeechSubscribe...");
+
+    if (!sessionTypeSoundSettings.where((x) => x.sessionTypeId == sessionTypeId2).singleOrNull!.enabled || !soundToggleEnabled) {
+      return;
+    }
+
     if (_eventSpeechStreamSubscription != null) {
       await _eventSpeechStreamSubscription!.cancel();
     }
+
+    final eventSpeechSetting = sessionTypeEventSpeechSettingSettings.where((x) => x.sessionTypeId == sessionTypeId2).singleOrNull!.eventSpeechSetting;
 
     _eventSpeechStreamSubscription = eventServiceClient()
         .eventSpeechSubscribe(
           EventSpeechSubscribeRequest(
             eventId: eventProto!.id,
             eventUserId: followEventUserId,
-            locale: eventSpeechSetting!.locale,
-            localName: eventSpeechSetting!.localName,
-            eventSpeechTypeOptions: eventSpeechTypeOptions.where((x) => x.$1).map((x)  => EventSpeechTypeOption(eventSpeechTypeId: x.$2.eventSpeechTypeId, laps: x.$2.hasLaps() ? UInt32Value(value:  x.$2.laps.value ): null))
+            locale: eventSpeechSetting.locale,
+            localName: eventSpeechSetting.localName,
+            eventSpeechTypeOptions: sessionTypeEventSpeechTypeSettings
+                .where((x) => x.sessionTypeId == sessionTypeId2 && x.laps != 0)
+                .map(
+                  (x) => EventSpeechTypeOption(
+                    eventSpeechTypeId: x.eventSpeechTypeId,
+                    laps: x.laps != 0 ? UInt32Value(value: x.laps.abs()) : null,
+                  ),
+                ),
           ),
         )
         .listen(
           (data) {
-            _audioPlayer ??= AudioPlayer();
-            // https://github.com/bluefireteam/audioplayers/issues/1269
-            //_audioPlayer!.play(UrlSource(Uri.dataFromBytes(Uint8List.fromList(data.speech.value), mimeType: "audio/mpeg").toString()));
-            //_audioPlayer!.play(UrlSource("https://luan.xyz/files/audio/nasa_on_a_mission.mp3"));
-            _audioPlayer!.play(BytesSource(Uint8List.fromList(data.speech.value)));
+            if (data.speech.value.isNotEmpty) {
+              _audioPlayer ??= AudioPlayer();
+              if (_audioPlayer!.state != PlayerState.playing) {
+                // https://github.com/bluefireteam/audioplayers/issues/1269
+                //_audioPlayer!.play(UrlSource(Uri.dataFromBytes(Uint8List.fromList(data.speech.value), mimeType: "audio/mpeg").toString()));
+                //_audioPlayer!.play(UrlSource("https://luan.xyz/files/audio/nasa_on_a_mission.mp3"));
+                _audioPlayer!.play(BytesSource(Uint8List.fromList(data.speech.value)));
+              }
+            }
           },
           onDone: () => debugPrint('_eventSpeechSubscribe done'),
           onError: (exception) async {
@@ -304,4 +560,135 @@ class EventModel extends ChangeNotifier with GrpcClient {
       _audioPlayer == null;
     }
   }
+
+  SessionTypeSoundSetting _getSessionTypeSoundSetting({
+    required SharedPreferences sharedPreferences,
+    required SessionTypeId sessionTypeId,
+    required bool enabledDefault,
+  }) {
+    bool enabled = enabledDefault;
+    final enabledValue = sharedPreferences.getBool("${sessionTypeId.name}_sound");
+    if (enabledValue != null) {
+      enabled = enabledValue;
+    }
+
+    return SessionTypeSoundSetting(sessionTypeId: sessionTypeId, enabled: enabled);
+  }
+
+  Future<void> setSessionTypeSoundSetting({required SessionTypeId sessionTypeId, required bool enabled}) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    sharedPreferences.setBool("${sessionTypeId.name}_sound", enabled);
+
+    final sessionTypeSoundSetting = sessionTypeSoundSettings.where((x) => x.sessionTypeId == sessionTypeId).singleOrNull;
+    if (sessionTypeSoundSetting != null) {
+      sessionTypeSoundSetting.enabled = enabled;
+
+      if (enabled && soundToggleEnabled) {
+        await _eventSpeechSubscribe();
+      } else {
+        await _eventSpeechUnsubscribe();
+      }
+
+      notifyListeners();
+    }
+  }
+
+  bool get soundEnabled {
+    return sessionTypeSoundSettings.where((x) => x.sessionTypeId == sessionTypeId2).singleOrNull!.enabled;
+  }
+
+  Future<void> soundEnabledNotify(bool value) async {
+    await setSessionTypeSoundSetting(sessionTypeId: sessionTypeId2, enabled: value);
+  }
+
+  SessionTypeEventSpeechSettingSetting _getSessionTypeEventSpeechSettingSetting({
+    required SharedPreferences sharedPreferences,
+    required SessionTypeId sessionTypeId,
+    required EventSpeechSettings eventSpeechSettingDefault,
+  }) {
+    EventSpeechSettings eventSpeechSetting = eventSpeechSettingDefault;
+    final eventSpeechSettingLocaleValue = sharedPreferences.getString("${sessionTypeId.name}_locale");
+    final eventSpeechSettingLocalNameValue = sharedPreferences.getString("${sessionTypeId.name}_local_name");
+    if (eventSpeechSettingLocaleValue != null && eventSpeechSettingLocalNameValue != null) {
+      final eventSpeechSettingSetting = eventSpeechSettings
+          .where((x) => x.locale == eventSpeechSettingLocaleValue && x.localName == eventSpeechSettingLocalNameValue)
+          .singleOrNull;
+      if (eventSpeechSettingSetting != null) {
+        eventSpeechSetting = eventSpeechSettingSetting;
+      }
+    }
+
+    return SessionTypeEventSpeechSettingSetting(sessionTypeId: sessionTypeId, eventSpeechSetting: eventSpeechSetting);
+  }
+
+  Future<void> setSessionTypeEventSpeechSettingSetting({required SessionTypeId sessionTypeId, required EventSpeechSettings eventSpeechSetting}) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    sharedPreferences.setString("${sessionTypeId.name}_locale", eventSpeechSetting.locale);
+    sharedPreferences.setString("${sessionTypeId.name}_local_name", eventSpeechSetting.localName);
+
+    final sessionTypeEventSpeechSettingSetting = sessionTypeEventSpeechSettingSettings.where((x) => x.sessionTypeId == sessionTypeId).singleOrNull;
+    if (sessionTypeEventSpeechSettingSetting != null) {
+      sessionTypeEventSpeechSettingSetting.eventSpeechSetting = eventSpeechSetting;
+      await _eventSpeechSubscribe();
+      notifyListeners();
+    }
+  }
+
+  SessionTypeEventSpeechTypeSetting _getSessionTypeEventSpeechTypeSetting({
+    required SharedPreferences sharedPreferences,
+    required SessionTypeId sessionTypeId,
+    required EventSpeechTypeId eventSpeechTypeId,
+    required int lapsDefault,
+  }) {
+    int laps = lapsDefault;
+    final lapsValue = sharedPreferences.getInt("${sessionTypeId.name}_${eventSpeechTypeId.name}_laps");
+    if (lapsValue != null) {
+      laps = lapsValue;
+    }
+
+    return SessionTypeEventSpeechTypeSetting(sessionTypeId: sessionTypeId, eventSpeechTypeId: eventSpeechTypeId, laps: laps);
+  }
+
+  Future<void> setSessionTypeEventSpeechTypeSetting({
+    required SessionTypeId sessionTypeId,
+    required EventSpeechTypeId eventSpeechTypeId,
+    required int laps,
+  }) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    sharedPreferences.setInt("${sessionTypeId.name}_${eventSpeechTypeId.name}_laps", laps);
+
+    final sessionTypeEventSpeechTypeSetting = sessionTypeEventSpeechTypeSettings
+        .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == eventSpeechTypeId)
+        .singleOrNull;
+    if (sessionTypeEventSpeechTypeSetting != null) {
+      sessionTypeEventSpeechTypeSetting.laps = laps;
+      await _eventSpeechSubscribe();
+      notifyListeners();
+    }
+  }
+}
+
+class SessionTypeSoundSetting {
+  SessionTypeSoundSetting({required this.sessionTypeId, required this.enabled});
+
+  final SessionTypeId sessionTypeId;
+  bool enabled = false;
+}
+
+class SessionTypeEventSpeechSettingSetting {
+  SessionTypeEventSpeechSettingSetting({required this.sessionTypeId, required this.eventSpeechSetting});
+
+  final SessionTypeId sessionTypeId;
+  EventSpeechSettings eventSpeechSetting;
+}
+
+class SessionTypeEventSpeechTypeSetting {
+  SessionTypeEventSpeechTypeSetting({required this.sessionTypeId, required this.eventSpeechTypeId, required this.laps});
+
+  final SessionTypeId sessionTypeId;
+  final EventSpeechTypeId eventSpeechTypeId;
+  int laps;
 }

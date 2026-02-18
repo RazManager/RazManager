@@ -134,7 +134,8 @@ namespace RazManager.App.PublicServices.Entities.Event
                 [EventSpeechTypeId.Lap] = 10,
             };
 
-            Dictionary<EventSpeechTypeId, eventSpeechTypeLap> eventSpeechTypes = request.EventSpeechTypeOptions.ToDictionary(x => x.EventSpeechTypeId, x => new eventSpeechTypeLap { LapThreshold = x.Laps, LapCount = Convert.ToUInt32(0) });
+            Dictionary<EventSpeechTypeId, eventSpeechTypeLap> eventSpeechTypes = request.EventSpeechTypeOptions
+                .ToDictionary(x => x.EventSpeechTypeId, x => new eventSpeechTypeLap { LapThreshold = x.Laps });
 
             StreamSubscriptionHandle<Razmanager.Protobuf.Internal.Silo.UserServices.Event.EventSpeechTexts>? subscriptionHandle = null;
             try
@@ -156,6 +157,12 @@ namespace RazManager.App.PublicServices.Entities.Event
                         {
                             if (eventSpeechTypes.TryGetValue(eventSpeechText.EventSpeechTypeId, out var eventSpeechTypeLap))
                             {
+                                eventSpeechTypeLap.LapCount++;
+                                if (eventSpeechText.Time.HasValue)
+                                {
+                                    eventSpeechTypeLap.Times.Add(eventSpeechText.Time.Value);
+                                }
+
                                 if (!spooken && (!eventSpeechTypeLap.LapThreshold.HasValue || eventSpeechTypeLap.LapThreshold.Value <= eventSpeechTypeLap.LapCount))
                                 {
                                     SpeechStyle speechStyle;
@@ -190,6 +197,12 @@ namespace RazManager.App.PublicServices.Entities.Event
                                             speechStyle = SpeechStyle.GapBefore;
                                             break;
 
+                                        case EventSpeechTypeId.AverageLap:
+                                            speechStyle = SpeechStyle.Normal;
+                                            var averageTime =Math.Round(eventSpeechTypeLap.Times.Average(), 2);
+                                            eventSpeechText.Text = $"Average lap time  {averageTime}";
+                                            break;
+
                                         default:
                                             speechStyle = SpeechStyle.Normal;
                                             slow = eventSpeechText.Slow;
@@ -197,17 +210,14 @@ namespace RazManager.App.PublicServices.Entities.Event
                                     }
 
                                     var bytes = await _eventSpeech.SpeekAsync(request.Locale, name, eventSpeechText.Text, speechStyle, slow);
-                                    if (bytes is not null)
+                                    if (bytes is not null && bytes.Length > 0)
                                     {
                                         await responseStream.WriteAsync(new Razmanager.Protobuf.Public.V1.EventSpeech { Speech = Google.Protobuf.ByteString.CopyFrom(bytes) });
                                     }
 
                                     spooken = true;
                                     eventSpeechTypeLap.LapCount = 0;
-                                }
-                                else
-                                {
-                                    eventSpeechTypeLap.LapCount++;
+                                    eventSpeechTypeLap.Times.Clear();
                                 }
                             }
                         }
@@ -234,8 +244,9 @@ namespace RazManager.App.PublicServices.Entities.Event
 
         class eventSpeechTypeLap
         {
-            public uint? LapThreshold { get; set; }
-            public uint LapCount { get; set; }
+            public required uint? LapThreshold { get; set; }
+            public uint LapCount { get; set; } = 0;
+            public List<double> Times { get; set; } = [];
         }
 
 

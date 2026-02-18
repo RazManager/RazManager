@@ -108,7 +108,7 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
                           return IconButton(
                             icon: const Icon(Icons.volume_off),
                             tooltip: 'Sound on',
-                            onPressed: !model.soundEnabledToggleEnabled
+                            onPressed: !model.soundToggleEnabled
                                 ? null
                                 : () async {
                                     await model.soundEnabledNotify(true);

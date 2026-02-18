@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +15,7 @@ import '../../app_model.dart';
 import '../../utilities/color_definitions.dart';
 import '../../utilities/loading.dart';
 import '../../utilities/timer_conversion.dart';
+import '../event/public_event.model.dart';
 import '../public_mixin.dart';
 import '../race/public_race.model.dart';
 import 'public_heat.model.dart';
@@ -36,7 +36,7 @@ class PublicHeatStintModel extends ChangeNotifier {
   String? heatIndicatorId;
   List<TeamUser>? teamUsers;
 
-  void notify(int? heatUserKey) {
+  void heatUserSelected(int? heatUserKey) {
     this.heatUserKey = heatUserKey;
     final publicHeatChildState = _context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
     final heatModel = _context.read<HeatModel>();
@@ -159,68 +159,77 @@ abstract class _PublicHeatStintTabStateBase extends PublicHeatStateDetailStateBa
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Consumer<PublicHeatStintModel>(
-                    builder: (context, model, _) => Column(
-                      children: [
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            if (choiceChipWidth > constraints.maxWidth) {
-                              return DropdownMenu<int>(
-                                label: Text(publicHeatChildState.heatModel.teamHeat ? "Team *" : 'Driver *'),
-                                inputDecorationTheme: InputDecorationTheme(enabledBorder: null),
-                                initialSelection: model.heatUserKey,
-                                dropdownMenuEntries: heatModel.heatUsers.entries
-                                    .map(
-                                      (kv) => DropdownMenuEntry(
-                                        value: kv.key,
-                                        label: publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false),
-                                      ),
-                                    )
-                                    .toList(),
-                                onSelected: (value) {
-                                  if (value != null) {
-                                    model.notify(value);
-                                  }
-                                },
-                              );
-                            } else {
-                              return Wrap(
-                                spacing: 16,
-                                runSpacing: 16,
-                                children: [
-                                  ...heatModel.heatUsers.entries.map(
-                                    (x) => ChoiceChip(
-                                      label: Text(heatModel.heatUsers[x.key]?.name.value ?? '?'),
-                                      selected: model.heatUserKey == x.key,
-                                      onSelected: (value) {
-                                        if (value) {
-                                          model.notify(x.key);
-                                        } else {
-                                          model.notify(null);
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }
-                          },
-                        ),
-                        SizedBox(height: 16),
-                        if (model.heatUserKey == null)
-                          Row(children: [Text("Please select a ${heatModel.teamHeat ? 'team' : 'driver'}.")])
-                        else
-                          Expanded(
-                            child: Consumer<HeatStintAnalysisLoadingModel>(
-                              builder: (context, model, _) {
-                                if (model.loading) {
-                                  return const Center(child: Loading());
+                    builder: (context, heatStintModel, _) => Consumer<EventModel>(
+                      builder: (context, eventModel, _) {
+                        final followHeatUserKey = heatModel.heatUsers.entries.where((x) => x.value!.id == eventModel.followEventUserId).singleOrNull?.key;
+                        if (followHeatUserKey != null && heatStintModel.heatUserKey == null) {
+                          Future.microtask(() => heatStintModel.heatUserSelected(followHeatUserKey));
+                        }
+
+                        return Column(
+                          children: [
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                if (choiceChipWidth > constraints.maxWidth) {
+                                  return DropdownMenu<int>(
+                                    label: Text(publicHeatChildState.heatModel.teamHeat ? "Team *" : 'Driver *'),
+                                    inputDecorationTheme: InputDecorationTheme(enabledBorder: null),
+                                    initialSelection: heatStintModel.heatUserKey,
+                                    dropdownMenuEntries: heatModel.heatUsers.entries
+                                        .map(
+                                          (kv) => DropdownMenuEntry(
+                                            value: kv.key,
+                                            label: publicHeatChildState.seriesName(indicatorId: kv.key, useShortName: false),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onSelected: (value) {
+                                      if (value != null) {
+                                        heatStintModel.heatUserSelected(value);
+                                      }
+                                    },
+                                  );
                                 } else {
-                                  return child;
+                                  return Wrap(
+                                    spacing: 16,
+                                    runSpacing: 16,
+                                    children: [
+                                      ...heatModel.heatUsers.entries.map(
+                                        (x) => ChoiceChip(
+                                          label: Text(heatModel.heatUsers[x.key]?.name.value ?? '?'),
+                                          selected: heatStintModel.heatUserKey == x.key,
+                                          onSelected: (value) {
+                                            if (value) {
+                                              heatStintModel.heatUserSelected(x.key);
+                                            } else {
+                                              heatStintModel.heatUserSelected(null);
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  );
                                 }
                               },
                             ),
-                          ),
-                      ],
+                            SizedBox(height: 16),
+                            if (heatStintModel.heatUserKey == null)
+                              Row(children: [Text("Please select a ${heatModel.teamHeat ? 'team' : 'driver'}.")])
+                            else
+                              Expanded(
+                                child: Consumer<HeatStintAnalysisLoadingModel>(
+                                  builder: (context, model, _) {
+                                    if (model.loading) {
+                                      return const Center(child: Loading());
+                                    } else {
+                                      return child;
+                                    }
+                                  },
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -619,8 +628,8 @@ class _PublicHeatStintLapsChart extends StatefulWidget {
 class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> with ExceptionMessage, TimerConversion {
   late final _PublicHeatStintTabStateBase publicHeatStintTabState;
   late final PublicHeatChildStateBase publicHeatChildState;
-  //ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true);
-  bool dataLabelsVisible = false;
+  ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true);
+  bool dataLabelsVisible = true;
 
   @override
   void didChangeDependencies() {
@@ -645,9 +654,6 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
       builder: (context, model, _) {
         final raceModel = context.read<RaceModel>();
         final publicHeatChildState = context.findAncestorStateOfType<PublicHeatChildStateBase>()!;
-
-        // reset legends...
-        //zoomPanBehavior.reset();
         return Row(
           children: [
             Expanded(
@@ -675,7 +681,8 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
                 primaryYAxis: NumericAxis(title: AxisTitle(text: 'Lap time (s)')),
                 legend: const Legend(isVisible: true, toggleSeriesVisibility: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
                 trackballBehavior: TrackballBehavior(enable: true, activationMode: ActivationMode.singleTap),
-                zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
+                zoomPanBehavior: zoomPanBehavior,
+                //zoomPanBehavior: ZoomPanBehavior(enablePinching: true, enableSelectionZooming: true, enableMouseWheelZooming: true, enablePanning: true),
                 //onZooming: (zoomingArgs) => debugPrint("onZooming: ${zoomingArgs.currentZoomFactor}"),
                 // onActualRangeChanged: (rangeChangedArgs) {
                 //   if (rangeChangedArgs.orientation == AxisOrientation.vertical) {
@@ -731,23 +738,11 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                IconButton(icon: const Icon(Icons.zoom_in), tooltip: "Zoom in", onPressed: zoomPanBehavior.zoomIn),
+                IconButton(icon: const Icon(Icons.zoom_out), tooltip: "Zoom out", onPressed: zoomPanBehavior.zoomOut),
+                IconButton(icon: const Icon(Icons.undo), tooltip: "Reset zoom", onPressed: zoomPanBehavior.reset),
                 IconButton(
-                  icon: const Icon(Icons.zoom_in),
-                  tooltip: "Zoom in",
-                  onPressed: null, // () { zoomPanBehavior.zoomIn(); },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.zoom_out),
-                  tooltip: "Zoom out",
-                  onPressed: null, // () { zoomPanBehavior.zoomOut(); },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.undo),
-                  tooltip: "Reset zoom",
-                  onPressed: null, // () { zoomPanBehavior.reset(); },
-                ),
-                IconButton(
-                  icon: Icon(dataLabelsVisible ? Icons.clear : Icons.info),
+                  icon: Icon(dataLabelsVisible ? Icons.numbers : Icons.rectangle_outlined),
                   tooltip: "Show pit stops, deslots, and lap numbers",
                   onPressed: () {
                     dataLabelsVisible = !dataLabelsVisible;

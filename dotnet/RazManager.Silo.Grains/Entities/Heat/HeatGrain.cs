@@ -1301,7 +1301,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                                     eventSpeechTexts.Items.Add(new EventSpeechText
                                                     {
                                                         EventSpeechTypeId = EventSpeechTypeId.Faster,
-                                                        Text = $"You set a new personal fastest lap  {heatStateIndicatorTimeDisplay}"
+                                                        Text = $"You set a new personal fastest lap  {heatStateIndicatorTimeDisplay.Value}",
                                                     });
                                                     break;
 
@@ -1309,7 +1309,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                                     eventSpeechTexts.Items.Add(new EventSpeechText
                                                     {
                                                         EventSpeechTypeId = EventSpeechTypeId.Fastest,
-                                                        Text = $"You set the new overall fastest lap  {heatStateIndicatorTimeDisplay}"
+                                                        Text = $"You set the new overall fastest lap  {heatStateIndicatorTimeDisplay.Value}",
                                                     });
                                                     break;
 
@@ -1329,11 +1329,17 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                                         eventSpeechTexts.Items.Add(new EventSpeechText
                                                         {
                                                             EventSpeechTypeId = EventSpeechTypeId.Lap,
-                                                            Text = heatStateIndicatorTimeDisplay.Value.ToString()
+                                                            Text = heatStateIndicatorTimeDisplay.Value.ToString(),
                                                         });
                                                     }
                                                     break;
                                             }
+
+                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            {
+                                                EventSpeechTypeId = EventSpeechTypeId.AverageLap,
+                                                Time = heatStateIndicatorTimeDisplay
+                                            });
                                         }
                                     }
                                 }

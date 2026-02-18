@@ -202,7 +202,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                         ],
                                       ),
                                       Expanded(
-                                        flex: 2,
+                                        flex: 3,
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -485,6 +485,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                               return const Center(child: Loading());
                                             } else {
                                               return Expanded(
+                                                flex: 2,
                                                 child: SfCartesianChart(
                                                   key: UniqueKey(),
                                                   plotAreaBorderWidth: 0,
@@ -500,7 +501,9 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                               kv.value.chartSeriesController = controller;
                                                             });
                                                           },
-                                                          dataSource: kv.value.data,
+                                                          dataSource: kv.value.data
+                                                              .skip(max(kv.value.data.length - constraints.maxWidth / 50, 0).toInt())
+                                                              .toList(),
                                                           xValueMapper: (data, _) => data.lap,
                                                           yValueMapper: (data, _) => data.lapTime,
                                                           animationDuration: 0,
