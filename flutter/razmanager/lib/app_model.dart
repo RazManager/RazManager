@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:protobuf/well_known_types/google/protobuf/empty.pb.dart';
 
@@ -39,16 +38,6 @@ class AppModel extends ChangeNotifier with GrpcClient, ExceptionMessage {
     initializeDateFormatting(Platform.localeName);
     locale = Platform.localeName;
     debugPrint(Platform.localeName);
-
-    final networkInfo = NetworkInfo();
-
-    final wifiName = await networkInfo.getWifiName(); // "FooNetwork"
-    final wifiBSSID = await networkInfo.getWifiBSSID(); // 11:22:33:44:55:66
-    final wifiIP = await networkInfo.getWifiIP(); // 192.168.1.43
-    final wifiIPv6 = await networkInfo.getWifiIPv6(); // 2001:0db8:85a3:0000:0000:8a2e:0370:7334
-    final wifiSubmask = await networkInfo.getWifiSubmask(); // 255.255.255.0
-    final wifiBroadcast = await networkInfo.getWifiBroadcast(); // 192.168.1.255
-    final wifiGateway = await networkInfo.getWifiGatewayIP(); // 192.168.1.1
   }
 
   void setBusy({required bool value, required bool notify}) {

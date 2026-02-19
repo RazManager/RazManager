@@ -9,7 +9,7 @@ description: |
   one for permanently and temporarily installed displays at the venue.
 
 grade: devel # must be 'stable' to release into candidate/stable channels
-confinement: devmode # use 'strict' once you have the right plugs and slots
+confinement: strict
 
 platforms:
   amd64:
@@ -21,6 +21,8 @@ apps:
     extensions: [gnome]
     plugs:
     - network
+    - opengl
+    - audio-playback
 
 parts:
   razmanager:
