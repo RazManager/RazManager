@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=RazManager
+Comment=Race Management System (RMS) for slot cars
+Exec=razmanager
+Icon=${SNAP}/meta/gui/razmanager.png
+Terminal=false
+Type=Application
+Categories=Games;

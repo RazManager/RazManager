@@ -21,7 +21,6 @@ apps:
     extensions: [gnome]
     plugs:
     - network
-    - opengl
     - audio-playback
 
 parts:
@@ -44,5 +43,6 @@ build-packages:
   - libgstreamer-plugins-base1.0-dev
   - gstreamer1.0-plugins-good
   - gstreamer1.0-plugins-bad
+  #  libstdc++-12-dev
   #- libstdc++-15-dev
   #- libstdc++-14-dev
