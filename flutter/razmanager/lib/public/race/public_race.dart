@@ -207,6 +207,10 @@ class _PublicRaceHeatsState extends State<_PublicRaceHeats> with ExceptionMessag
                 }),
               ],
             ),
+            trailing: publicRaceState._raceModel.raceCommandPermissions.isEmpty ? null : TextButton(
+              child: const Text('Leaderboard green screen'),
+              onPressed: () => context.push('/public/heats-greenscreen/${item.id}'),
+            ),
             onTap: () => context.push('/public/heats/${item.id}'),
           );
         },

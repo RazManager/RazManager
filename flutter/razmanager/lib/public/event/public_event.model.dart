@@ -45,6 +45,8 @@ class EventModel extends ChangeNotifier with GrpcClient {
   List<String> followEventUserIds = [];
   List<String> eventUserIds = [];
 
+  bool leaderBoardUseMaxFontSize = true;
+
   DriverBoardSelection driverBoardSelection = DriverBoardSelection.all;
 
   @override
@@ -78,6 +80,11 @@ class EventModel extends ChangeNotifier with GrpcClient {
 
   void initialize() async {
     final sharedPreferences = await SharedPreferences.getInstance();
+
+    final sharedPreferenceLeaderBoardUseMaxFontSize = sharedPreferences.getBool('leaderBoardUseMaxFontSize');
+    if (sharedPreferenceLeaderBoardUseMaxFontSize != null) {
+      leaderBoardUseMaxFontSize = sharedPreferenceLeaderBoardUseMaxFontSize;
+    }
 
     final sharedPreferenceDriverBoardSelection = sharedPreferences.getString('driverBoardSelection');
     if (sharedPreferenceDriverBoardSelection != null) {
@@ -471,11 +478,20 @@ class EventModel extends ChangeNotifier with GrpcClient {
     notifyListeners();
   }
 
-  Future<void> driverboardDriverBoardSelectionNotify(DriverBoardSelection driverBoardSelection) async {
-    this.driverBoardSelection = driverBoardSelection;
+  Future<void> leaderBoardUseMaxFontSizeNotify(bool value) async {
+    leaderBoardUseMaxFontSize = value;
 
     final sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setString('driverBoardSelection', this.driverBoardSelection.name);
+    sharedPreferences.setBool('leaderBoardUseMaxFontSize', value);
+
+    notifyListeners();
+  }
+
+  Future<void> driverboardDriverBoardSelectionNotify(DriverBoardSelection value) async {
+    driverBoardSelection = value;
+
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('driverBoardSelection', driverBoardSelection.name);
 
     notifyListeners();
   }

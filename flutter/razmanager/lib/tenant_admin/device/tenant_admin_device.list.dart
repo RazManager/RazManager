@@ -15,8 +15,7 @@ class TenantAdminDeviceList extends StatefulWidget {
 }
 
 class _TenantAdminDeviceListState extends CrudMasterListStateBase<DeviceList, TenantAdminDeviceList> {
-  _TenantAdminDeviceListState()
-      : super(path: '/tenant-admin/devices', header: 'Devices', body: _TenantAdminDeviceListBody());
+  _TenantAdminDeviceListState() : super(path: '/tenant-admin/devices', header: 'Devices', body: _TenantAdminDeviceListBody());
 
   @override
   Future list(ListRequest listRequest) async {
@@ -30,14 +29,15 @@ class _TenantAdminDeviceListBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_TenantAdminDeviceListState>()!;
-    return Consumer<RefreshModel>(builder: (context, model, child) {
-      return ListView.separated(
-        key: ObjectKey(state.itemsRefreshedAt),
-        controller: state.scrollController,
-        itemCount: state.items.length,
-        itemBuilder: (context, index) {
-          final item = state.items.elementAt(index);
-          return ListTile(
+    return Consumer<RefreshModel>(
+      builder: (context, model, child) {
+        return ListView.separated(
+          key: ObjectKey(state.itemsRefreshedAt),
+          controller: state.scrollController,
+          itemCount: state.items.length,
+          itemBuilder: (context, index) {
+            final item = state.items.elementAt(index);
+            return ListTile(
               leading: const Icon(Icons.devices_other, size: 40),
               title: Text(item.name),
               subtitle: item.connected ? const Icon(Icons.link) : const Icon(Icons.link_off),
@@ -46,25 +46,20 @@ class _TenantAdminDeviceListBody extends StatelessWidget {
                   children: [
                     TextButton(
                       child: const Text('Edit'),
-                      onPressed: () => context.push('/tenant-admin/devices/io/${item.id}?etag=${item.etag}',
-                          extra: state.refreshItemsCallback),
+                      onPressed: () => context.push('/tenant-admin/devices/io/${item.id}?etag=${item.etag}', extra: state.refreshItemsCallback),
                     ),
                     const SizedBox(width: 16),
-                    TextButton(
-                      child: const Text('Monitor'),
-                      onPressed: () => context.push('/tenant-admin/devices/io/${item.id}/view'),
-                    ),
+                    TextButton(child: const Text('Monitor'), onPressed: () => context.push('/tenant-admin/devices/io/${item.id}/view')),
                   ],
                 ),
-              ));
-        },
-        separatorBuilder: (context, index) {
-          return const Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: Divider(),
-          );
-        },
-      );
-    });
+              ),
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const Padding(padding: EdgeInsets.only(left: 16, right: 16), child: Divider());
+          },
+        );
+      },
+    );
   }
 }

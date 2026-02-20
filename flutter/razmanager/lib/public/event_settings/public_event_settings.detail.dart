@@ -44,17 +44,7 @@ class PublicEventSettingsDetail extends StatelessWidget {
               children: [
                 _PublicEventSettingsDetailFollow(),
                 _PublicEventSettingsDetailSound(),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("This space will be used for configuration of the leaderboard."),
-                      const SizedBox(height: 16),
-                      Expanded(child: const Placeholder()),
-                    ],
-                  ),
-                ),
+                _PublicEventSettingsLeaderboard(),
                 _PublicEventSettingsDetailDriverBoard(),
               ],
             ),
@@ -488,3 +478,35 @@ class DropdownMenuLap extends StatelessWidget {
     },
   );
 }
+
+
+class _PublicEventSettingsLeaderboard extends StatelessWidget {
+@override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Consumer<EventModel>(
+          builder: (context, model, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Switch(
+                    value: model.leaderBoardUseMaxFontSize,
+                    onChanged: (value) async => await model.leaderBoardUseMaxFontSizeNotify(value)
+                  ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: const Padding(padding: EdgeInsets.only(left: 16), child: Text("Limit font size to be as big as an ordinary view header size", overflow: TextOverflow.visible,)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

@@ -11,8 +11,6 @@ import '../../protobuf/razmanager/protobuf/public/heat.v1.pb.dart';
 import '../../protobuf/razmanager/protobuf/public/race_feature_type_id.v1.pb.dart';
 import '../../utilities/exception_message.dart';
 import '../public_mixin.dart';
-import '../race/public_race.model.dart';
-import 'public_heat.model.dart';
 import 'public_heat_child_base.dart';
 
 class PublicHeatLeaderboard extends PublicHeatStateDetailBase {
@@ -198,7 +196,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                 );
                 var leftMargin = leaderBoardLeftMargin(constraints.maxWidth, leaderboardColumns);
 
-                if (leftMargin < 0 && Theme.of(context).textTheme.headlineLarge!.fontSize! < fontSize) {
+                if (publicHeatChildState.eventModel.leaderBoardUseMaxFontSize &&  leftMargin < 0 && Theme.of(context).textTheme.headlineLarge!.fontSize! < fontSize) {
                   // All columns didn't fit. Try to use a lower (but still large) fontsize.
                   fontSize = Theme.of(context).textTheme.headlineLarge!.fontSize!;
                   leaderboardColumns = calculateLeaderboardColumnsSized(

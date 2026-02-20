@@ -9,6 +9,7 @@ import 'app_model.dart';
 import 'public/event/public_event.dart';
 import 'public/event_settings/public_event_settings.detail.dart';
 import 'public/heat/public_heat.dart';
+import 'public/heat/public_heat_green_screen.dart';
 import 'public/home/home.dart';
 import 'public/profile/profile.detail.dart';
 import 'public/race/public_race.dart';
@@ -64,6 +65,13 @@ final router = GoRouter(
       pageBuilder: (context, state) => NoTransitionPage<void>(
         key: state.pageKey,
         child: PublicHeat(id: state.pathParameters['id']!),
+      ),
+    ),
+    GoRoute(
+      path: '/public/heats-greenscreen/:id',
+      pageBuilder: (context, state) => NoTransitionPage<void>(
+        key: state.pageKey,
+        child: PublicHeatGreenScreen(id: state.pathParameters['id']!),
       ),
     ),
     GoRoute(
