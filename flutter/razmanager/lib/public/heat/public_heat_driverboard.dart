@@ -210,7 +210,12 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                               Consumer<HeatAnalysisLoadingModel>(
                                                 builder: (context, model, _) {
                                                   if (model.loading) {
-                                                    return const Center(child: Loading());
+                                                    if (heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_PENDING ||
+                                                        heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OPENED) {
+                                                      return const Center(child: Text("Waiting for the heat to start."));
+                                                    } else {
+                                                      return const Center(child: Loading());
+                                                    }
                                                   } else {
                                                     return Consumer<HeatDriverboardGapModel>(
                                                       builder: (_, model, __) {

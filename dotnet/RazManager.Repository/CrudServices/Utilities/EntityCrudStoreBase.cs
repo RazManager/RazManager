@@ -56,7 +56,10 @@ namespace RazManager.Repository.CrudServices.Utilities
 
         public virtual async Task<(TReadProto Proto, string ETag)> ReadAsync(Guid id)
         {
-            var entity = await GetQueryable().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var entity = await GetQueryable()
+                .AsSplitQuery()
+                .SingleOrDefaultAsync(x => x.Id == id)
+                .ConfigureAwait(false);
 
             if (entity is null)
             {

@@ -88,10 +88,9 @@ class _ProfileDetailState extends CrudMasterDetailStateBase<UserRead> {
     formGroup = FormGroup({
       'email': FormControl<String>(value: readProto.email.hasValue() ? readProto.email.value : null, validators: [Validators.email]),
       'name': FormControl<String>(value: readProto.name.value, validators: [Validators.required]),
-      'shortName': FormControl<String>(value: readProto.shortName.value,          validators: [Validators.required, Validators.minLength(3)]),
-      'image':
-          FormControl<Uint8List?>(value: readProto.image.hasValue() ? Uint8List.fromList(readProto.image.value) : null),
-      'imageDeleted': FormControl<bool?>()
+      'shortName': FormControl<String>(value: readProto.shortName.value, validators: [Validators.required, Validators.minLength(3)]),
+      'image': FormControl<Uint8List?>(value: readProto.image.hasValue() ? Uint8List.fromList(readProto.image.value) : null),
+      'imageDeleted': FormControl<bool?>(),
     });
   }
 
@@ -113,75 +112,83 @@ class _ProfileDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_ProfileDetailState>()!;
     return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(state.header),
-            flexibleSpace: const AppProgressIndicator(),
-            bottom: TabBar(tabs: [Tab(text: state.header), const Tab(text: 'Events'), const Tab(text: 'Clubs/Places')]),
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(state.header),
+          flexibleSpace: const AppProgressIndicator(),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: state.header),
+              const Tab(text: 'Events'),
+              const Tab(text: 'Clubs/Places'),
+            ],
           ),
-          body: TabBarView(children: [
+        ),
+        body: TabBarView(
+          children: [
             SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: LayoutBuilder(builder: (context, constraints) {
-                  if (constraints.maxWidth > 600) {
-                    final formGroup = context.findAncestorStateOfType<_ProfileDetailState>()!.formGroup;
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(flex: 2, child: _ProfileDetailBodyMain()),
-                        const SizedBox(width: 16),
-                        Expanded(child: ImageField(formGroup: formGroup))
-                      ],
-                    );
-                  } else {
-                    final formGroup = context.findAncestorStateOfType<_ProfileDetailState>()!.formGroup;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _ProfileDetailBodyMain(),
-                        const SizedBox(height: 16),
-                        ImageField(formGroup: formGroup)
-                      ],
-                    );
-                  }
-                }),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 600) {
+                      final formGroup = context.findAncestorStateOfType<_ProfileDetailState>()!.formGroup;
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 2, child: _ProfileDetailBodyMain()),
+                          const SizedBox(width: 16),
+                          Expanded(child: ImageField(formGroup: formGroup)),
+                        ],
+                      );
+                    } else {
+                      final formGroup = context.findAncestorStateOfType<_ProfileDetailState>()!.formGroup;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _ProfileDetailBodyMain(),
+                          const SizedBox(height: 16),
+                          ImageField(formGroup: formGroup),
+                        ],
+                      );
+                    }
+                  },
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: _ProfileDetailEvents(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: _ProfileDetailTenants(),
-            ),
-          ]),
-          bottomNavigationBar: const ReactiveFormBottomAppBar(),
-          drawer: const AppDrawer(),
-        ));
+            Padding(padding: const EdgeInsets.all(16), child: _ProfileDetailEvents()),
+            Padding(padding: const EdgeInsets.all(16), child: _ProfileDetailTenants()),
+          ],
+        ),
+        bottomNavigationBar: const ReactiveFormBottomAppBar(),
+        drawer: const AppDrawer(),
+      ),
+    );
   }
 }
 
 class _ProfileDetailBodyMain extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+  final state = context.findAncestorStateOfType<_ProfileDetailState>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        TextField(
+          readOnly: true,
+          controller: TextEditingController(text: state.readProto.userName.value),
+          decoration: const InputDecoration(labelText: 'Username', border: InputBorder.none),
+        ),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1300),
           child: ReactiveTextField(
             formControlName: 'email',
             maxLength: 100,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
-              labelText: 'E-mail',
-            ),
-            validationMessages: {
-              ValidationMessage.email: (error) => 'Please enter a valid e-mail address.'
-            },
+            decoration: const InputDecoration(labelText: 'E-mail'),
+            validationMessages: {ValidationMessage.email: (error) => 'Please enter a valid e-mail address.'},
           ),
         ),
         ConstrainedBox(
@@ -190,9 +197,7 @@ class _ProfileDetailBodyMain extends StatelessWidget {
             formControlName: 'name',
             maxLength: 100,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'Name *',
-            ),
+            decoration: const InputDecoration(labelText: 'Name *'),
             validationMessages: {ValidationMessage.required: (error) => 'Please enter a name.'},
           ),
         ),
@@ -203,9 +208,7 @@ class _ProfileDetailBodyMain extends StatelessWidget {
             maxLength: 3,
             inputFormatters: [UpperCaseTextFormatter()],
             textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(
-              labelText: 'Short name *',
-            ),
+            decoration: const InputDecoration(labelText: 'Short name *'),
             validationMessages: {ValidationMessage.minLength: (error) => 'Short name must be 3 characters long.'},
           ),
         ),
@@ -231,11 +234,8 @@ class _ProfileDetailEvents extends StatelessWidget {
                 leading: item.image.hasValue()
                     ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.image.value)))
                     : item.tenant.image.hasValue()
-                        ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.tenant.image.value)))
-                        : const Icon(
-                            Icons.event,
-                            size: 40,
-                          ),
+                    ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.tenant.image.value)))
+                    : const Icon(Icons.event, size: 40),
                 title: Text(item.name),
                 subtitle: Text(item.tenant.name),
                 trailing: IconButton(
@@ -271,10 +271,7 @@ class _ProfileDetailTenants extends StatelessWidget {
               return ListTile(
                 leading: item.image.hasValue()
                     ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.image.value)))
-                    : const Icon(
-                        Icons.place,
-                        size: 40,
-                      ),
+                    : const Icon(Icons.place, size: 40),
                 title: Text(item.name),
                 subtitle: item.administrator ? const Text('Administrator') : null,
                 trailing: IconButton(

@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../protobuf/razmanager/protobuf/public/event_speech_type_id.v1.pbenum.dart';
 import '../../protobuf/razmanager/protobuf/public/session_type_id.v1.pbenum.dart';
