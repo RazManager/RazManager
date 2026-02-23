@@ -38,6 +38,7 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
                 .Include(x => x.Race).ThenInclude(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationIndicators)
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.Car).ThenInclude(x => x.CarImages.Where(x => x.ImageSize == ImageSize.Avatar))
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.HeatIndicatorStints.OrderBy(x => x.Lap))
+                .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == new Guid(request.Value));
             if (entity is null)
             {

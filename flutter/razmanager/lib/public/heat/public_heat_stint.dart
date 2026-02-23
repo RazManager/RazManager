@@ -691,7 +691,7 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
                 // },
                 series: [
                   ...publicHeatChildState.heatStintAnalysisIndicatorStints.indexed.map(
-                    (item) => FastLineSeries<HeatStintAnalysisIndicatorStintLap, DateTime>(
+                    (item) => LineSeries<HeatStintAnalysisIndicatorStintLap, DateTime>(
                       onRendererCreated: (controller) {
                         final heatAnalysisLapSerie = publicHeatChildState.heatStintAnalysisLapSeries[item.$2.id];
                         //debugPrint("heatAnalysisLapSerie ${item.$2.id} ${publicHeatChildState.heatStintAnalysisLapSeries.length} $heatAnalysisLapSerie");

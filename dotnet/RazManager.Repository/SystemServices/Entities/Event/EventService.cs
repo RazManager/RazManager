@@ -33,6 +33,7 @@ namespace RazManager.Repository.SystemServices.Entities.Event
                 .Include(x => x.EventUsers)
                     .ThenInclude(x => x.Autopilot).ThenInclude(x => x.AutopilotImages.Where(x => x.ImageSize == Stores.Utilities.ImageSize.Avatar))
                 .Include(x => x.Races.OrderBy(x => x.Number))
+                .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == new System.Guid(request.Value));
             if (entity is null)
             {

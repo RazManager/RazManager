@@ -143,7 +143,7 @@ namespace RazManager.Repository.CrudServices.Utilities
         {
             try
             {
-                var entity = await GetQueryable().AsTracking().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+                var entity = await GetQueryable().AsSplitQuery().AsTracking().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
 
                 if (entity is null)
                 {
@@ -179,7 +179,7 @@ namespace RazManager.Repository.CrudServices.Utilities
 
         public async Task<(TEntity Entity, string ETag)> UpdateAsync(Guid id, string? eTag, Action<TEntity> map, Action<TEntity> validate)
         {
-            var entity = await GetQueryable().AsTracking().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var entity = await GetQueryable().AsSplitQuery().AsTracking().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
 
             if (entity is null)
             {
@@ -229,7 +229,7 @@ namespace RazManager.Repository.CrudServices.Utilities
         {
             try
             {
-                var entity = await GetQueryable().AsTracking().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+                var entity = await GetQueryable().AsSplitQuery().AsTracking().SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
 
                 if (entity is null)
                 {

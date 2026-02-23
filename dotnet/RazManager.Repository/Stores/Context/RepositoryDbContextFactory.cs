@@ -10,7 +10,7 @@ namespace RazManager.Repository.Stores.Context
         {
 
             var optionsBuilder = new DbContextOptionsBuilder<RepositoryDbContext>()
-                .UseNpgsql();
+                .UseNpgsql(options => options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             return new RepositoryDbContext(optionsBuilder.Options);
         }
     }

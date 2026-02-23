@@ -212,7 +212,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                   if (model.loading) {
                                                     if (heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_PENDING ||
                                                         heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OPENED) {
-                                                      return const Center(child: Text("Waiting for the heat to start."));
+                                                      return Text("");
                                                     } else {
                                                       return const Center(child: Loading());
                                                     }
@@ -387,7 +387,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                                             energyLapsLeftHasValue ? "${heatLeaderboardIndicator.energyLapsLeft.value}L" : '',
                                                                             style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
                                                                           ),
-                                                                          Text('Energy laps left'),
+                                                                          Text('Energy laps'),
                                                                         ],
                                                                       ),
                                                                   ],
@@ -487,7 +487,12 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                         Consumer<HeatAnalysisLoadingModel>(
                                           builder: (context, model, _) {
                                             if (model.loading) {
-                                              return const Center(child: Loading());
+                                              if (heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_PENDING ||
+                                                  heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OPENED) {
+                                                return Text("");
+                                              } else {
+                                                return const Center(child: Loading());
+                                              }
                                             } else {
                                               return Expanded(
                                                 flex: 2,
@@ -499,7 +504,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                   series: publicHeatChildState.heatAnalysisLapTimeLapSeries.entries
                                                       .where((x) => x.key == heatIndicator.indicatorId)
                                                       .map(
-                                                        (kv) => FastLineSeries<HeatAnalysisLapTimeLapData, int>(
+                                                        (kv) => LineSeries<HeatAnalysisLapTimeLapData, int>(
                                                           onRendererCreated: (controller) {
                                                             Future.microtask(() {
                                                               //debugPrint("_PublicHeatAnalysesPositionsChartState onRendererCreated microtask");
