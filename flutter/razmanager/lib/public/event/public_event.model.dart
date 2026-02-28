@@ -453,6 +453,9 @@ class EventModel extends ChangeNotifier with GrpcClient {
         .listen(
           (data) {
             eventProto = data;
+            if (followEventUserIds.isEmpty) {
+            followEventUserIds = data.eventUsers.map((x) => x.id).toList();
+            }
             notifyListeners();
           },
           onDone: () => debugPrint('eventSubscribe done'),
@@ -466,8 +469,8 @@ class EventModel extends ChangeNotifier with GrpcClient {
 
   Future<void> followEventUserIdNotify(String eventUserId) async {
     followEventUserId = eventUserId;
-    followEventUserIds = [];
     if (eventUserId == "") {
+      followEventUserIds = eventProto!.eventUsers.map((x) => x.id).toList();
       await _eventSpeechUnsubscribe();
     } else {
       followEventUserIds = [eventUserId];

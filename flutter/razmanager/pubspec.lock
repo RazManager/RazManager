@@ -673,10 +673,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: cbc40be9be1c5af4dab4d6e0de4d5d3729e6f3d65b89d21e1815d57705644a6f
+      sha256: "8374d6200ab33ac99031a852eba4c8eb2170c4bf20778b3e2c9eccb45384fb41"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.20"
+    version: "2.4.21"
   shared_preferences_foundation:
     dependency: transitive
     description:
@@ -758,34 +758,34 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "1da213617d8ae57d3a50f1472f5983471aa9468d57ab8da590aab618d18d9a10"
+      sha256: "9deb6030db7ad5f1d907062d40b32bfa3ff36ff7e6daec84ce85282507cddd81"
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.5"
+    version: "32.2.7"
   syncfusion_flutter_core:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_core
-      sha256: "9156e78f47576d576c99b52fb895e67518745e8e2cc35272aa1fa738fa0f0b1e"
+      sha256: a7cc6eaed797806890de86b208b2094e66f61e278457867677a29b040ed56879
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.5"
+    version: "32.2.7"
   syncfusion_flutter_datagrid:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_datagrid
-      sha256: bb97f721856316980e74dd57909f8532ab747422e424494e6f601488c2bec8d1
+      sha256: b767fb85658de0007de1409d04a37d5a40a332bdcaac0c6049382aada787c438
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.5"
+    version: "32.2.7"
   syncfusion_flutter_gauges:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_gauges
-      sha256: "2fad69445d98be8c8976a07805f6b1758c38ee6cd280732f64388ce36e26fdc1"
+      sha256: a346738f8544150d97a1eed06b18f486f45c0618abfe87842772707dd28b7a32
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.5"
+    version: "32.2.7"
   synchronized:
     dependency: transitive
     description:
