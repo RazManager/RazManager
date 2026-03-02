@@ -95,7 +95,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
         _PublicHeatLeaderboardColumnKey.laps: _PublicHeatLeaderboardColumnValue(text: "Laps", width: textWidth("  Laps", fontSize)),
         _PublicHeatLeaderboardColumnKey.lapTime: _PublicHeatLeaderboardColumnValue(text: "Last lap", width: textWidth("   Last lap", fontSize)),
         _PublicHeatLeaderboardColumnKey.lapFastestTime: _PublicHeatLeaderboardColumnValue(text: "Fastest", width: textWidth("   Fastest", fontSize)),
-        _PublicHeatLeaderboardColumnKey.gapInterval: _PublicHeatLeaderboardColumnValue(text: "Gap", width: textWidth("000000", fontSize)),
+        _PublicHeatLeaderboardColumnKey.gapInterval: _PublicHeatLeaderboardColumnValue(text: "Gap", width: textWidth("000000", fontSize) + 8 + fontSize),
         _PublicHeatLeaderboardColumnKey.gapLeader: _PublicHeatLeaderboardColumnValue(text: "Leader", width: textWidth("  Leader", fontSize)),
       }.entries,
     );
@@ -196,7 +196,9 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                 );
                 var leftMargin = leaderBoardLeftMargin(constraints.maxWidth, leaderboardColumns);
 
-                if (publicHeatChildState.eventModel.leaderBoardUseMaxFontSize &&  leftMargin < 0 && Theme.of(context).textTheme.headlineLarge!.fontSize! < fontSize) {
+                if (publicHeatChildState.eventModel.leaderBoardUseMaxFontSize &&
+                    leftMargin < 0 &&
+                    Theme.of(context).textTheme.headlineLarge!.fontSize! < fontSize) {
                   // All columns didn't fit. Try to use a lower (but still large) fontsize.
                   fontSize = Theme.of(context).textTheme.headlineLarge!.fontSize!;
                   leaderboardColumns = calculateLeaderboardColumnsSized(
@@ -243,6 +245,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
+                                  model.heatStateSymbol(fontSize * 2),
                                   if (constraints.maxWidth > 2 * model.timerTextWidth(fontSize * 2, "BungeeInline"))
                                     Text(
                                       model.laps.toString(),
@@ -337,10 +340,17 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                                     case _PublicHeatLeaderboardColumnKey.gapInterval:
                                       return SizedBox(
                                         width: x.value.width,
-                                        child: Text(
-                                          x.value.text,
-                                          textAlign: TextAlign.end,
-                                          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                x.value.text,
+                                                textAlign: TextAlign.end,
+                                                style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                            SizedBox(width: 8 + fontSize)
+                                          ],
                                         ),
                                       );
                                     case _PublicHeatLeaderboardColumnKey.energyPercentage:
@@ -520,10 +530,30 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                                           case _PublicHeatLeaderboardColumnKey.gapInterval:
                                             return SizedBox(
                                               width: x.value.width,
-                                              child: Text(
-                                                heatLeaderboardIndicator.gapInterval.value,
-                                                textAlign: TextAlign.end,
-                                                style: TextStyle(fontSize: fontSize),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      heatLeaderboardIndicator.gapInterval.value,
+                                                      textAlign: TextAlign.end,
+                                                      style: TextStyle(fontSize: fontSize),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  if (heatLeaderboardIndicator.gapIntervalFraction.hasValue())
+                                                  // Text(
+                                                  //     heatLeaderboardIndicator.gapIntervalFraction.value.toString(),
+                                                  //     textAlign: TextAlign.end,
+                                                  //     style: TextStyle(fontSize: 4),
+                                                  // )
+                                                    AnimatedRotation(
+                                                      turns: -heatLeaderboardIndicator.gapIntervalFraction.value / 2,
+                                                      duration: const Duration(seconds: 1),
+                                                      child: Icon(Icons.arrow_forward, size: fontSize),
+                                                    )
+                                                  else
+                                                    SizedBox(width: fontSize),
+                                                ],
                                               ),
                                             );
                                           case _PublicHeatLeaderboardColumnKey.energyPercentage:

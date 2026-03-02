@@ -207,10 +207,12 @@ class _PublicEventSettingsDetailSoundSessionNonLapRelated extends StatelessWidge
               TableRow(
                 children: [
                   Switch(
-                    value: model.sessionTypeEventSpeechTypeSettings
-                        .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER)
-                        .singleOrNull!
-                        .laps != 0,
+                    value:
+                        model.sessionTypeEventSpeechTypeSettings
+                            .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LEADER)
+                            .singleOrNull!
+                            .laps !=
+                        0,
                     onChanged: (value) async {
                       await model.setSessionTypeEventSpeechTypeSetting(
                         sessionTypeId: sessionTypeId,
@@ -225,10 +227,12 @@ class _PublicEventSettingsDetailSoundSessionNonLapRelated extends StatelessWidge
               TableRow(
                 children: [
                   Switch(
-                    value: model.sessionTypeEventSpeechTypeSettings
-                        .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED)
-                        .singleOrNull!
-                        .laps != 0,
+                    value:
+                        model.sessionTypeEventSpeechTypeSettings
+                            .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_GAINED)
+                            .singleOrNull!
+                            .laps !=
+                        0,
                     onChanged: (value) async {
                       await model.setSessionTypeEventSpeechTypeSetting(
                         sessionTypeId: sessionTypeId,
@@ -243,10 +247,12 @@ class _PublicEventSettingsDetailSoundSessionNonLapRelated extends StatelessWidge
               TableRow(
                 children: [
                   Switch(
-                    value: model.sessionTypeEventSpeechTypeSettings
-                        .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST)
-                        .singleOrNull!
-                        .laps != 0,
+                    value:
+                        model.sessionTypeEventSpeechTypeSettings
+                            .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_POSITION_LOST)
+                            .singleOrNull!
+                            .laps !=
+                        0,
                     onChanged: (value) async {
                       await model.setSessionTypeEventSpeechTypeSetting(
                         sessionTypeId: sessionTypeId,
@@ -261,10 +267,12 @@ class _PublicEventSettingsDetailSoundSessionNonLapRelated extends StatelessWidge
               TableRow(
                 children: [
                   Switch(
-                    value: model.sessionTypeEventSpeechTypeSettings
-                        .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST)
-                        .singleOrNull!
-                        .laps != 0,
+                    value:
+                        model.sessionTypeEventSpeechTypeSettings
+                            .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTEST)
+                            .singleOrNull!
+                            .laps !=
+                        0,
                     onChanged: (value) async {
                       await model.setSessionTypeEventSpeechTypeSetting(
                         sessionTypeId: sessionTypeId,
@@ -279,10 +287,12 @@ class _PublicEventSettingsDetailSoundSessionNonLapRelated extends StatelessWidge
               TableRow(
                 children: [
                   Switch(
-                    value: model.sessionTypeEventSpeechTypeSettings
-                        .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER)
-                        .singleOrNull!
-                        .laps != 0,
+                    value:
+                        model.sessionTypeEventSpeechTypeSettings
+                            .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_FASTER)
+                            .singleOrNull!
+                            .laps !=
+                        0,
                     onChanged: (value) async {
                       await model.setSessionTypeEventSpeechTypeSetting(
                         sessionTypeId: sessionTypeId,
@@ -395,6 +405,36 @@ class _PublicEventSettingsDetailSoundSessionRace extends _PublicEventSettingsDet
   const _PublicEventSettingsDetailSoundSessionRace() : super(sessionTypeId: SessionTypeId.SESSION_TYPE_ID_RACE);
 }
 
+class _PublicEventSettingsLeaderboard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Consumer<EventModel>(
+          builder: (context, model, _) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Switch(value: model.leaderBoardUseMaxFontSize, onChanged: (value) async => await model.leaderBoardUseMaxFontSizeNotify(value)),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 16),
+                      child: Text("Limit font size to be as big as an ordinary view header size", overflow: TextOverflow.visible),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _PublicEventSettingsDetailDriverBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -413,6 +453,19 @@ class _PublicEventSettingsDetailDriverBoard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Switch(value: model.driverBoardMinimal, onChanged: (value) async => await model.driverBoardMinimalNotify(value)),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 16),
+                        child: Text("Show only a minimal number of fields", overflow: TextOverflow.visible),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
                 const Text("Select which drivers/teams that should be shown on the event's driverboard."),
                 RadioListTile(value: DriverBoardSelection.all, title: Text('All')),
                 RadioListTile(value: DriverBoardSelection.firsthalf, title: Text('First half')),
@@ -477,35 +530,3 @@ class DropdownMenuLap extends StatelessWidget {
     },
   );
 }
-
-
-class _PublicEventSettingsLeaderboard extends StatelessWidget {
-@override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Consumer<EventModel>(
-          builder: (context, model, _) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Switch(
-                    value: model.leaderBoardUseMaxFontSize,
-                    onChanged: (value) async => await model.leaderBoardUseMaxFontSizeNotify(value)
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: const Padding(padding: EdgeInsets.only(left: 16), child: Text("Limit font size to be as big as an ordinary view header size", overflow: TextOverflow.visible,)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-

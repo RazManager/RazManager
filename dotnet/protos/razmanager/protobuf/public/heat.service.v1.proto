@@ -13,6 +13,7 @@ service HeatService {
   rpc HeatLeaderboardSubscribe (google.protobuf.StringValue) returns (stream HeatLeaderboard);
   rpc HeatAnalysesSubscribe (google.protobuf.StringValue) returns (stream HeatAnalyses);
   rpc HeatStintAnalysesSubscribe (HeatStintAnalysesRequest) returns (stream HeatStintAnalysis);
+  rpc HeatStintEventUsersSubscribe (HeatStintEventUsersRequest) returns (stream HeatStintEventUsers);
   rpc Command (HeatCommandRequest) returns (google.protobuf.Empty);
   rpc CommandPermissions (google.protobuf.StringValue) returns (HeatCommandPermissions);
 }
@@ -25,4 +26,8 @@ message HeatCommandRequest {
 message HeatStintAnalysesRequest {
   string heat_id = 1;
   uint32 indicator_id = 2;
+}
+
+message HeatStintEventUsersRequest {
+  string heat_id = 1;
 }

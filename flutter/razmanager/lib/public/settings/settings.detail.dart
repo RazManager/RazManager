@@ -39,9 +39,6 @@ class _SettingsDetailState extends State<SettingsDetail> {
   Widget build(BuildContext context) {
     final settingsModel = context.read<SettingsModel>();
     for (final c in ColorDefinitions.primaries) {
-      debugPrint(c.color.toString());
-      debugPrint('');
-      debugPrint(settingsModel.themeDataColorSchemeSeed.toString());
     }
 
     return Scaffold(

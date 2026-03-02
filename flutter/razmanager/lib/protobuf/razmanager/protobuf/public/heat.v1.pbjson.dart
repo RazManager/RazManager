@@ -444,6 +444,14 @@ const HeatLeaderboardIndicator$json = {
       '6': '.google.protobuf.StringValue',
       '10': 'gapInterval'
     },
+    {
+      '1': 'gap_interval_fraction',
+      '3': 13,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.DoubleValue',
+      '10': 'gapIntervalFraction'
+    },
     {'1': 'energy_percent', '3': 7, '4': 1, '5': 13, '10': 'energyPercent'},
     {
       '1': 'energy_laps_left',
@@ -482,13 +490,14 @@ final $typed_data.Uint8List heatLeaderboardIndicatorDescriptor = $convert.base64
     '5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5IZWF0SW5kaWNhdG9yVGltZVR5cGVUaW1l'
     'Ug10aW1lVHlwZVRpbWVzEjsKCmdhcF9sZWFkZXIYBSABKAsyHC5nb29nbGUucHJvdG9idWYuU3'
     'RyaW5nVmFsdWVSCWdhcExlYWRlchI/CgxnYXBfaW50ZXJ2YWwYBiABKAsyHC5nb29nbGUucHJv'
-    'dG9idWYuU3RyaW5nVmFsdWVSC2dhcEludGVydmFsEiUKDmVuZXJneV9wZXJjZW50GAcgASgNUg'
-    '1lbmVyZ3lQZXJjZW50EkYKEGVuZXJneV9sYXBzX2xlZnQYCCABKAsyHC5nb29nbGUucHJvdG9i'
-    'dWYuVUludDMyVmFsdWVSDmVuZXJneUxhcHNMZWZ0EkYKBWZsYWdzGAkgAygOMjAucmF6bWFuYW'
-    'dlci5wcm90b2J1Zi5wdWJsaWMudjEuSGVhdEluZGljYXRvckZsYWdSBWZsYWdzEhsKCXBpdF9s'
-    'YW5lcxgKIAEoDVIIcGl0TGFuZXMSJAoOY2FyX29mZl90cmFja3MYCyABKA1SDGNhck9mZlRyYW'
-    'NrcxJJChJ0ZWFtX2V2ZW50X3VzZXJfaWQYDCABKAsyHC5nb29nbGUucHJvdG9idWYuU3RyaW5n'
-    'VmFsdWVSD3RlYW1FdmVudFVzZXJJZA==');
+    'dG9idWYuU3RyaW5nVmFsdWVSC2dhcEludGVydmFsElAKFWdhcF9pbnRlcnZhbF9mcmFjdGlvbh'
+    'gNIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5Eb3VibGVWYWx1ZVITZ2FwSW50ZXJ2YWxGcmFjdGlv'
+    'bhIlCg5lbmVyZ3lfcGVyY2VudBgHIAEoDVINZW5lcmd5UGVyY2VudBJGChBlbmVyZ3lfbGFwc1'
+    '9sZWZ0GAggASgLMhwuZ29vZ2xlLnByb3RvYnVmLlVJbnQzMlZhbHVlUg5lbmVyZ3lMYXBzTGVm'
+    'dBJGCgVmbGFncxgJIAMoDjIwLnJhem1hbmFnZXIucHJvdG9idWYucHVibGljLnYxLkhlYXRJbm'
+    'RpY2F0b3JGbGFnUgVmbGFncxIbCglwaXRfbGFuZXMYCiABKA1SCHBpdExhbmVzEiQKDmNhcl9v'
+    'ZmZfdHJhY2tzGAsgASgNUgxjYXJPZmZUcmFja3MSSQoSdGVhbV9ldmVudF91c2VyX2lkGAwgAS'
+    'gLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlUg90ZWFtRXZlbnRVc2VySWQ=');
 
 @$core.Deprecated('Use heatIndicatorTimeTypeTimeDescriptor instead')
 const HeatIndicatorTimeTypeTime$json = {
@@ -647,6 +656,14 @@ const HeatAnalysisLap$json = {
     },
     {'1': 'pitlanes', '3': 4, '4': 1, '5': 13, '10': 'pitlanes'},
     {'1': 'deslots', '3': 5, '4': 1, '5': 13, '10': 'deslots'},
+    {
+      '1': 'team_event_user_id',
+      '3': 6,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.StringValue',
+      '10': 'teamEventUserId'
+    },
   ],
 };
 
@@ -655,7 +672,8 @@ final $typed_data.Uint8List heatAnalysisLapDescriptor = $convert.base64Decode(
     'Cg9IZWF0QW5hbHlzaXNMYXASGgoIcG9zaXRpb24YASABKA1SCHBvc2l0aW9uEhAKA2xhcBgCIA'
     'EoDVIDbGFwEjAKBHRpbWUYAyABKAsyHC5nb29nbGUucHJvdG9idWYuRG91YmxlVmFsdWVSBHRp'
     'bWUSGgoIcGl0bGFuZXMYBCABKA1SCHBpdGxhbmVzEhgKB2Rlc2xvdHMYBSABKA1SB2Rlc2xvdH'
-    'M=');
+    'MSSQoSdGVhbV9ldmVudF91c2VyX2lkGAYgASgLMhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1Zh'
+    'bHVlUg90ZWFtRXZlbnRVc2VySWQ=');
 
 @$core.Deprecated('Use heatAnalysisGapDescriptor instead')
 const HeatAnalysisGap$json = {
@@ -841,3 +859,62 @@ final $typed_data.Uint8List heatStintAnalysisIndicatorStintLapDescriptor =
         'CzIZLmdvb2dsZS5wcm90b2J1Zi5EdXJhdGlvblIMdGltZXJFbGFwc2VkEjAKBHRpbWUYBCABKA'
         'syHC5nb29nbGUucHJvdG9idWYuRG91YmxlVmFsdWVSBHRpbWUSGgoIcGl0bGFuZXMYBSABKA1S'
         'CHBpdGxhbmVzEhgKB2Rlc2xvdHMYBiABKA1SB2Rlc2xvdHM=');
+
+@$core.Deprecated('Use heatStintEventUsersDescriptor instead')
+const HeatStintEventUsers$json = {
+  '1': 'HeatStintEventUsers',
+  '2': [
+    {
+      '1': 'indicators',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.razmanager.protobuf.public.v1.HeatStintEventUsersIndicator',
+      '10': 'indicators'
+    },
+  ],
+};
+
+/// Descriptor for `HeatStintEventUsers`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List heatStintEventUsersDescriptor = $convert.base64Decode(
+    'ChNIZWF0U3RpbnRFdmVudFVzZXJzElsKCmluZGljYXRvcnMYASADKAsyOy5yYXptYW5hZ2VyLn'
+    'Byb3RvYnVmLnB1YmxpYy52MS5IZWF0U3RpbnRFdmVudFVzZXJzSW5kaWNhdG9yUgppbmRpY2F0'
+    'b3Jz');
+
+@$core.Deprecated('Use heatStintEventUsersIndicatorDescriptor instead')
+const HeatStintEventUsersIndicator$json = {
+  '1': 'HeatStintEventUsersIndicator',
+  '2': [
+    {'1': 'indicator_id', '3': 1, '4': 1, '5': 13, '10': 'indicatorId'},
+    {
+      '1': 'laps',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.razmanager.protobuf.public.v1.HeatStintEventUsersIndicatorLap',
+      '10': 'laps'
+    },
+  ],
+};
+
+/// Descriptor for `HeatStintEventUsersIndicator`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List heatStintEventUsersIndicatorDescriptor =
+    $convert.base64Decode(
+        'ChxIZWF0U3RpbnRFdmVudFVzZXJzSW5kaWNhdG9yEiEKDGluZGljYXRvcl9pZBgBIAEoDVILaW'
+        '5kaWNhdG9ySWQSUgoEbGFwcxgCIAMoCzI+LnJhem1hbmFnZXIucHJvdG9idWYucHVibGljLnYx'
+        'LkhlYXRTdGludEV2ZW50VXNlcnNJbmRpY2F0b3JMYXBSBGxhcHM=');
+
+@$core.Deprecated('Use heatStintEventUsersIndicatorLapDescriptor instead')
+const HeatStintEventUsersIndicatorLap$json = {
+  '1': 'HeatStintEventUsersIndicatorLap',
+  '2': [
+    {'1': 'lap', '3': 1, '4': 1, '5': 13, '10': 'lap'},
+    {'1': 'event_user_id', '3': 2, '4': 1, '5': 9, '10': 'eventUserId'},
+  ],
+};
+
+/// Descriptor for `HeatStintEventUsersIndicatorLap`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List heatStintEventUsersIndicatorLapDescriptor =
+    $convert.base64Decode(
+        'Ch9IZWF0U3RpbnRFdmVudFVzZXJzSW5kaWNhdG9yTGFwEhAKA2xhcBgBIAEoDVIDbGFwEiIKDW'
+        'V2ZW50X3VzZXJfaWQYAiABKAlSC2V2ZW50VXNlcklk');

@@ -81,6 +81,15 @@ class HeatServiceClient extends $grpc.Client {
         options: options);
   }
 
+  $grpc.ResponseStream<$1.HeatStintEventUsers> heatStintEventUsersSubscribe(
+    $2.HeatStintEventUsersRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createStreamingCall(
+        _$heatStintEventUsersSubscribe, $async.Stream.fromIterable([request]),
+        options: options);
+  }
+
   $grpc.ResponseFuture<$3.Empty> command(
     $2.HeatCommandRequest request, {
     $grpc.CallOptions? options,
@@ -121,6 +130,11 @@ class HeatServiceClient extends $grpc.Client {
       '/razmanager.protobuf.public.v1.HeatService/HeatStintAnalysesSubscribe',
       ($2.HeatStintAnalysesRequest value) => value.writeToBuffer(),
       $1.HeatStintAnalysis.fromBuffer);
+  static final _$heatStintEventUsersSubscribe = $grpc.ClientMethod<
+          $2.HeatStintEventUsersRequest, $1.HeatStintEventUsers>(
+      '/razmanager.protobuf.public.v1.HeatService/HeatStintEventUsersSubscribe',
+      ($2.HeatStintEventUsersRequest value) => value.writeToBuffer(),
+      $1.HeatStintEventUsers.fromBuffer);
   static final _$command = $grpc.ClientMethod<$2.HeatCommandRequest, $3.Empty>(
       '/razmanager.protobuf.public.v1.HeatService/Command',
       ($2.HeatCommandRequest value) => value.writeToBuffer(),
@@ -174,6 +188,15 @@ abstract class HeatServiceBase extends $grpc.Service {
             ($core.List<$core.int> value) =>
                 $2.HeatStintAnalysesRequest.fromBuffer(value),
             ($1.HeatStintAnalysis value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$2.HeatStintEventUsersRequest,
+            $1.HeatStintEventUsers>(
+        'HeatStintEventUsersSubscribe',
+        heatStintEventUsersSubscribe_Pre,
+        false,
+        true,
+        ($core.List<$core.int> value) =>
+            $2.HeatStintEventUsersRequest.fromBuffer(value),
+        ($1.HeatStintEventUsers value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$2.HeatCommandRequest, $3.Empty>(
         'Command',
         command_Pre,
@@ -231,6 +254,15 @@ abstract class HeatServiceBase extends $grpc.Service {
 
   $async.Stream<$1.HeatStintAnalysis> heatStintAnalysesSubscribe(
       $grpc.ServiceCall call, $2.HeatStintAnalysesRequest request);
+
+  $async.Stream<$1.HeatStintEventUsers> heatStintEventUsersSubscribe_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$2.HeatStintEventUsersRequest> $request) async* {
+    yield* heatStintEventUsersSubscribe($call, await $request);
+  }
+
+  $async.Stream<$1.HeatStintEventUsers> heatStintEventUsersSubscribe(
+      $grpc.ServiceCall call, $2.HeatStintEventUsersRequest request);
 
   $async.Future<$3.Empty> command_Pre($grpc.ServiceCall $call,
       $async.Future<$2.HeatCommandRequest> $request) async {

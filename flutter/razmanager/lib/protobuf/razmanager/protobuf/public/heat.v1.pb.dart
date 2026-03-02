@@ -751,6 +751,7 @@ class HeatLeaderboardIndicator extends $pb.GeneratedMessage {
     $core.int? pitLanes,
     $core.int? carOffTracks,
     $0.StringValue? teamEventUserId,
+    $0.DoubleValue? gapIntervalFraction,
   }) {
     final result = create();
     if (indicatorId != null) result.indicatorId = indicatorId;
@@ -765,6 +766,8 @@ class HeatLeaderboardIndicator extends $pb.GeneratedMessage {
     if (pitLanes != null) result.pitLanes = pitLanes;
     if (carOffTracks != null) result.carOffTracks = carOffTracks;
     if (teamEventUserId != null) result.teamEventUserId = teamEventUserId;
+    if (gapIntervalFraction != null)
+      result.gapIntervalFraction = gapIntervalFraction;
     return result;
   }
 
@@ -807,6 +810,8 @@ class HeatLeaderboardIndicator extends $pb.GeneratedMessage {
         fieldType: $pb.PbFieldType.OU3)
     ..aOM<$0.StringValue>(12, _omitFieldNames ? '' : 'teamEventUserId',
         subBuilder: $0.StringValue.create)
+    ..aOM<$0.DoubleValue>(13, _omitFieldNames ? '' : 'gapIntervalFraction',
+        subBuilder: $0.DoubleValue.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -934,6 +939,17 @@ class HeatLeaderboardIndicator extends $pb.GeneratedMessage {
   void clearTeamEventUserId() => $_clearField(12);
   @$pb.TagNumber(12)
   $0.StringValue ensureTeamEventUserId() => $_ensure(11);
+
+  @$pb.TagNumber(13)
+  $0.DoubleValue get gapIntervalFraction => $_getN(12);
+  @$pb.TagNumber(13)
+  set gapIntervalFraction($0.DoubleValue value) => $_setField(13, value);
+  @$pb.TagNumber(13)
+  $core.bool hasGapIntervalFraction() => $_has(12);
+  @$pb.TagNumber(13)
+  void clearGapIntervalFraction() => $_clearField(13);
+  @$pb.TagNumber(13)
+  $0.DoubleValue ensureGapIntervalFraction() => $_ensure(12);
 }
 
 class HeatIndicatorTimeTypeTime extends $pb.GeneratedMessage {
@@ -1245,6 +1261,7 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
     $0.DoubleValue? time,
     $core.int? pitlanes,
     $core.int? deslots,
+    $0.StringValue? teamEventUserId,
   }) {
     final result = create();
     if (position != null) result.position = position;
@@ -1252,6 +1269,7 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
     if (time != null) result.time = time;
     if (pitlanes != null) result.pitlanes = pitlanes;
     if (deslots != null) result.deslots = deslots;
+    if (teamEventUserId != null) result.teamEventUserId = teamEventUserId;
     return result;
   }
 
@@ -1275,6 +1293,8 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
         subBuilder: $0.DoubleValue.create)
     ..aI(4, _omitFieldNames ? '' : 'pitlanes', fieldType: $pb.PbFieldType.OU3)
     ..aI(5, _omitFieldNames ? '' : 'deslots', fieldType: $pb.PbFieldType.OU3)
+    ..aOM<$0.StringValue>(6, _omitFieldNames ? '' : 'teamEventUserId',
+        subBuilder: $0.StringValue.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1342,6 +1362,17 @@ class HeatAnalysisLap extends $pb.GeneratedMessage {
   $core.bool hasDeslots() => $_has(4);
   @$pb.TagNumber(5)
   void clearDeslots() => $_clearField(5);
+
+  @$pb.TagNumber(6)
+  $0.StringValue get teamEventUserId => $_getN(5);
+  @$pb.TagNumber(6)
+  set teamEventUserId($0.StringValue value) => $_setField(6, value);
+  @$pb.TagNumber(6)
+  $core.bool hasTeamEventUserId() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearTeamEventUserId() => $_clearField(6);
+  @$pb.TagNumber(6)
+  $0.StringValue ensureTeamEventUserId() => $_ensure(5);
 }
 
 class HeatAnalysisGap extends $pb.GeneratedMessage {
@@ -1872,6 +1903,193 @@ class HeatStintAnalysisIndicatorStintLap extends $pb.GeneratedMessage {
   $core.bool hasDeslots() => $_has(5);
   @$pb.TagNumber(6)
   void clearDeslots() => $_clearField(6);
+}
+
+class HeatStintEventUsers extends $pb.GeneratedMessage {
+  factory HeatStintEventUsers({
+    $core.Iterable<HeatStintEventUsersIndicator>? indicators,
+  }) {
+    final result = create();
+    if (indicators != null) result.indicators.addAll(indicators);
+    return result;
+  }
+
+  HeatStintEventUsers._();
+
+  factory HeatStintEventUsers.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory HeatStintEventUsers.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'HeatStintEventUsers',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..pPM<HeatStintEventUsersIndicator>(1, _omitFieldNames ? '' : 'indicators',
+        subBuilder: HeatStintEventUsersIndicator.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HeatStintEventUsers clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HeatStintEventUsers copyWith(void Function(HeatStintEventUsers) updates) =>
+      super.copyWith((message) => updates(message as HeatStintEventUsers))
+          as HeatStintEventUsers;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static HeatStintEventUsers create() => HeatStintEventUsers._();
+  @$core.override
+  HeatStintEventUsers createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static HeatStintEventUsers getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<HeatStintEventUsers>(create);
+  static HeatStintEventUsers? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<HeatStintEventUsersIndicator> get indicators => $_getList(0);
+}
+
+class HeatStintEventUsersIndicator extends $pb.GeneratedMessage {
+  factory HeatStintEventUsersIndicator({
+    $core.int? indicatorId,
+    $core.Iterable<HeatStintEventUsersIndicatorLap>? laps,
+  }) {
+    final result = create();
+    if (indicatorId != null) result.indicatorId = indicatorId;
+    if (laps != null) result.laps.addAll(laps);
+    return result;
+  }
+
+  HeatStintEventUsersIndicator._();
+
+  factory HeatStintEventUsersIndicator.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory HeatStintEventUsersIndicator.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'HeatStintEventUsersIndicator',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'indicatorId',
+        fieldType: $pb.PbFieldType.OU3)
+    ..pPM<HeatStintEventUsersIndicatorLap>(2, _omitFieldNames ? '' : 'laps',
+        subBuilder: HeatStintEventUsersIndicatorLap.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HeatStintEventUsersIndicator clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HeatStintEventUsersIndicator copyWith(
+          void Function(HeatStintEventUsersIndicator) updates) =>
+      super.copyWith(
+              (message) => updates(message as HeatStintEventUsersIndicator))
+          as HeatStintEventUsersIndicator;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static HeatStintEventUsersIndicator create() =>
+      HeatStintEventUsersIndicator._();
+  @$core.override
+  HeatStintEventUsersIndicator createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static HeatStintEventUsersIndicator getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<HeatStintEventUsersIndicator>(create);
+  static HeatStintEventUsersIndicator? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get indicatorId => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set indicatorId($core.int value) => $_setUnsignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasIndicatorId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearIndicatorId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $pb.PbList<HeatStintEventUsersIndicatorLap> get laps => $_getList(1);
+}
+
+class HeatStintEventUsersIndicatorLap extends $pb.GeneratedMessage {
+  factory HeatStintEventUsersIndicatorLap({
+    $core.int? lap,
+    $core.String? eventUserId,
+  }) {
+    final result = create();
+    if (lap != null) result.lap = lap;
+    if (eventUserId != null) result.eventUserId = eventUserId;
+    return result;
+  }
+
+  HeatStintEventUsersIndicatorLap._();
+
+  factory HeatStintEventUsersIndicatorLap.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory HeatStintEventUsersIndicatorLap.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'HeatStintEventUsersIndicatorLap',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'lap', fieldType: $pb.PbFieldType.OU3)
+    ..aOS(2, _omitFieldNames ? '' : 'eventUserId')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HeatStintEventUsersIndicatorLap clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  HeatStintEventUsersIndicatorLap copyWith(
+          void Function(HeatStintEventUsersIndicatorLap) updates) =>
+      super.copyWith(
+              (message) => updates(message as HeatStintEventUsersIndicatorLap))
+          as HeatStintEventUsersIndicatorLap;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static HeatStintEventUsersIndicatorLap create() =>
+      HeatStintEventUsersIndicatorLap._();
+  @$core.override
+  HeatStintEventUsersIndicatorLap createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static HeatStintEventUsersIndicatorLap getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<HeatStintEventUsersIndicatorLap>(
+          create);
+  static HeatStintEventUsersIndicatorLap? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get lap => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set lap($core.int value) => $_setUnsignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasLap() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearLap() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get eventUserId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set eventUserId($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasEventUserId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearEventUserId() => $_clearField(2);
 }
 
 const $core.bool _omitFieldNames =

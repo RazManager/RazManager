@@ -98,10 +98,10 @@ class _HomeState extends State<Home> with GrpcClient, ExceptionMessage {
 
         final packageInfo = await PackageInfo.fromPlatform();
         final applicationVersion = packageInfo.version;
-        debugPrint("applicationVersion: $applicationVersion");
+        //debugPrint("applicationVersion: $applicationVersion");
         final applicationVersionParts = applicationVersion.split('.');
-        debugPrint("applicationVersionParts.length: ${applicationVersionParts.length}");
-        debugPrint("${applicationVersionParts[0]} ${applicationVersionParts[1]} ${applicationVersionParts[2]}");
+        //debugPrint("applicationVersionParts.length: ${applicationVersionParts.length}");
+        //debugPrint("${applicationVersionParts[0]} ${applicationVersionParts[1]} ${applicationVersionParts[2]}");
 
         final sharedPreferences = await SharedPreferences.getInstance();
         final confirmedVersionMajor = sharedPreferences.getInt('confirmedVersionMajor');
@@ -616,7 +616,14 @@ class _HomeEvents extends StatelessWidget with DateFormatter {
                       ? CircleAvatar(foregroundImage: MemoryImage(Uint8List.fromList(item.tenant.image.value)))
                       : const Icon(Icons.event, size: 40),
                   title: Text(item.name),
-                  subtitle: Text(item.tenant.name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item.tenant.name),
+                      if (item.description.hasValue())
+                      Text(item.description.value),
+                    ],
+                  ),
                   trailing: item.startsAt.hasSeconds()
                       ? Text(dateTimeFormat(item.startsAt.toDateTime(toLocal: true)), style: Theme.of(context).textTheme.bodyMedium)
                       : null,

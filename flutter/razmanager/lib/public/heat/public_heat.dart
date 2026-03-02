@@ -110,9 +110,10 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
     return Consumer<HeatModel>(
       builder: (context, heatModel, _) {
         if (heatModel.heatProto != null) {
-          final eventModel = context.read<EventModel>();
-          final raceModel = context.read<RaceModel>();
-          heatRefreshed(heatModel: heatModel);
+          if (!initiated) {
+            //debugPrint("Calling heatRefreshed ${heatModel.heatId} ${publicHeatState.id} $initiated");
+            heatRefreshed(heatModel: heatModel);
+          }
           return Actions(
             actions: {
               CloseIntent: CallbackAction<CloseIntent>(
@@ -134,7 +135,11 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
                     ),
                     flexibleSpace: const AppProgressIndicator(),
                     actions: [
-                      IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
+                      IconButton(
+                        icon: const Icon(Icons.settings),
+                        tooltip: 'Settings',
+                        onPressed: () => context.push('/public/heats/${publicHeatState.id}/event-settings'),
+                      ),
                       Consumer<EventModel>(
                         builder: (context, model, _) {
                           if (!model.soundEnabled) {

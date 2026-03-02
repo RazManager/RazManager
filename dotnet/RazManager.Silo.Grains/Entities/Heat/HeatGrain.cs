@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Google.Protobuf;
+using Microsoft.Extensions.Logging;
 using Orleans.Streams;
 using Razmanager.Protobuf.Internal.Repository.Silo.SystemServices.TrackConfiguration;
 using Razmanager.Protobuf.Internal.Silo.UserServices.Event;
@@ -337,6 +338,22 @@ namespace RazManager.Silo.Grains.Entities.Heat
         public Task<HeatStintAnalysisIndicatorStints> ReadHeatStintAnalysisIndicatorStintsAsync(byte indicatorId)
         {
             return Task.FromResult(_heatStintAnalysisIndicatorStints[indicatorId]);
+        }
+
+
+        public Task<HeatStintEventUsers> ReadHeatStintEventUsersAsync()
+        {
+            var result = new HeatStintEventUsers();
+
+            foreach (var heatIndicator in _heat!.HeatIndicators)
+            {
+                var heatStintEventUsersIndicator = new HeatStintEventUsersIndicator { IndicatorId = heatIndicator.IndicatorId };
+                heatStintEventUsersIndicator.Laps.AddRange(heatIndicator.HeatIndicatorStints
+                    .Where(x => !string.IsNullOrEmpty(x.EventUserId))
+                    .Select(x => new HeatStintEventUsersIndicatorLap { Lap = x.Lap, EventUserId = x.EventUserId }));
+                result.Indicators.Add(heatStintEventUsersIndicator);
+            }
+            return Task.FromResult(result);
         }
 
 
@@ -947,7 +964,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                 heatStateIndicator.Finished = true;
                             }
 
-
                             var eventUsersEventSpeechTexts = new Dictionary<Guid, EventSpeechTexts>();
 
                             HeatStateIndicator? leaderIndicator = null;
@@ -1016,6 +1032,11 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                 item.indicatorKv.Value.GapIntervalTime = null;
                                 item.indicatorKv.Value.GapIntervalLaps = null;
 
+                                if (item.indicatorKv.Value.Position == 1)
+                                {
+                                    item.indicatorKv.Value.GapIntervalFraction = null;
+                                }
+
                                 var heatStateIndicatorTime = item.indicatorKv.Value.AllTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].LastOrDefault();
                                 if (heatStateIndicatorTime is not null)
                                 {
@@ -1027,6 +1048,11 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                     if (intervalIndicator is not null)
                                     {
                                         (item.indicatorKv.Value.GapIntervalTime, item.indicatorKv.Value.GapIntervalLaps) = CalculateGap(heatStateIndicatorTime, intervalIndicator);
+
+                                        if (item.indicatorKv.Value.GapIntervalTime.HasValue && item.indicatorKv.Value.GapIntervalTime.Value < 0)
+                                        {
+                                            item.indicatorKv.Value.GapIntervalTime = null;
+                                        }
                                     }
                                 }
 
@@ -1075,6 +1101,12 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                 {
                                     heatAnalysis.Lap.Pitlanes = heatStateIndicatorTime.Pitlanes;
                                     heatAnalysis.Lap.Deslots = heatStateIndicatorTime.Deslots;
+                                }
+
+                                var heatIndicatorStints = _heat?.HeatIndicators.SingleOrDefault(x => x.IndicatorId == indicatorId)?.HeatIndicatorStints;
+                                if (heatIndicatorStints is not null)
+                                {
+                                    heatAnalysis.Lap.TeamEventUserId = heatIndicatorStints.SingleOrDefault(x => x.Lap == heatStateIndicator.Laps!.Value)?.EventUserId;
                                 }
 
                                 _heatAnalyses.Items.Add(heatAnalysis);
@@ -1178,6 +1210,11 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                             if (time.HasValue)
                                             {
                                                 heatAnalysis.Gap.DeltaFraction = heatAnalysis.Gap.DeltaValue / time.Value;
+
+                                                if (otherItem.Value.Position == heatStateIndicator.Position - 1)
+                                                {
+                                                    heatStateIndicator.GapIntervalFraction = heatAnalysis.Gap.DeltaFraction;
+                                                }
                                             }
                                         }
 
@@ -1557,14 +1594,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
 
             if (heatStateIndicatorTime.Timestamp > otherHeatStateIndicatorTime.Timestamp)
             {
-                if (heatStateIndicatorTime.Lap == otherHeatStateIndicatorTime.Lap)
-                {
-                    return ((heatStateIndicatorTime.Timestamp - otherHeatStateIndicatorTime.Timestamp).TotalSeconds, null);
-                }
-                else
-                {
-                    return (null, Convert.ToInt16(otherHeatStateIndicatorTime.Lap - heatStateIndicatorTime.Lap));
-                }
+                return ((heatStateIndicatorTime.Timestamp - otherHeatStateIndicatorTime.Timestamp).TotalSeconds, heatStateIndicatorTime.Lap == otherHeatStateIndicatorTime.Lap ? null : Convert.ToInt16(otherHeatStateIndicatorTime.Lap - heatStateIndicatorTime.Lap));
             }
             else
             {
@@ -1576,14 +1606,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                     return (null, null);
                 }
 
-                if (heatStateIndicatorTime.Lap == otherHeatStateIndicatorTime.Lap)
-                {
-                    return ((heatStateIndicatorTime.Timestamp - otherHeatStateIndicatorTime.Timestamp).TotalSeconds, null);
-                }
-                else
-                {
-                    return (null, Convert.ToInt16(otherHeatStateIndicatorTime.Lap - heatStateIndicatorTime.Lap));
-                }
+                return ((heatStateIndicatorTime.Timestamp - otherHeatStateIndicatorTime.Timestamp).TotalSeconds, heatStateIndicatorTime.Lap == otherHeatStateIndicatorTime.Lap ? null : Convert.ToInt16(otherHeatStateIndicatorTime.Lap - heatStateIndicatorTime.Lap));
             }
         }
 
@@ -1770,6 +1793,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                     IndicatorId = heatStateInternalIndicatorKv.Key,
                     Position = heatStateInternalIndicatorKv.Value.Position,
                     Laps = heatStateInternalIndicatorKv.Value.Laps,
+                    GapIntervalFraction = heatStateInternalIndicatorKv.Value.GapIntervalFraction
                 };
 
                 if (heatStateInternalIndicatorKv.Value.Finished)
@@ -1777,21 +1801,22 @@ namespace RazManager.Silo.Grains.Entities.Heat
                     heatLeaderboardIndicator.Flags.Add(HeatIndicatorFlag.Finished);
                 }
 
-                if (heatStateInternalIndicatorKv.Value.GapLeaderTime.HasValue)
-                {
-                    heatLeaderboardIndicator.GapLeader = heatStateInternalIndicatorKv.Value.GapLeaderTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
-                }
-                else if (heatStateInternalIndicatorKv.Value.GapLeaderLaps.HasValue)
+                if (heatStateInternalIndicatorKv.Value.GapLeaderLaps.HasValue)
                 {
                     heatLeaderboardIndicator.GapLeader = $"{heatStateInternalIndicatorKv.Value.GapLeaderLaps.Value}L";
                 }
-                if (heatStateInternalIndicatorKv.Value.GapIntervalTime.HasValue)
+                else if (heatStateInternalIndicatorKv.Value.GapLeaderTime.HasValue)
                 {
-                    heatLeaderboardIndicator.GapInterval = heatStateInternalIndicatorKv.Value.GapIntervalTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
+                    heatLeaderboardIndicator.GapLeader = heatStateInternalIndicatorKv.Value.GapLeaderTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
                 }
-                else if (heatStateInternalIndicatorKv.Value.GapIntervalLaps.HasValue)
+
+                if (heatStateInternalIndicatorKv.Value.GapIntervalLaps.HasValue)
                 {
                     heatLeaderboardIndicator.GapInterval = $"{heatStateInternalIndicatorKv.Value.GapIntervalLaps.Value}L";
+                }
+                else if (heatStateInternalIndicatorKv.Value.GapIntervalTime.HasValue)
+                {
+                    heatLeaderboardIndicator.GapInterval = heatStateInternalIndicatorKv.Value.GapIntervalTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
                 }
 
                 if (_timeTypeFastestTimes[HeatIndicatorTimeTypeId.Lap].IndicatorId == heatStateInternalIndicatorKv.Key)
@@ -1903,6 +1928,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
             public short? GapLeaderLaps { get; set; }
             public double? GapIntervalTime { get; set; }
             public short? GapIntervalLaps { get; set; }
+            public double? GapIntervalFraction { get; set; }
             public bool Finished { get; set; }
             public bool LapWarning { get; set; }
             public bool Pitlane { get; set; }

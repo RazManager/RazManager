@@ -124,7 +124,12 @@ class _PublicHeatAnalysesPositionsChartState extends State<_PublicHeatAnalysesPo
       builder: (context, heatModel, _) => Consumer<HeatAnalysisLoadingModel>(
         builder: (context, model, _) {
           if (model.loading) {
-            return const Center(child: Loading());
+            if (heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_PENDING ||
+                heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OPENED) {
+              return Center(child: Text(""));
+            } else {
+              return const Center(child: Loading());
+            }
           } else {
             final publicHeatAnalysesState = context.findAncestorStateOfType<_PublicHeatAnalysesState>()!;
             return LayoutBuilder(
@@ -300,7 +305,12 @@ class _PublicHeatAnalysesGapsChartState extends State<_PublicHeatAnalysesGapsCha
                     child: Consumer<HeatAnalysisLoadingModel>(
                       builder: (context, heatAnalysisLoadingModel, _) {
                         if (heatAnalysisLoadingModel.loading) {
-                          return const Center(child: Loading());
+                          if (heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_PENDING ||
+                              heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OPENED) {
+                            return Center(child: Text(""));
+                          } else {
+                            return const Center(child: Loading());
+                          }
                         } else {
                           final publicHeatAnalysesState = context.findAncestorStateOfType<_PublicHeatAnalysesState>()!;
                           final plotBandHeatStates = publicHeatChildState.heatAnalysisHeatStateTypes
@@ -425,7 +435,12 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
         builder: (context, heatModel, _) => Consumer<HeatAnalysisLoadingModel>(
           builder: (context, model, _) {
             if (model.loading) {
-              return const Center(child: Loading());
+              if (heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_PENDING ||
+                  heatModel.heatProto!.heatStateType.id == HeatStateTypeId.HEAT_STATE_TYPE_ID_OPENED) {
+                return Center(child: Text(""));
+              } else {
+                return const Center(child: Loading());
+              }
             } else {
               final publicHeatAnalysesState = context.findAncestorStateOfType<_PublicHeatAnalysesState>()!;
               final plotBandHeatStates = publicHeatChildState.heatAnalysisHeatStateTypes
@@ -492,7 +507,9 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                           isVisible: isDataLabelVisible,
                           builder: (data, point, series, pointIndex, seriesIndex) {
                             final d = data as HeatAnalysisLapData;
-                            if (d.pitlanes > 0) {
+                            if (d.teamEventUserId != null) {
+                              return Icon(Icons.sports_motorsports, color: heatModel.heatIndicatorColors[kv.key]);
+                            } else if (d.pitlanes > 0) {
                               return Icon(Icons.car_repair, color: heatModel.heatIndicatorColors[kv.key]);
                             } else if (d.deslots > 0) {
                               return Icon(Icons.car_crash, color: heatModel.heatIndicatorColors[kv.key]);

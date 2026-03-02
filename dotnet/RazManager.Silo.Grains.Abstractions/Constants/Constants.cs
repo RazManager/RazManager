@@ -24,7 +24,8 @@ namespace RazManager.Silo.Grains
             HeatState,
             HeatLeaderboard,
             HeatAnalyses,
-            HeatStintAnalysis
+            HeatStintAnalysis,
+            HeatStintEventUsers
             //AllDeviceConfigurationDeviceConfigurationInput,
             //AllDeviceConfigurationDeviceConfigurationOutput,
             //AllHeatOutput,

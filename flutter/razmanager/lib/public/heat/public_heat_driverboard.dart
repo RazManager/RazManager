@@ -120,7 +120,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                       columns = 1;
                     } else {
                       var size = sqrt(constraints.maxHeight * constraints.maxWidth / indicatorsLength);
-                      rows = (constraints.maxHeight * 0.8 / size).ceil();
+                      rows = (constraints.maxHeight * (eventModel.driverBoardMinimal ? 1.0 : 0.8)  / size).ceil();
                       columns = (indicatorsLength / rows).ceil();
                       size = constraints.maxHeight / rows;
                     }
@@ -206,7 +206,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            if (constraints.maxWidth > 400)
+                                            if (constraints.maxWidth > 400 && !eventModel.driverBoardMinimal)
                                               Consumer<HeatAnalysisLoadingModel>(
                                                 builder: (context, model, _) {
                                                   if (model.loading) {
@@ -397,67 +397,69 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                           ),
                                                         ),
                                                       ),
-                                                      SizedBox(height: 16),
-                                                      Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                        children: [
-                                                          Column(
-                                                            children: [
-                                                              Text(
-                                                                timeTypeTimeLap != null && timeTypeTimeLap.time.hasValue()
-                                                                    ? timeTypeTimeLap.time.value.toStringAsFixed(2)
-                                                                    : '',
-                                                                textAlign: TextAlign.end,
-                                                                style: TextStyle(
-                                                                  fontSize: bottomFontSize,
-                                                                  fontWeight: FontWeight.bold,
-                                                                  color: fastestTimeTypeColor(timeTypeTimeLap),
+                                                      if (!eventModel.driverBoardMinimal) ...[
+                                                        SizedBox(height: 16),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                          children: [
+                                                            Column(
+                                                              children: [
+                                                                Text(
+                                                                  timeTypeTimeLap != null && timeTypeTimeLap.time.hasValue()
+                                                                      ? timeTypeTimeLap.time.value.toStringAsFixed(2)
+                                                                      : '',
+                                                                  textAlign: TextAlign.end,
+                                                                  style: TextStyle(
+                                                                    fontSize: bottomFontSize,
+                                                                    fontWeight: FontWeight.bold,
+                                                                    color: fastestTimeTypeColor(timeTypeTimeLap),
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              Text('Latest'),
-                                                            ],
-                                                          ),
-                                                          Column(
-                                                            children: [
-                                                              Text(
-                                                                timeTypeTimeLap != null && timeTypeTimeLap.fastestTime.hasValue()
-                                                                    ? timeTypeTimeLap.fastestTime.value.toStringAsFixed(2)
-                                                                    : '',
-                                                                textAlign: TextAlign.end,
-                                                                style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold),
-                                                              ),
-                                                              Text('Fastest'),
-                                                            ],
-                                                          ),
-                                                          Column(
-                                                            children: [
-                                                              Text(
-                                                                lapsHasValue ? heatLeaderboardIndicator.laps.value.toString() : '',
-                                                                style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold),
-                                                              ),
-                                                              Text('Laps'),
-                                                            ],
-                                                          ),
-                                                          // Column(
-                                                          //   children: [
-                                                          //     Text(heatLeaderboardIndicator.gapInterval.value, style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold)),
-                                                          //     Text('Gap'),
-                                                          //   ],
-                                                          // ),
-                                                          // Column(
-                                                          //   children: [
-                                                          //     Text(heatLeaderboardIndicator.gapLeader.value, style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold)),
-                                                          //     Text('Leader'),
-                                                          //   ],
-                                                          // ),
-                                                        ],
-                                                      ),
+                                                                Text('Latest'),
+                                                              ],
+                                                            ),
+                                                            Column(
+                                                              children: [
+                                                                Text(
+                                                                  timeTypeTimeLap != null && timeTypeTimeLap.fastestTime.hasValue()
+                                                                      ? timeTypeTimeLap.fastestTime.value.toStringAsFixed(2)
+                                                                      : '',
+                                                                  textAlign: TextAlign.end,
+                                                                  style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold),
+                                                                ),
+                                                                Text('Fastest'),
+                                                              ],
+                                                            ),
+                                                            Column(
+                                                              children: [
+                                                                Text(
+                                                                  lapsHasValue ? heatLeaderboardIndicator.laps.value.toString() : '',
+                                                                  style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold),
+                                                                ),
+                                                                Text('Laps'),
+                                                              ],
+                                                            ),
+                                                            // Column(
+                                                            //   children: [
+                                                            //     Text(heatLeaderboardIndicator.gapInterval.value, style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold)),
+                                                            //     Text('Gap'),
+                                                            //   ],
+                                                            // ),
+                                                            // Column(
+                                                            //   children: [
+                                                            //     Text(heatLeaderboardIndicator.gapLeader.value, style: TextStyle(fontSize: bottomFontSize, fontWeight: FontWeight.bold)),
+                                                            //     Text('Leader'),
+                                                            //   ],
+                                                            // ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ],
                                                   );
                                                 },
                                               ),
                                             ),
-                                            if (raceModel.motorSimulation)
+                                            if (raceModel.motorSimulation && !eventModel.driverBoardMinimal)
                                               Column(
                                                 crossAxisAlignment: CrossAxisAlignment.end,
                                                 children: [
@@ -482,7 +484,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                           ],
                                         ),
                                       ),
-                                      if (constraints.maxHeight > 300) ...[
+                                      if (constraints.maxHeight > 300 && !eventModel.driverBoardMinimal) ...[
                                         SizedBox(height: 16),
                                         Consumer<HeatAnalysisLoadingModel>(
                                           builder: (context, model, _) {

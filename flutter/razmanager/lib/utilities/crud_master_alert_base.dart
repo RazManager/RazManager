@@ -183,7 +183,7 @@ class SaveAction extends ContextAction<SaveIntent> with ExceptionMessage {
           Navigator.of(context).pop(true);
         } on Exception catch (exception) {
           state.snackBarText = exceptionMessage(exception);
-          debugPrint(state.snackBarText);
+          //debugPrint(state.snackBarText);
         } finally {
           if (state.clientChannel != null) {
             await state.clientChannel!.shutdown();

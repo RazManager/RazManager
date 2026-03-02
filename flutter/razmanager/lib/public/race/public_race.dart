@@ -39,7 +39,7 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
 
   @override
   void dispose() {
-    debugPrint("scheduling releaseRace");
+    //debugPrint("scheduling releaseRace");
     Future.microtask(_raceModel.releaseRace);
 
     super.dispose();
@@ -101,7 +101,7 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
                   title: Text(raceDisplayName(event: _eventModel.eventProto, race: raceModel.raceProto!)),
                   flexibleSpace: const AppProgressIndicator(),
                   actions: [
-                    IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/event-settings')),
+                    IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/races/${widget.id}/event-settings')),
                     Consumer<EventModel>(
                       builder: (context, model, _) {
                         if (!model.soundEnabled) {

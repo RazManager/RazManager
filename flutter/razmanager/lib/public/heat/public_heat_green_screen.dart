@@ -316,21 +316,21 @@ class _PublicHeatGreenScreenLeaderboardState extends State<_PublicHeatGreenScree
 
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW:
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_COUNTDOWN_YELLOW:
-                            stateWidget = CircleAvatar(backgroundColor: Colors.yellowAccent, radius: fontSize / 2 * 1.5);
+                            stateWidget = CircleAvatar(backgroundColor: Colors.yellowAccent, radius: fontSize / 2);
 
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_RED:
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_COUNTDOWN_RED:
-                            stateWidget = CircleAvatar(backgroundColor: Colors.redAccent, radius: fontSize / 2 * 1.5);
+                            stateWidget = CircleAvatar(backgroundColor: Colors.redAccent, radius: fontSize / 2);
                             break;
 
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_ENDED:
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_OFF:
                           case HeatStateTypeId.HEAT_STATE_TYPE_ID_CLOSED:
-                            stateWidget = Icon(Icons.sports_score, size: fontSize * 1.5);
+                            stateWidget = Icon(Icons.sports_score, size: fontSize);
                             break;
 
                           default:
-                            stateWidget = SizedBox(width: fontSize * 1.5);
+                            stateWidget = SizedBox(width: fontSize);
                             break;
                         }
 

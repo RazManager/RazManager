@@ -37,7 +37,7 @@ class AppModel extends ChangeNotifier with GrpcClient, ExceptionMessage {
 
     initializeDateFormatting(Platform.localeName);
     locale = Platform.localeName;
-    debugPrint(Platform.localeName);
+    //debugPrint(Platform.localeName);
   }
 
   void setBusy({required bool value, required bool notify}) {
@@ -108,7 +108,7 @@ class AppModel extends ChangeNotifier with GrpcClient, ExceptionMessage {
         final sharedPreferences = await SharedPreferences.getInstance();
         await sharedPreferences.setString('refreshToken', refreshToken!);
 
-        debugPrint("accessToken ${DateTime.now()} $accessToken");
+        //debugPrint("accessToken ${DateTime.now()} $accessToken");
 
         if (tokenTimer != null) {
           tokenTimer!.cancel;

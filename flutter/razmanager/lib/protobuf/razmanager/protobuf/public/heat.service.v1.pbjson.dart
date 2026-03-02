@@ -51,3 +51,16 @@ final $typed_data.Uint8List heatStintAnalysesRequestDescriptor =
     $convert.base64Decode(
         'ChhIZWF0U3RpbnRBbmFseXNlc1JlcXVlc3QSFwoHaGVhdF9pZBgBIAEoCVIGaGVhdElkEiEKDG'
         'luZGljYXRvcl9pZBgCIAEoDVILaW5kaWNhdG9ySWQ=');
+
+@$core.Deprecated('Use heatStintEventUsersRequestDescriptor instead')
+const HeatStintEventUsersRequest$json = {
+  '1': 'HeatStintEventUsersRequest',
+  '2': [
+    {'1': 'heat_id', '3': 1, '4': 1, '5': 9, '10': 'heatId'},
+  ],
+};
+
+/// Descriptor for `HeatStintEventUsersRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List heatStintEventUsersRequestDescriptor =
+    $convert.base64Decode(
+        'ChpIZWF0U3RpbnRFdmVudFVzZXJzUmVxdWVzdBIXCgdoZWF0X2lkGAEgASgJUgZoZWF0SWQ=');

@@ -48,7 +48,7 @@ class RaceModel extends ChangeNotifier with GrpcClient {
   }
 
   Future<void> releaseRace() async {
-    debugPrint("releaseRace");
+    //debugPrint("releaseRace");
     raceProto = null;
 
     if (_raceStreamSubscription != null) {
@@ -71,7 +71,7 @@ class RaceModel extends ChangeNotifier with GrpcClient {
 
           notifyListeners();
         },
-        onDone: () => debugPrint('raceSubscribe done'),
+        //onDone: () => debugPrint('raceSubscribe done'),
         onError: (exception) async {
           debugPrint("raceSubscribe $exception");
           await _eventModel.handleGrpcError(exception);

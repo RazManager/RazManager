@@ -92,7 +92,7 @@ class HeatModel extends ChangeNotifier with GrpcClient {
 
           notifyListeners();
         },
-        onDone: () => debugPrint('heatSubscribe done'),
+        //onDone: () => debugPrint('heatSubscribe done'),
         onError: (exception) async {
           debugPrint("heatSubscribe $exception");
           await _eventModel.handleGrpcError(exception);

@@ -49,6 +49,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   List<HeatAnalysisHeatStateType> heatAnalysisHeatStateTypes = [];
   List<HeatStintAnalysisIndicatorStint> heatStintAnalysisIndicatorStints = [];
   Map<String, HeatStintAnalysisLapSerie> heatStintAnalysisLapSeries = {};
+  bool initiated = false;
 
   int? heatStintAnalysisSubscribeIndicatorId;
 
@@ -101,7 +102,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   }
 
   void heatRefreshed({required HeatModel heatModel}) {
-    debugPrint("heatRefreshed");
+    //debugPrint("heatRefreshed");
 
     heatClear(heatModel: heatModel);
 
@@ -109,7 +110,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   }
 
   void heatClear({required HeatModel heatModel}) {
-    debugPrint("heatClear");
+    //debugPrint("heatClear");
 
     context.read<HeatDriverboardGapModel>().initialize(heatModel.heatProto!.heatIndicators);
 
@@ -142,6 +143,8 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
     //heatStintAnalysisLapSeries.clear();
 
     // dispose chartseriescontrollers?
+
+    initiated = true;
   }
 
   Future<void> heatStateSubscribe() async {
@@ -160,7 +163,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
               heatClear(heatModel: heatModel);
             }
           },
-          onDone: () => debugPrint('heatStateSubscribe done'),
+          //onDone: () => debugPrint('heatStateSubscribe done'),
           onError: (exception) async {
             debugPrint("heatStateSubscribe $exception");
             await eventModel.handleGrpcError(exception);
@@ -170,11 +173,11 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   }
 
   Future<void> heatLeaderboardSubscribe() async {
-    debugPrint("heatLeaderboardSubscribe before check");
+    //debugPrint("heatLeaderboardSubscribe before check");
     if (heatLeaderboardStreamSubscription != null) {
       return;
     }
-    debugPrint("heatLeaderboardSubscribe after check");
+    //debugPrint("heatLeaderboardSubscribe after check");
 
     final heatLeaderboardModel = context.read<HeatLeaderboardModel>();
     final heatAnnounceModel = context.read<HeatAnnounceModel>();
@@ -187,7 +190,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
             heatLeaderboardModel.notify(data);
             heatAnnounceModel.update(data);
           },
-          onDone: () => debugPrint('Done...'),
+          //onDone: () => debugPrint('Done...'),
           onError: (exception) async {
             debugPrint("heatLeaderboardSubscribe $exception");
             await heatLeaderboardStreamSubscription!.cancel();
@@ -199,27 +202,27 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   }
 
   Future<void> heatAnalysisSubscribe() async {
-    debugPrint("heatAnalysisSubscribe before check");
+    //debugPrint("heatAnalysisSubscribe before check");
     if (heatAnalysesStreamSubscription != null) {
       return;
     }
-    debugPrint("heatAnalysisSubscribe after check");
+    //debugPrint("heatAnalysisSubscribe after check $heatAnalysesStreamSubscription");
 
     final heatDriverboardGapModel = context.read<HeatDriverboardGapModel>();
     final heatAnalysisLoadingModel = context.read<HeatAnalysisLoadingModel>();
 
     heatAnalysisLoadingModel.notify(true);
 
-    final listenStartedAt = DateTime.now();
+    //final listenStartedAt = DateTime.now();
     heatAnalysesStreamSubscription = heatModel
         .heatServiceClient()
         .heatAnalysesSubscribe(StringValue(value: id))
         .listen(
           (data) {
             if (heatAnalysisLoadingModel.loading) {
-              debugPrint(
-                'heatAnalysesSubscribe data.items.length: ${data.items.length}, listen loading duration: ${DateTime.now().difference(listenStartedAt)}',
-              );
+              // debugPrint(
+              //   'heatAnalysesSubscribe data.items.length: ${data.items.length}, listen loading duration: ${DateTime.now().difference(listenStartedAt)}',
+              // );
               heatAnalysisLoadingModel.notify(false);
             }
 
@@ -244,10 +247,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
               }
               if (item.indicatorId.hasValue()) {
                 if (item.hasLap()) {
-                  final newHeatAnalysisPositionData = HeatAnalysisPositionData(
-                    lap: item.lap.lap,
-                    position: item.lap.position,
-                  );
+                  final newHeatAnalysisPositionData = HeatAnalysisPositionData(lap: item.lap.lap, position: item.lap.position);
 
                   bool updateLast = false;
                   final heatAnalysisPositionSerie = heatAnalysisPositionSeries[item.indicatorId.value];
@@ -276,17 +276,18 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                         lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
                         pitlanes: item.lap.pitlanes,
                         deslots: item.lap.deslots,
+                        teamEventUserId: item.lap.teamEventUserId.hasValue() ? item.lap.teamEventUserId.value : null
                       ),
                     );
                     heatAnalysisLapSerie.addedDataIndexes.add(heatAnalysisLapSerie.data.length - 1);
 
                     final heatAnalysisLapTimeLapSerie = heatAnalysisLapTimeLapSeries[item.indicatorId.value];
                     final heatAnalysisLapTimeLapData = HeatAnalysisLapTimeLapData(
-                        lap: item.lap.lap,
-                        lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
-                        pitlanes: item.lap.pitlanes,
-                        deslots: item.lap.deslots,
-                      );
+                      lap: item.lap.lap,
+                      lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
+                      pitlanes: item.lap.pitlanes,
+                      deslots: item.lap.deslots,
+                    );
                     heatAnalysisLapTimeLapSerie!.data.add(heatAnalysisLapTimeLapData);
                     final index = heatAnalysisLapTimeLapSerie!.data.indexOf(heatAnalysisLapTimeLapData);
                     heatAnalysisLapTimeLapSerie.addedDataIndexes.add(index);
@@ -358,7 +359,7 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
             }
             //debugPrint('heatAnalysesSubscribe data.items.length: ${data.items.length}, process duration: ${DateTime.now().difference(dataStartedAt)}');
           },
-          onDone: () => debugPrint('heatAnalysisSubscribe Done...'),
+          //onDone: () => debugPrint('heatAnalysisSubscribe Done...'),
           onError: (exception) async {
             debugPrint("heatAnalysisSubscribe $exception");
             await heatAnalysesStreamSubscription!.cancel();
@@ -378,12 +379,12 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
   }
 
   Future<void> heatStintAnalysisSubscribe(int indicatorId) async {
-    debugPrint("heatStintAnalysisSubscribe before check");
+    //debugPrint("heatStintAnalysisSubscribe before check");
     if (heatStintAnalysesStreamSubscription != null && heatStintAnalysisSubscribeIndicatorId != null && heatStintAnalysisSubscribeIndicatorId == indicatorId) {
       return;
     }
     heatStintAnalysisSubscribeIndicatorId = indicatorId;
-    debugPrint("heatStintAnalysisSubscribe after check");
+    //debugPrint("heatStintAnalysisSubscribe after check");
 
     if (heatStintAnalysesStreamSubscription != null) {
       await heatStintAnalysesStreamSubscription!.cancel();
@@ -399,14 +400,14 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
         .listen(
           (data) {
             if (data.refresh) {
-              debugPrint("heatStintAnalysesSubscribe refreshed");
+              //debugPrint("heatStintAnalysesSubscribe refreshed");
               heatStintAnalysisIndicatorStints = data.heatStintAnalysisIndicatorStints.items;
               heatStintAnalysisLapSeries.clear();
               heatStintAnalysisLapSeries.addEntries(data.heatStintAnalysisIndicatorStints.items.map((x) => MapEntry(x.id, HeatStintAnalysisLapSerie())));
               heatStintAnalysisLoadingModel.notify(false);
               heatStintAnalysisListModel.notify();
             } else {
-              debugPrint("heatStintAnalysesSubscribe not refreshed $heatStintAnalysisSubscribeIndicatorId");
+              //debugPrint("heatStintAnalysesSubscribe not refreshed $heatStintAnalysisSubscribeIndicatorId");
               for (var item in data.heatStintAnalysisIndicatorStints.items) {
                 final heatStintAnalysisIndicatorStint = heatStintAnalysisIndicatorStints.where((x) => x.id == item.id).singleOrNull;
                 //debugPrint("heatStintAnalysesSubscribe not refreshed ${heatStintAnalysisIndicatorStint}");
@@ -637,16 +638,15 @@ class HeatAnalysisLapSerie {
   List<int> addedDataIndexes = [];
 }
 
-
 class HeatAnalysisLapData {
-  const HeatAnalysisLapData({required this.timerElapsed, required this.lap, required this.lapTime, required this.pitlanes, required this.deslots});
+  const HeatAnalysisLapData({required this.timerElapsed, required this.lap, required this.lapTime, required this.pitlanes, required this.deslots, required this.teamEventUserId});
   final DateTime timerElapsed;
   final int lap;
   final double? lapTime;
   final int pitlanes;
   final int deslots;
+  final String? teamEventUserId;
 }
-
 
 class HeatAnalysisLapTimeLapSerie {
   ChartSeriesController<HeatAnalysisLapTimeLapData, int>? chartSeriesController;
@@ -679,20 +679,22 @@ class PublicHeatHeatStateHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fontSize = Theme.of(context).textTheme.headlineLarge!.fontSize!;
     return Consumer<HeatStateHeaderModel>(
       builder: (_, model, __) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            model.heatStateSymbol(fontSize),
             Text(
               model.laps.toString(),
-              style: TextStyle(fontSize: Theme.of(context).textTheme.headlineLarge?.fontSize, fontFamily: 'BungeeInline'),
+              style: TextStyle(fontSize: fontSize, fontFamily: 'BungeeInline'),
             ),
             SizedBox(
-              width: model.timerTextWidth(Theme.of(context).textTheme.headlineLarge!.fontSize!, "BungeeInline"),
+              width: model.timerTextWidth(fontSize, "BungeeInline"),
               child: Text(
                 model.timer,
-                style: TextStyle(fontSize: Theme.of(context).textTheme.headlineLarge?.fontSize, fontFamily: 'BungeeInline'),
+                style: TextStyle(fontSize: fontSize, fontFamily: 'BungeeInline'),
               ),
             ),
           ],
@@ -728,9 +730,9 @@ abstract class PublicHeatStateDetailStateBase extends State<PublicHeatStateDetai
   BoxDecoration? heatStateBoxDecoration(HeatStateModel model, double animationValue) {
     late final List<Color> colors;
     switch (model.heatStateType?.id) {
-      case HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING:
-        colors = [Colors.green, Colors.greenAccent, Colors.green];
-        break;
+      //case HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING:
+        //colors = [Colors.green, Colors.greenAccent, Colors.green];
+        //break;
 
       case HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW:
       case HeatStateTypeId.HEAT_STATE_TYPE_ID_COUNTDOWN_YELLOW:
@@ -742,10 +744,10 @@ abstract class PublicHeatStateDetailStateBase extends State<PublicHeatStateDetai
         colors = [Colors.red, Colors.redAccent, Colors.red];
         break;
 
-      case HeatStateTypeId.HEAT_STATE_TYPE_ID_ENDED:
-      case HeatStateTypeId.HEAT_STATE_TYPE_ID_OFF:
-        colors = [Colors.black, Colors.transparent, Colors.black];
-        break;
+      // case HeatStateTypeId.HEAT_STATE_TYPE_ID_ENDED:
+      // case HeatStateTypeId.HEAT_STATE_TYPE_ID_OFF:
+      //   colors = [Colors.black, Colors.transparent, Colors.black];
+      //   break;
 
       default:
         return null;
@@ -1020,6 +1022,7 @@ class HeatStateModel extends ChangeNotifier {
 }
 
 class HeatStateHeaderModel extends ChangeNotifier {
+  HeatState? heatState;
   int laps = 0;
   String timer = "";
   Duration _timerElapsed = Duration.zero;
@@ -1033,6 +1036,7 @@ class HeatStateHeaderModel extends ChangeNotifier {
   }
 
   void notify(HeatState heatState, Race race) {
+    this.heatState = heatState;
     laps = heatState.lapsCurrent.value;
     _race = race;
 
@@ -1114,6 +1118,30 @@ class HeatStateHeaderModel extends ChangeNotifier {
 
     return size.width;
   }
+
+
+  Widget heatStateSymbol(double fontSize) {
+    switch (heatState?.heatStateType?.id) {
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_RUNNING:
+        return CircleAvatar(backgroundColor: Colors.greenAccent, radius: fontSize / 2);
+
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_YELLOW:
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_COUNTDOWN_YELLOW:
+        return CircleAvatar(backgroundColor: Colors.yellowAccent, radius: fontSize / 2);
+
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_RED:
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_COUNTDOWN_RED:
+        return CircleAvatar(backgroundColor: Colors.redAccent, radius: fontSize / 2);
+
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_ENDED:
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_OFF:
+      case HeatStateTypeId.HEAT_STATE_TYPE_ID_CLOSED:
+        return Icon(Icons.sports_score, size: fontSize);
+
+      default:
+        return SizedBox(width: fontSize);
+    }
+  }
 }
 
 class HeatAnnounceModel extends ChangeNotifier {
@@ -1147,7 +1175,7 @@ class HeatDriverboardGapModel extends ChangeNotifier {
   Map<int, Map<int, HeatAnalysisGap?>> indicatorGaps = {};
 
   void initialize(Iterable<HeatIndicator> heatIndicators) {
-    debugPrint('_HeatDriverboardGapModel initialize');
+    //debugPrint('_HeatDriverboardGapModel initialize');
     indicatorGaps.clear();
     indicatorGaps.addEntries(
       heatIndicators.map((heatIndicator) {

@@ -48,6 +48,7 @@ class EventModel extends ChangeNotifier with GrpcClient {
   bool leaderBoardUseMaxFontSize = true;
 
   DriverBoardSelection driverBoardSelection = DriverBoardSelection.all;
+  bool driverBoardMinimal = false;
 
   @override
   void dispose() {
@@ -84,6 +85,11 @@ class EventModel extends ChangeNotifier with GrpcClient {
     final sharedPreferenceLeaderBoardUseMaxFontSize = sharedPreferences.getBool('leaderBoardUseMaxFontSize');
     if (sharedPreferenceLeaderBoardUseMaxFontSize != null) {
       leaderBoardUseMaxFontSize = sharedPreferenceLeaderBoardUseMaxFontSize;
+    }
+
+    final sharedPreferenceDriverBoardMinimal = sharedPreferences.getBool('driverBoardMinimal');
+    if (sharedPreferenceDriverBoardMinimal != null) {
+      driverBoardMinimal = sharedPreferenceDriverBoardMinimal;
     }
 
     final sharedPreferenceDriverBoardSelection = sharedPreferences.getString('driverBoardSelection');
@@ -407,7 +413,7 @@ class EventModel extends ChangeNotifier with GrpcClient {
           connectionStreamController.add(false);
         }
       },
-      onDone: () => debugPrint('clientChannel done'),
+      //onDone: () => debugPrint('clientChannel done'),
       onError: (exception) {
         debugPrint("clientChannel $exception");
       },
@@ -458,7 +464,7 @@ class EventModel extends ChangeNotifier with GrpcClient {
             }
             notifyListeners();
           },
-          onDone: () => debugPrint('eventSubscribe done'),
+          //onDone: () => debugPrint('eventSubscribe done'),
           onError: (exception) async {
             debugPrint("eventSubscribe $exception");
             await handleGrpcError(exception);
@@ -486,6 +492,15 @@ class EventModel extends ChangeNotifier with GrpcClient {
 
     final sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setBool('leaderBoardUseMaxFontSize', value);
+
+    notifyListeners();
+  }
+
+  Future<void> driverBoardMinimalNotify(bool value) async {
+    driverBoardMinimal = value;
+
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool('driverBoardMinimal', value);
 
     notifyListeners();
   }

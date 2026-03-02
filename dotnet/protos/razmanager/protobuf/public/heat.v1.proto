@@ -119,6 +119,7 @@ message HeatLeaderboardIndicator {
   repeated HeatIndicatorTimeTypeTime time_type_times = 4;
   google.protobuf.StringValue gap_leader = 5;
   google.protobuf.StringValue gap_interval = 6;
+  google.protobuf.DoubleValue gap_interval_fraction = 13;
   uint32 energy_percent = 7;
   google.protobuf.UInt32Value energy_laps_left = 8;
   repeated HeatIndicatorFlag flags = 9;
@@ -184,6 +185,7 @@ message HeatAnalysisLap {
   google.protobuf.DoubleValue time = 3;
   uint32 pitlanes = 4;
   uint32 deslots = 5;
+  google.protobuf.StringValue team_event_user_id = 6;
 }
 
 message HeatAnalysisGap {
@@ -226,4 +228,18 @@ message HeatStintAnalysisIndicatorStintLap {
   google.protobuf.DoubleValue time = 4;
   uint32 pitlanes = 5;
   uint32 deslots = 6;
+}
+
+message HeatStintEventUsers {
+  repeated HeatStintEventUsersIndicator indicators = 1;
+}
+
+message HeatStintEventUsersIndicator {
+  uint32 indicator_id = 1;
+  repeated HeatStintEventUsersIndicatorLap laps = 2;
+}
+
+message HeatStintEventUsersIndicatorLap {
+  uint32 lap = 1;
+  string event_user_id = 2;
 }
