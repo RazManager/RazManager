@@ -541,11 +541,6 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                                                   ),
                                                   SizedBox(width: 8),
                                                   if (heatLeaderboardIndicator.gapIntervalFraction.hasValue())
-                                                  // Text(
-                                                  //     heatLeaderboardIndicator.gapIntervalFraction.value.toString(),
-                                                  //     textAlign: TextAlign.end,
-                                                  //     style: TextStyle(fontSize: 4),
-                                                  // )
                                                     AnimatedRotation(
                                                       turns: -heatLeaderboardIndicator.gapIntervalFraction.value / 2,
                                                       duration: const Duration(seconds: 1),
