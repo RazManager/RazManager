@@ -9,8 +9,8 @@ It's open-source, but you should typically not download the source code itself f
 
 If you want to interact with RazManager, you'll need a RazManager client. You would use that client as race organiser, driver, team or anyone else interested in a slot car event that is taking place (or has taken place) using the RazManager server.
 
-Currently the client isn't available from an app store, i.e. from the Microsoft Store, from Apple's app store, from Google play or as a Linux snap.
-Instead, download a version for your operating system from the [releases page](https://github.com/RazManager/RazManager/releases) (link to the right), expand the assets dropdown on the the relase you've choosen, extract the compressed file, and start the excecutable file.
+Currently, the client isn't available from an app store, i.e. from the Microsoft Store, from Apple's app store, from Google play or as a Linux snap.
+Instead, download a version for your operating system from the [releases page](https://github.com/RazManager/RazManager/releases), expand the assets dropdown on the the relase you've choosen, extract the compressed file, and then start the excecutable file.
 
 
 ## Hardware and software requirements
@@ -20,7 +20,7 @@ A computer/device capable of running
 - Linux. A Raspberry Pi will work, but it needs at least 2GB RAM.
 - macOS (at least 10.14)
 - iOS
-- Android.
+- Android
 
 The RazManager client is written in Flutter, so for details about supported OS versions, [please read the Flutter supported platforms documentation](https://docs.flutter.dev/reference/supported-platforms).
 
@@ -31,10 +31,22 @@ The RazManager client is written in Flutter, so for details about supported OS v
 After extracting the .zip file, simply start razmanager.exe. You'll get a warning that you're trying to run a file from an untrusted source.
 Click on "more information" (or similar), and accept to run it anyway.
 
+It may very rarely happen that you get an error when starting RazManager on Windows that there's a missing .DLL file, e.g. that a file called MSVCP140.dll or VCRUNTIME140_1.dll. These are files that are normally installed, but if they are missing from your computer, you need to install them manually.
+Go to the page for [Microsoft Visual C++ Redistributable latest supported downloads](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist), scroll down a bit, download vc_redist.x64.exe, run it, and then restart RazManager.
+
 
 ### Linux
 
-RazManager client versions for Linux, both amd64 (Intel) and arm64 (e.g. Raspberry Pi), are availeble from [Canonical's Snapcraft store](https://snapcraft.io/razmanager). The versions are in the beta channel, and they will update your device automatically. But once RazManager is out of beta, you will need to change to the stable channel.
+RazManager client versions for Linux, both amd64 (Intel) and arm64 (e.g. Raspberry Pi), are availeble from [Canonical's Snapcraft store](https://snapcraft.io/razmanager). When installed, there will be an icon for staring RazManager among other apps or in an Other menu folder. The versions are in the beta channel, and they will update your device automatically. But once RazManager is out of beta, you will need to change to the stable channel.
+
+On some minimal Linux distrubutions, e.g. Lubuntu, there might be some missing graphis functionality, and you need to manually get RazManger to understand that it should use software rendering (instead of hardware rendering). You will notice this as it appears that RazManager doesn't start.
+As a work-around, start a Termninal and add an environment variable so that software rendering is used instead:
+
+<code>export LIBGL_ALWAYS_SOFTWARE=1</code>
+
+Then from the same Terminal session, start RazManager manually:
+
+<code>razmanager</code>
 
 
 ### macOS
