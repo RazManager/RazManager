@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
     <PackageReference Include="Azure.Identity" Version="1.18.0" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
@@ -45,6 +45,7 @@
     <ProjectReference Include="..\RazManager.Silo.Grains.Abstractions\RazManager.Silo.Grains.Abstractions.csproj" />
     <ProjectReference Include="..\RazManager.Silo.Repository\RazManager.Silo.Repository.csproj" />
     <ProjectReference Include="..\RazManager.Utilities.AspNetCoreGrpc\RazManager.Utilities.AspNetCoreGrpc.csproj" />
+    <ProjectReference Include="..\RazManager.Utilities.GrpcClient\RazManager.Utilities.GrpcClient.csproj" />
     <ProjectReference Include="..\RazManager.Utilities.Grpc\RazManager.Utilities.Grpc.csproj" />
     <ProjectReference Include="..\RazManager.Utilities.Host\RazManager.Utilities.Host.csproj" />
   </ItemGroup>

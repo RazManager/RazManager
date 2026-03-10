@@ -16,8 +16,6 @@ namespace RazManager.IO.Services.Settings
     {
         public string? CertificatePem { get; set; }
         public string KeyPem { get; set; } = null!;
-        public string? TenantName { get; set; }
-        public string? DeviceName { get; set; }
         public List<DeviceConfiguration> DeviceConfigurations { get; set; } = [];
     }
 

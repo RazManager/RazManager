@@ -15,18 +15,12 @@ namespace RazManager.Repository.Stores.Entities.Device
         [StringLength(1000)]
         public string? Description { get; set; }
 
-        //[Required]
-        //public bool Connected { get; set; }
-
         public DateTime? LastConnectedAt { get; set; }
 
         [Required]
         public bool Simulated { get; set; } = false;
 
-        //[Required]
-        //public List<DeviceProperty.DevicePropertyEntity> DeviceProperties { get; set; } = new();
-
         [Required]
-        public List<Entities.DeviceConfiguration.DeviceConfigurationEntity> DeviceConfigurations { get; set; } = new();
+        public List<Entities.DeviceConfiguration.DeviceConfigurationEntity> DeviceConfigurations { get; set; } = [];
     }
 }

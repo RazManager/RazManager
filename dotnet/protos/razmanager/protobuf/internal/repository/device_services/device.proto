@@ -7,5 +7,10 @@ package razmanager.protobuf.internal.repository.device_services.device;
 
 
 service DeviceService {
-  rpc DeviceInformation (public.v1.DeviceInformation) returns (google.protobuf.Empty);
+  rpc DeviceInformation (DeviceInformationRequest) returns (google.protobuf.Empty);
+}
+
+message DeviceInformationRequest {
+  string id = 1;
+  public.v1.DeviceInformation device_information = 2;
 }

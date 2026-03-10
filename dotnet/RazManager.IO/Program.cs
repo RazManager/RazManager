@@ -1,14 +1,10 @@
-using Azure.Identity;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RazManager.IO.Services.Commissioning;
 using RazManager.IO.Services.SystemInformation;
-using RazManager.Utilities.Host;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
@@ -37,32 +33,12 @@ namespace RazManager.IO
                 });
             }
 
-            if (builder.Environment.IsProduction())
-            {
-                var azureKeyVaultOptions = builder.Configuration.Get<AzureKeyVaultOptions>();
-                Validator.ValidateObject(azureKeyVaultOptions!, new ValidationContext(azureKeyVaultOptions!), true);
-
-                builder.Configuration.AddAzureKeyVault(
-                    azureKeyVaultOptions!.AzureKeyVaultUri,
-                    new ManagedIdentityCredential(ManagedIdentityId.FromUserAssignedObjectId(azureKeyVaultOptions.AzureKeyVaultManagedIdentityObjectId)));
-
-                var applicationInsightsOptions = builder.Configuration.Get<ApplicationInsightsOptions>();
-                Validator.ValidateObject(applicationInsightsOptions!, new ValidationContext(applicationInsightsOptions!), true);
-
-                builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
-                {
-                    options.ConnectionString = applicationInsightsOptions!.ApplicationInsightsConnectionString;
-                });
-            }
-
-            var chronoLogOptions = builder.Configuration.Get<Services.ChronoLog.ChronoLogOptions>();
-            Validator.ValidateObject(chronoLogOptions!, new ValidationContext(chronoLogOptions!), true);
-            builder.Services.AddSingleton<Services.ChronoLog.ChronoLogOptions>(chronoLogOptions!);
+            var connectionOptions = builder.Configuration.Get<Utilities.ConnectionOptions>();
+            Validator.ValidateObject(connectionOptions!, new ValidationContext(connectionOptions!), true);
+            builder.Services.AddSingleton<Utilities.ConnectionOptions>(connectionOptions!);
 
             builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =>
             {
-                // SSL/TLS and a certificate is required when clients are using grpc.
-                // Otherwise, the client won't/can't send the credentials in the metadata header.
                 kestrelServerOptions.ListenAnyIP(3302, listenOptions =>
                 {
                     listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
@@ -72,6 +48,12 @@ namespace RazManager.IO
                         var now = DateTimeOffset.UtcNow;
                         var certificateRequest = new CertificateRequest("CN=RazManager", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                         var certificate = certificateRequest.CreateSelfSigned(now, now.AddYears(50));
+
+                        if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
+                        {
+                            certificate = X509CertificateLoader.LoadPkcs12(certificate.Export(X509ContentType.Pkcs12, "password"), "password");
+                        }
+
                         listenOptions.UseHttps(certificate);
                     }
                 });
@@ -106,8 +88,7 @@ namespace RazManager.IO
                 opt.EnableDetailedErrors = true;
             });
 
-            builder.Services.AddHostedService<RazManager.IO.Services.ChronoLog.ChronoLogService>();
-
+            builder.Services.AddHostedService<RazManager.IO.Services.Device.DeviceService>();
 
             var app = builder.Build();
 

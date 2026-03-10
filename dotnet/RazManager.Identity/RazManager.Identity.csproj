@@ -9,11 +9,12 @@
 
 	<PropertyGroup>
 		<ServerGarbageCollection>true</ServerGarbageCollection>
+		<UserSecretsId>4a894013-4f04-44db-ae05-df497c84784c</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.0.0" />
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.4.0" />
+    <PackageReference Include="AutoMapper" Version="16.1.0" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
     <PackageReference Include="Azure.Identity" Version="1.18.0" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
     <PackageReference Include="Duende.IdentityServer" Version="7.4.6" />

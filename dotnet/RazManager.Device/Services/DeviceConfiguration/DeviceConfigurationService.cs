@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Razmanager.Protobuf.Public.V1;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace RazManager.Device.Services.DeviceConfiguration
 {
+    [Authorize]
     public class DeviceConfigurationService : Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceBase
     {
         private readonly IClusterClient _clusterClient;

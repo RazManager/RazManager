@@ -44,20 +44,5 @@ namespace RazManager.Repository.Utilities
                 return new Guid(tenantId);
             }
         }
-
-
-        public Guid DeviceId
-        {
-            get
-            {
-                var deviceId = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "deviceId")?.Value;
-                if (deviceId is null)
-                {
-                    return Guid.Empty;
-                }
-
-                return new Guid(deviceId);
-            }
-        }
     }
 }

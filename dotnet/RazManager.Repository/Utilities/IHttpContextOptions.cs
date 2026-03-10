@@ -6,6 +6,5 @@ namespace RazManager.Repository.Utilities
     {
         Guid UserId { get; }
         Guid TenantId { get; }
-        Guid DeviceId { get; }
     }
 }

@@ -9,8 +9,8 @@ package razmanager.protobuf.public.v1;
 
 
 message DeviceInformation {
-  string id = 1;
-  string name = 2;
+  //string id = 1;
+  //string name = 2;
   repeated DeviceProperty device_properties = 3;
   repeated DeviceConfiguration device_configurations = 4;
   //repeated string ip_addresses = 3;

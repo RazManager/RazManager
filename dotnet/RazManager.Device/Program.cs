@@ -8,12 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Orleans.Hosting;
 using Orleans.Serialization;
 using RazManager.Device.Utilities;
-using RazManager.Utilities.AspNetCoreGrpc;
 using RazManager.Utilities.Grpc;
+using RazManager.Utilities.GrpcClient;
 using RazManager.Utilities.Host;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -34,7 +33,7 @@ namespace RazManager.Device
 
             if (builder.Environment.IsProduction())
             {
-                builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
+                builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =>
                 {
                     kestrelServerOptions.ListenAnyIP(8080, listenOptions =>
                     {
@@ -61,9 +60,7 @@ namespace RazManager.Device
             {
                 builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =>
                 {
-                    // SSL/TLS and a certificate is required when clients are using grpc.
-                    // Otherwise, the client won't/can't send the credentials in the metadata header.
-                    kestrelServerOptions.ListenAnyIP(5001, listenOptions =>
+                    kestrelServerOptions.ListenAnyIP(8081, listenOptions =>
                     {
                         listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
 
@@ -96,39 +93,38 @@ namespace RazManager.Device
                 options.ForwardedHeaders = ForwardedHeaders.All;
             });
 
+            builder.Services.AddCertificateForwarding(options =>
+            {
+                options.CertificateHeader = "X-Client-Cert";
+                options.HeaderConverter = value =>
+                {
+                    var certificate = X509CertificateLoader.LoadCertificate(Convert.FromBase64String(value));
+                    return certificate;
+                };
+            });
+
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IHttpContextOptions, HttpContextOptions>();
 
-            var c = new CertificateService().GetAllCertificatesAsync([]).Result.First();
-
             builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
-                .AddCertificate(CertificateAuthenticationDefaults.AuthenticationScheme, options =>
+                .AddCertificate(options =>
                 {
-                    options.AllowedCertificateTypes = CertificateTypes.SelfSigned;
                     options.ValidateCertificateUse = false;
                     options.ChainTrustValidationMode = System.Security.Cryptography.X509Certificates.X509ChainTrustMode.CustomRootTrust;
-                    options.CustomTrustStore = new System.Security.Cryptography.X509Certificates.X509Certificate2Collection(c);
+                    options.CustomTrustStore.Add(new CertificateService().GetAllCertificatesAsync([]).Result.First());
+                    options.RevocationMode = X509RevocationMode.NoCheck;
 
                     options.Events = new CertificateAuthenticationEvents
                     {
                         OnCertificateValidated = async context =>
                         {
-                            //var serviceClient = context.HttpContext.RequestServices.GetRequiredService<Razmanager.Protobuf.Internal.Repository.SystemServices.Device.DeviceService.DeviceServiceClient>();
-                            //var authorizedResponse = await serviceClient.AuthorizedCertificateAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = context.ClientCertificate.Thumbprint });
-                            //if (authorizedResponse.Authorized)
-                            //{
-                                var claims = new[]
+                            var claims = new[]
                                 {
-                                    new Claim("deviceId", "123")
+                                    new Claim("deviceId",  context.ClientCertificate.SubjectName.EnumerateRelativeDistinguishedNames().Single()!.GetSingleElementValue()!)
                                 };
-                                context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
-                                context.Success();
-                            //}
-                            //else
-                            //{
-                            //    context.Fail($"Non-valid certificate: {context.ClientCertificate.Thumbprint}");
-                            //}
-                        }
+                            context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+                            context.Success();
+                        },
                     };
                 });
 
@@ -140,7 +136,7 @@ namespace RazManager.Device
                 options.Interceptors.Add<GrpcServerInterceptor>();
             });
 
-            builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Internal.Repository.DeviceServices.Device.DeviceService.DeviceServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
+            builder.Services.AddGrpcClientWithoutAuthentication<Razmanager.Protobuf.Internal.Repository.DeviceServices.Device.DeviceService.DeviceServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
 
             builder.UseOrleansClient(clientBuilder =>
             {
@@ -152,7 +148,6 @@ namespace RazManager.Device
                 {
                     return Task.FromResult(true);
                 });
-
 
                 clientBuilder.Services.AddSingleton<Orleans.Messaging.IGatewayListProvider, RazManager.Silo.Repository.Services.GatewayListProviderRepository>();
                 clientBuilder.Services.AddSingleton<Orleans.IMembershipTable, RazManager.Silo.Repository.Services.MembershipTableRepository>();
@@ -171,10 +166,10 @@ namespace RazManager.Device
                         npqsqlOptions.EnableRetryOnFailure();
                     }));
 
-
             var app = builder.Build();
 
             app.UseForwardedHeaders();
+            app.UseCertificateForwarding();
             app.UseAuthentication();
             app.UseAuthorization();
 

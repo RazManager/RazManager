@@ -33,7 +33,8 @@ namespace RazManager.Utilities.AspNetCoreGrpc
                     }
                     return Task.CompletedTask;
                 });
-                options.Credentials = ChannelCredentials.Create(new SslCredentials(), credentials);
+                options.Credentials = ChannelCredentials.Create(ChannelCredentials.Insecure, credentials);
+                options.UnsafeUseInsecureChannelCallCredentials = true;
                 options.MaxReceiveMessageSize = 10 * 1024 * 1024;
                 options.MaxSendMessageSize = 10 * 1024 * 1024;
             });

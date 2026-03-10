@@ -51,8 +51,6 @@ namespace RazManager.IO.Services.Commissioning
 
             using (var rsa = RSA.Create())
             {
-                //_settingsService.Settings.ClientId = id;
-                _settingsService.Settings.DeviceName = name;
                 _settingsService.Settings.KeyPem = rsa.ExportPkcs8PrivateKeyPem();
                 var certificateRequest = new CertificateRequest($"CN={id}", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                 certificateRequest.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0,false));

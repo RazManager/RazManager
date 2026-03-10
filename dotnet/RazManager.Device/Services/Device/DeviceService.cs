@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Razmanager.Protobuf.Public.V1;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace RazManager.Device.Services.Device
 {
-    //[Authorize]
+    [Authorize]
     public class DeviceService : Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceBase
     {
         private readonly Razmanager.Protobuf.Internal.Repository.DeviceServices.Device.DeviceService.DeviceServiceClient _serviceClient;
@@ -35,7 +36,14 @@ namespace RazManager.Device.Services.Device
         {
             try
             {
-                await _serviceClient.DeviceInformationAsync(request);
+                await _serviceClient.DeviceInformationAsync(
+                    new Razmanager.Protobuf.Internal.Repository.DeviceServices.Device.DeviceInformationRequest
+                    { 
+                        Id = _httpContextOptions.DeviceId.ToString(),
+                        DeviceInformation = request
+                    },
+                    null, null, context.CancellationToken);
+
                 foreach (var deviceConfiguration in request.DeviceConfigurations)
                 {
                     await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.DeviceConfiguration.IDeviceConfigurationGrain>(new Guid(deviceConfiguration.Id)).RefreshAsync();

@@ -104,11 +104,7 @@ namespace RazManager.IO.Services.ChronoLog
 
                 var certificate = _settingsService.Certificate;
 
-                var deviceInformation = new Razmanager.Protobuf.Public.V1.DeviceInformation
-                {
-                    Id = certificate.SubjectName.EnumerateRelativeDistinguishedNames().Single()!.GetSingleElementValue()!,
-                    Name = _settingsService.Settings.DeviceName
-                };
+                var deviceInformation = new Razmanager.Protobuf.Public.V1.DeviceInformation();
                 var deviceConfiguration = new Razmanager.Protobuf.Public.V1.DeviceConfiguration
                 {
                     Id = _settingsService.Settings.DeviceConfigurations.First().Id.ToString(),

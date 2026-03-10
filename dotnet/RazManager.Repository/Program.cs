@@ -9,34 +9,16 @@ using Microsoft.Extensions.Hosting;
 using RazManager.Repository.Utilities;
 using RazManager.Utilities.Grpc;
 using RazManager.Utilities.Host;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =>
 {
-    // SSL/TLS and a certificate is required when clients are using grpc.
-    // Otherwise, the client won't/can't send the credentials in the metadata header.
-    kestrelServerOptions.ListenAnyIP(5001, listenOptions =>
+    kestrelServerOptions.ListenAnyIP(8080, listenOptions =>
     {
         listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
-
-        using (var rsa = RSA.Create())
-        {
-            var now = DateTimeOffset.UtcNow;
-            var certificateRequest = new CertificateRequest("CN=RazManager", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            var certificate = certificateRequest.CreateSelfSigned(now, now.AddYears(50));
-
-            listenOptions.UseHttps(certificate, options =>
-            {
-                options.ClientCertificateMode = Microsoft.AspNetCore.Server.Kestrel.Https.ClientCertificateMode.AllowCertificate;
-                options.AllowAnyClientCertificate();
-            });
-        }
     });
 });
 
@@ -87,16 +69,19 @@ builder.Services.AddAuthentication()
     //    options.Audience = "admin_api";
     //    // In development, the client uses a different IdentityAuthority URL compared to the backend
     //    options.TokenValidationParameters.ValidateIssuer = builder.Environment.IsProduction();
-    //});
+    //})
 
-builder.Services.AddAuthorization(options =>
-{
-    options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        //.AddAuthenticationSchemes("app_api", "admin_api")
-        .AddAuthenticationSchemes("app_api")
-        .Build();
-});
+builder.Services.AddAuthorization();
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.DefaultPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+//        .RequireAuthenticatedUser()
+//        //.AddAuthenticationSchemes("app_api", "admin_api")
+//        //.AddAuthenticationSchemes("app_api", CertificateAuthenticationDefaults.AuthenticationScheme)
+//        .AddAuthenticationSchemes(CertificateAuthenticationDefaults.AuthenticationScheme)
+//        .Build();
+//});
 
 builder.Services.AddGrpc(options =>
 {
