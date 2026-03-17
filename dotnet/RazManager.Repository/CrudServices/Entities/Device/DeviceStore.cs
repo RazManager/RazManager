@@ -78,48 +78,51 @@ namespace RazManager.Repository.CrudServices.Entities.Device
 
         private void CreateUpdateMap(DeviceCreateUpdate proto, DeviceEntity entity)
         {
-            var deviceConfigurationProto = proto.DeviceConfigurations.First();
-
-            var deviceConfigurationEntity = entity.DeviceConfigurations.FirstOrDefault();
-            if (deviceConfigurationEntity is null)
+            if (entity.Simulated)
             {
-                deviceConfigurationEntity = new DeviceConfigurationEntity
+                var deviceConfigurationProto = proto.DeviceConfigurations.First();
+
+                var deviceConfigurationEntity = entity.DeviceConfigurations.FirstOrDefault();
+                if (deviceConfigurationEntity is null)
                 {
-                    Id = Guid.NewGuid(), 
-                    Name = "Simulated"
-                };
-                entity.DeviceConfigurations.Add(deviceConfigurationEntity);
-            }
+                    deviceConfigurationEntity = new DeviceConfigurationEntity
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = "Simulated"
+                    };
+                    entity.DeviceConfigurations.Add(deviceConfigurationEntity);
+                }
 
-            deviceConfigurationEntity.DeviceConfigurationInputs.RemoveAll(x => true);
-            foreach (var deviceConfigurationInputProto in deviceConfigurationProto.DeviceConfigurationInputs)
-            {
-                deviceConfigurationEntity.DeviceConfigurationInputs.Add(new Stores.Entities.DeviceConfigurationInput.DeviceConfigurationInputEntity
+                deviceConfigurationEntity.DeviceConfigurationInputs.RemoveAll(x => true);
+                foreach (var deviceConfigurationInputProto in deviceConfigurationProto.DeviceConfigurationInputs)
                 {
-                    DeviceConfigurationInputTypeId = deviceConfigurationInputProto.DeviceConfigurationInputTypeId,
-                    DeviceConfigurationInputId = deviceConfigurationInputProto.DeviceConfigurationInputId.HasValue ?  Convert.ToByte(deviceConfigurationInputProto.DeviceConfigurationInputId) : null
-                });
-            }
+                    deviceConfigurationEntity.DeviceConfigurationInputs.Add(new Stores.Entities.DeviceConfigurationInput.DeviceConfigurationInputEntity
+                    {
+                        DeviceConfigurationInputTypeId = deviceConfigurationInputProto.DeviceConfigurationInputTypeId,
+                        DeviceConfigurationInputId = deviceConfigurationInputProto.DeviceConfigurationInputId.HasValue ? Convert.ToByte(deviceConfigurationInputProto.DeviceConfigurationInputId) : null
+                    });
+                }
 
-            deviceConfigurationEntity.DeviceConfigurationOutputs.RemoveAll(x => true);
-            foreach (var deviceConfigurationOutputProto in deviceConfigurationProto.DeviceConfigurationOutputs)
-            {
-                deviceConfigurationEntity.DeviceConfigurationOutputs.Add(new Stores.Entities.DeviceConfigurationOutput.DeviceConfigurationOutputEntity
+                deviceConfigurationEntity.DeviceConfigurationOutputs.RemoveAll(x => true);
+                foreach (var deviceConfigurationOutputProto in deviceConfigurationProto.DeviceConfigurationOutputs)
                 {
-                    DeviceConfigurationOutputTypeId = deviceConfigurationOutputProto.DeviceConfigurationOutputTypeId,
-                    DeviceConfigurationOutputId = deviceConfigurationOutputProto.DeviceConfigurationOutputId.HasValue ? Convert.ToByte(deviceConfigurationOutputProto.DeviceConfigurationOutputId) : null
-                });
-            }
+                    deviceConfigurationEntity.DeviceConfigurationOutputs.Add(new Stores.Entities.DeviceConfigurationOutput.DeviceConfigurationOutputEntity
+                    {
+                        DeviceConfigurationOutputTypeId = deviceConfigurationOutputProto.DeviceConfigurationOutputTypeId,
+                        DeviceConfigurationOutputId = deviceConfigurationOutputProto.DeviceConfigurationOutputId.HasValue ? Convert.ToByte(deviceConfigurationOutputProto.DeviceConfigurationOutputId) : null
+                    });
+                }
 
-            deviceConfigurationEntity.DeviceConfigurationFeatures.RemoveAll(x => true);
-            if (deviceConfigurationProto.DeviceConfigurationInputs.Any(x => x.DeviceConfigurationInputTypeId == DeviceConfigurationInputTypeId.Sector1FinishIndicator))
-            {
-                deviceConfigurationEntity.DeviceConfigurationFeatures.Add(new() { DeviceConfigurationFeatureTypeId = DeviceConfigurationFeatureTypeId.Sector1 });
-                deviceConfigurationEntity.DeviceConfigurationFeatures.Add(new() { DeviceConfigurationFeatureTypeId = DeviceConfigurationFeatureTypeId.Sector2 });
-            }
-            if (deviceConfigurationProto.DeviceConfigurationInputs.Any(x => x.DeviceConfigurationInputTypeId == DeviceConfigurationInputTypeId.Sector2FinishIndicator))
-            {
-                deviceConfigurationEntity.DeviceConfigurationFeatures.Add(new() { DeviceConfigurationFeatureTypeId = DeviceConfigurationFeatureTypeId.Sector3 });
+                deviceConfigurationEntity.DeviceConfigurationFeatures.RemoveAll(x => true);
+                if (deviceConfigurationProto.DeviceConfigurationInputs.Any(x => x.DeviceConfigurationInputTypeId == DeviceConfigurationInputTypeId.Sector1FinishIndicator))
+                {
+                    deviceConfigurationEntity.DeviceConfigurationFeatures.Add(new() { DeviceConfigurationFeatureTypeId = DeviceConfigurationFeatureTypeId.Sector1 });
+                    deviceConfigurationEntity.DeviceConfigurationFeatures.Add(new() { DeviceConfigurationFeatureTypeId = DeviceConfigurationFeatureTypeId.Sector2 });
+                }
+                if (deviceConfigurationProto.DeviceConfigurationInputs.Any(x => x.DeviceConfigurationInputTypeId == DeviceConfigurationInputTypeId.Sector2FinishIndicator))
+                {
+                    deviceConfigurationEntity.DeviceConfigurationFeatures.Add(new() { DeviceConfigurationFeatureTypeId = DeviceConfigurationFeatureTypeId.Sector3 });
+                }
             }
         }
 
@@ -147,6 +150,11 @@ namespace RazManager.Repository.CrudServices.Entities.Device
 
             foreach(var deviceConfiguration in entity.DeviceConfigurations)
             {
+                if (await RepositoryDbContext.DeviceConfigurations.AnyAsync(x => x.DeviceId == deviceConfiguration.DeviceId && x.Id != entity.Id && x.Name == entity.Name))
+                {
+                    validationResults.Add(new ValidationResult(ExceptionMessages.DeviceConfigurationNameDuplicate));
+                }
+
                 foreach (var item in deviceConfiguration.DeviceConfigurationInputs
                     .Where(x => !x.DeviceConfigurationInputId.HasValue &&
                                   Constants.DeviceConfigurationInputTypes.First(t => t.DeviceConfigurationInputTypeId == x.DeviceConfigurationInputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.Required)))

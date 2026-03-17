@@ -150,8 +150,22 @@ final $typed_data.Uint8List deviceUpdateRequestDescriptor = $convert.base64Decod
 const DeviceConfigurationRead$json = {
   '1': 'DeviceConfigurationRead',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
-    {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
+    {
+      '1': 'id',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.StringValue',
+      '10': 'id'
+    },
+    {
+      '1': 'name',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.StringValue',
+      '10': 'name'
+    },
     {
       '1': 'device_configuration_inputs',
       '3': 3,
@@ -173,17 +187,19 @@ const DeviceConfigurationRead$json = {
 
 /// Descriptor for `DeviceConfigurationRead`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List deviceConfigurationReadDescriptor = $convert.base64Decode(
-    'ChdEZXZpY2VDb25maWd1cmF0aW9uUmVhZBIOCgJpZBgBIAEoCVICaWQSEgoEbmFtZRgCIAEoCV'
-    'IEbmFtZRJ9ChtkZXZpY2VfY29uZmlndXJhdGlvbl9pbnB1dHMYAyADKAsyPS5yYXptYW5hZ2Vy'
-    'LnByb3RvYnVmLnB1YmxpYy52MS5EZXZpY2VEZXZpY2VDb25maWd1cmF0aW9uSW5wdXRSGWRldm'
-    'ljZUNvbmZpZ3VyYXRpb25JbnB1dHMSgAEKHGRldmljZV9jb25maWd1cmF0aW9uX291dHB1dHMY'
-    'BCADKAsyPi5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5EZXZpY2VEZXZpY2VDb25maW'
-    'd1cmF0aW9uT3V0cHV0UhpkZXZpY2VDb25maWd1cmF0aW9uT3V0cHV0cw==');
+    'ChdEZXZpY2VDb25maWd1cmF0aW9uUmVhZBIsCgJpZBgBIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi'
+    '5TdHJpbmdWYWx1ZVICaWQSMAoEbmFtZRgCIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdW'
+    'YWx1ZVIEbmFtZRJ9ChtkZXZpY2VfY29uZmlndXJhdGlvbl9pbnB1dHMYAyADKAsyPS5yYXptYW'
+    '5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5EZXZpY2VEZXZpY2VDb25maWd1cmF0aW9uSW5wdXRS'
+    'GWRldmljZUNvbmZpZ3VyYXRpb25JbnB1dHMSgAEKHGRldmljZV9jb25maWd1cmF0aW9uX291dH'
+    'B1dHMYBCADKAsyPi5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5EZXZpY2VEZXZpY2VD'
+    'b25maWd1cmF0aW9uT3V0cHV0UhpkZXZpY2VDb25maWd1cmF0aW9uT3V0cHV0cw==');
 
 @$core.Deprecated('Use deviceConfigurationCreateUpdateDescriptor instead')
 const DeviceConfigurationCreateUpdate$json = {
   '1': 'DeviceConfigurationCreateUpdate',
   '2': [
+    {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {
       '1': 'device_configuration_inputs',
       '3': 3,
@@ -205,12 +221,12 @@ const DeviceConfigurationCreateUpdate$json = {
 
 /// Descriptor for `DeviceConfigurationCreateUpdate`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List deviceConfigurationCreateUpdateDescriptor = $convert.base64Decode(
-    'Ch9EZXZpY2VDb25maWd1cmF0aW9uQ3JlYXRlVXBkYXRlEn0KG2RldmljZV9jb25maWd1cmF0aW'
-    '9uX2lucHV0cxgDIAMoCzI9LnJhem1hbmFnZXIucHJvdG9idWYucHVibGljLnYxLkRldmljZURl'
-    'dmljZUNvbmZpZ3VyYXRpb25JbnB1dFIZZGV2aWNlQ29uZmlndXJhdGlvbklucHV0cxKAAQocZG'
-    'V2aWNlX2NvbmZpZ3VyYXRpb25fb3V0cHV0cxgEIAMoCzI+LnJhem1hbmFnZXIucHJvdG9idWYu'
-    'cHVibGljLnYxLkRldmljZURldmljZUNvbmZpZ3VyYXRpb25PdXRwdXRSGmRldmljZUNvbmZpZ3'
-    'VyYXRpb25PdXRwdXRz');
+    'Ch9EZXZpY2VDb25maWd1cmF0aW9uQ3JlYXRlVXBkYXRlEhIKBG5hbWUYAiABKAlSBG5hbWUSfQ'
+    'obZGV2aWNlX2NvbmZpZ3VyYXRpb25faW5wdXRzGAMgAygLMj0ucmF6bWFuYWdlci5wcm90b2J1'
+    'Zi5wdWJsaWMudjEuRGV2aWNlRGV2aWNlQ29uZmlndXJhdGlvbklucHV0UhlkZXZpY2VDb25maW'
+    'd1cmF0aW9uSW5wdXRzEoABChxkZXZpY2VfY29uZmlndXJhdGlvbl9vdXRwdXRzGAQgAygLMj4u'
+    'cmF6bWFuYWdlci5wcm90b2J1Zi5wdWJsaWMudjEuRGV2aWNlRGV2aWNlQ29uZmlndXJhdGlvbk'
+    '91dHB1dFIaZGV2aWNlQ29uZmlndXJhdGlvbk91dHB1dHM=');
 
 @$core.Deprecated('Use deviceListResponseDescriptor instead')
 const DeviceListResponse$json = {

@@ -11,11 +11,6 @@ package razmanager.protobuf.public.v1;
 
 
 service DeviceConfigurationService {
-  rpc DeviceConfigurationInputsPublish (stream DeviceConfigurationDeviceConfigurationInputs) returns (google.protobuf.Empty);
+  rpc DeviceConfigurationInputsPublish (public.v1.DeviceConfigurationInputs) returns (google.protobuf.Empty);
   rpc DeviceConfigurationOutputsSubscribe (google.protobuf.StringValue) returns (stream public.v1.DeviceConfigurationOutputs);
-}
-
-message DeviceConfigurationDeviceConfigurationInputs {
-  string id = 1;
-  public.v1.DeviceConfigurationInputs device_configuration_inputs = 2;
 }

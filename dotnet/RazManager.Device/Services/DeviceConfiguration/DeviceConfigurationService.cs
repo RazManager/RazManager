@@ -6,6 +6,7 @@ using Orleans;
 using Razmanager.Protobuf.Public.V1;
 using RazManager.Silo.Grains.Entities.DeviceConfiguration;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -27,23 +28,12 @@ namespace RazManager.Device.Services.DeviceConfiguration
         }
 
 
-        public override async Task<Empty> DeviceConfigurationInputsPublish(IAsyncStreamReader<DeviceConfigurationDeviceConfigurationInputs> requestStream, ServerCallContext context)
+        public override async Task<Empty> DeviceConfigurationInputsPublish(DeviceConfigurationInputs request, ServerCallContext context)
         {
-            try
-            {
-                await foreach (var deviceConfigurationDeviceConfigurationInputs in requestStream.ReadAllAsync(context.CancellationToken))
-                {
-                    await _clusterClient.GetGrain<IDeviceConfigurationGrain>(new Guid(deviceConfigurationDeviceConfigurationInputs.Id))
-                        .DeviceConfigurationInputsAsync(deviceConfigurationDeviceConfigurationInputs.DeviceConfigurationInputs, false);
-                }
-            }
-            catch (System.IO.IOException)
-            {
-            }
-            catch (System.OperationCanceledException)
-            {
-            }
+            var i = request.Items.FirstOrDefault();
 
+            await _clusterClient.GetGrain<IDeviceConfigurationGrain>(new Guid(i!.DeviceConfigurationId))
+                .DeviceConfigurationInputsAsync(request, false);
             return new Empty();
         }
     }

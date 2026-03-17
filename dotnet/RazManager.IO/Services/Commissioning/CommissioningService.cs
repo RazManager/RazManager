@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.Extensions.Hosting;
 using Razmanager.Protobuf.Internal.Io.Commissioning;
 using System;
 using System.Security.Cryptography;
@@ -68,7 +69,7 @@ namespace RazManager.IO.Services.Commissioning
         public override async Task<Empty> CertificateResponse(CommissioningCertificateResponse request, ServerCallContext context)
         {
             _settingsService.Settings.CertificatePem = request.CertificatePem;
-            await _settingsService.SaveAsync(true);
+            await _settingsService.SaveAsync();
             return new Empty();
         }
     }

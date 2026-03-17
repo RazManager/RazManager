@@ -50,14 +50,15 @@ message DeviceUpdateRequest {
 
 
 message DeviceConfigurationRead {
-  string id = 1;
-  string name = 2;
+  google.protobuf.StringValue id = 1;
+  google.protobuf.StringValue name = 2;
   repeated public.v1.DeviceDeviceConfigurationInput device_configuration_inputs = 3;
   repeated public.v1.DeviceDeviceConfigurationOutput device_configuration_outputs = 4;
 }
 
 
 message DeviceConfigurationCreateUpdate {
+  string name = 2;
   repeated public.v1.DeviceDeviceConfigurationInput device_configuration_inputs = 3;
   repeated public.v1.DeviceDeviceConfigurationOutput device_configuration_outputs = 4;
 }

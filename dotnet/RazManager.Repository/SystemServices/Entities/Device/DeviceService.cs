@@ -3,6 +3,7 @@ using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using Razmanager.Protobuf.Internal.Repository.SystemServices.Device;
 using RazManager.Utilities.Exceptions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,6 +40,23 @@ namespace RazManager.Repository.SystemServices.Entities.Device
             };
             result.DeviceConfigurationIds.AddRange(entity.DeviceConfigurations.Select(x => x.Id.ToString()));
             return result;
+        }
+
+
+        public override async Task<Empty> Update(DeviceUpdateRequest request, ServerCallContext context)
+        {
+            var entity = await _repositoryDbContext.Devices.AsTracking()
+                .SingleOrDefaultAsync(x => x.Id == new Guid(request.Id)).ConfigureAwait(false);
+            if (entity is null)
+            {
+                throw new NotFoundException();
+            }
+
+            entity.LastConnectedAt = request.LastConnectedAt.ToDateTime();
+
+            await _repositoryDbContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return new Empty();
         }
     }
 }

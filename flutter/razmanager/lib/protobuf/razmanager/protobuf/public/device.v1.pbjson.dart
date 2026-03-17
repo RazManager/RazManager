@@ -19,8 +19,6 @@ import 'dart:typed_data' as $typed_data;
 const DeviceInformation$json = {
   '1': 'DeviceInformation',
   '2': [
-    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
-    {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
     {
       '1': 'device_properties',
       '3': 3,
@@ -42,11 +40,10 @@ const DeviceInformation$json = {
 
 /// Descriptor for `DeviceInformation`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List deviceInformationDescriptor = $convert.base64Decode(
-    'ChFEZXZpY2VJbmZvcm1hdGlvbhIOCgJpZBgBIAEoCVICaWQSEgoEbmFtZRgCIAEoCVIEbmFtZR'
-    'JaChFkZXZpY2VfcHJvcGVydGllcxgDIAMoCzItLnJhem1hbmFnZXIucHJvdG9idWYucHVibGlj'
-    'LnYxLkRldmljZVByb3BlcnR5UhBkZXZpY2VQcm9wZXJ0aWVzEmcKFWRldmljZV9jb25maWd1cm'
-    'F0aW9ucxgEIAMoCzIyLnJhem1hbmFnZXIucHJvdG9idWYucHVibGljLnYxLkRldmljZUNvbmZp'
-    'Z3VyYXRpb25SFGRldmljZUNvbmZpZ3VyYXRpb25z');
+    'ChFEZXZpY2VJbmZvcm1hdGlvbhJaChFkZXZpY2VfcHJvcGVydGllcxgDIAMoCzItLnJhem1hbm'
+    'FnZXIucHJvdG9idWYucHVibGljLnYxLkRldmljZVByb3BlcnR5UhBkZXZpY2VQcm9wZXJ0aWVz'
+    'EmcKFWRldmljZV9jb25maWd1cmF0aW9ucxgEIAMoCzIyLnJhem1hbmFnZXIucHJvdG9idWYucH'
+    'VibGljLnYxLkRldmljZUNvbmZpZ3VyYXRpb25SFGRldmljZUNvbmZpZ3VyYXRpb25z');
 
 @$core.Deprecated('Use devicePropertyDescriptor instead')
 const DeviceProperty$json = {

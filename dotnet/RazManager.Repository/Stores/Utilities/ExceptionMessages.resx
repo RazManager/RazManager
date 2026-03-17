@@ -171,4 +171,7 @@
   <data name="UserAlreadySignedUp" xml:space="preserve">
     <value>This username has already signed up.</value>
   </data>
+  <data name="DeviceConfigurationNameDuplicate" xml:space="preserve">
+    <value>Two (or more) device configurations cannot have the same name.</value>
+  </data>
 </root>

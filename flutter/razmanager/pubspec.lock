@@ -313,10 +313,10 @@ packages:
     dependency: transitive
     description:
       name: hooks
-      sha256: "7a08a0d684cb3b8fb604b78455d5d352f502b68079f7b80b831c62220ab0a4f6"
+      sha256: e79ed1e8e1929bc6ecb6ec85f0cb519c887aa5b423705ded0d0f2d9226def388
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   http:
     dependency: "direct main"
     description:
@@ -505,10 +505,10 @@ packages:
     dependency: transitive
     description:
       name: native_toolchain_c
-      sha256: "89e83885ba09da5fdf2cdacc8002a712ca238c28b7f717910b34bcd27b0d03ac"
+      sha256: "92b2ca62c8bd2b8d2f267cdfccf9bfbdb7322f778f8f91b3ce5b5cda23a3899f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.4"
+    version: "0.17.5"
   nested:
     dependency: transitive
     description:
@@ -758,34 +758,34 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: f2ad24787d7d0e7f9ccdd0ba2961147a6ebbad8e6836969413af7f15c9754f1d
+      sha256: a7b7be133602bcffd6d6c13020a2869f2f5d0232835b1a15164a5bb57aab3868
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.8"
+    version: "32.2.9"
   syncfusion_flutter_core:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_core
-      sha256: "080c4a57f12cb03869c863f6b33fb170ce9653ac741281f11ff8e067dc96fe99"
+      sha256: "7699e129fc48dfdbb6ad7f8396eaddf5b8f06c649c5bfabdeee5a73dbaca845c"
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.8"
+    version: "32.2.9"
   syncfusion_flutter_datagrid:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_datagrid
-      sha256: "22251a0d8da40fd50eb8ce8bff4e08e513f7d2e7f8767c1b6a239203f900f2e5"
+      sha256: "21992f7e8754741dc1c08780a64fb276349e3f1e4212bf7856292e9fe9f44f7e"
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.8"
+    version: "32.2.9"
   syncfusion_flutter_gauges:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_gauges
-      sha256: "11ec00997cf37c5b02c00689b7083875f0f77561b43fbe760997eda30a321a99"
+      sha256: cfd145117d7db3890852780a080f959e389c5d4cd569a76669d3fe95c61a51c1
       url: "https://pub.dev"
     source: hosted
-    version: "32.2.8"
+    version: "32.2.9"
   synchronized:
     dependency: transitive
     description:

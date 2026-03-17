@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/device.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message DeviceRequest {
+  string id = 1;
+  string correlation_id = 2;
+  oneof value {
+    DeviceConnectionRequest device_connection_request = 3;
+    DeviceSystemInformationRequest device_system_information_request = 4;
+    DeviceSettingsReadRequest device_settings_read_request = 5;
+    DeviceSettingsUpsertRequest device_settings_upsert_request = 6;
+
+  }
+}
+
+message DeviceResponse {
+  string correlation_id = 2;
+  oneof value {
+    DeviceConnectionResponse device_connection_response = 3;
+    DeviceSystemInformationResponse device_system_information_response = 4;
+    DeviceSettingsResponse device_settings_response = 5;
+  }
+}
+
+
+message DeviceConnectionRequest {
+}
+
+message DeviceConnectionResponse {
+  bool connected = 1;
+}
+
+message DeviceSystemInformationRequest {
+}
+
+message DeviceSystemInformationResponse {
+  google.protobuf.StringValue hardware_model = 1;
+  google.protobuf.StringValue hardware_processor = 2;
+  google.protobuf.StringValue software_assembly_version = 3;
+  google.protobuf.StringValue software_snap_version = 4;
+  google.protobuf.StringValue software_dot_net_version = 5;
+  google.protobuf.StringValue software_os_version = 6;
+  google.protobuf.StringValue software_os_release_version = 7;
+  repeated string serial_port_names = 8;
+}
+
+
+message DeviceSettingsReadRequest {
+}
+
+message DeviceSettingsUpsertRequest {
+  DeviceSettings device_settings = 1;
+}
+
+message DeviceSettingsResponse {
+  DeviceSettings device_settings = 1;
+}
+
+
+message DeviceSettings {
+  repeated DeviceConfigurationSettings device_configuration_settings = 1;
+}
+
+
+message DeviceConfigurationSettings {
+  string id = 1;
+  string name = 2;
+  repeated DeviceIntegration device_integrations = 3;
+}
+
+
+enum DeviceIntegrationTypeId {
+  DEVICE_INTEGRATION_TYPE_ID_UNDEFINED = 0;
+  DEVICE_INTEGRATION_TYPE_ID_GPIO = 1;
+  DEVICE_INTEGRATION_TYPE_ID_OXIGEN = 2;
+  DEVICE_INTEGRATION_TYPE_ID_SCALEXTRIC_ARC = 3;
+  DEVICE_INTEGRATION_TYPE_ID_SCALEXTRIC_APB = 4;
+  DEVICE_INTEGRATION_TYPE_ID_SCALEXTRIC_PIT_PRO = 5;
+  DEVICE_INTEGRATION_TYPE_ID_PHILIPS_HUE = 6;
+  DEVICE_INTEGRATION_TYPE_ID_RGB = 7;
+  DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER = 8;
+}
+
+message DeviceIntegration {
+  oneof value {
+    DeviceIntegrationGpio device_integration_gpio = 1;
+    DeviceIntegrationOxigen device_integration_oxigen = 2;
+    DeviceIntegrationScalextricArc device_integration_scalextric_arc = 3;
+    DeviceIntegrationScalextricApb device_integration_scalextric_apb = 4;
+    DeviceIntegrationScalextricPitPro device_integration_scalextric_pit_pro = 5;
+    DeviceIntegrationPhilipsHue device_integration_philips_hue = 6;
+    DeviceIntegrationRgb device_integration_rgb = 7;
+    DeviceIntegrationLapMaster device_integration_lap_master = 8;
+  }
+}
+
+
+message DeviceIntegrationGpio {
+}
+
+
+message DeviceIntegrationOxigen {
+  string serial_port_name = 1;
+  OxigenTxPitlaneLapCountingTypeId oxigen_tx_pit_lane_lap_counting_type_id = 2;
+  OxigenTxPitlaneLapTriggerTypeId oxigen_tx_pit_lane_lap_trigger_type_id = 3;
+  OxigenRxLapTimesTypeId oxigen_rx_lap_times_type_id = 4;
+  uint32 max_controller_id = 5;
+}
+
+
+enum OxigenTxPitlaneLapCountingTypeId {
+  OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_ENABLED = 0;
+  OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_DISABLED = 1;
+}
+
+
+enum OxigenTxPitlaneLapTriggerTypeId {
+  OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_UNDEFINED = 0;
+  OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_ENTRY = 1;
+  OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_EXIT = 2;
+}
+
+enum OxigenRxLapTimesTypeId {
+  OXIGEN_RX_LAP_TIMES_TYPE_ID_CONTROLLER = 0;
+  OXIGEN_RX_LAP_TIMES_TYPE_ID_TIMER = 1;
+}
+
+
+message DeviceIntegrationScalextricArc {
+}
+
+
+message DeviceIntegrationScalextricApb {
+  string serial_port_name = 1;
+}
+
+
+message DeviceIntegrationScalextricPitPro {
+  string serial_port_name = 1;
+}
+
+
+message DeviceIntegrationPhilipsHue {
+}
+
+
+message DeviceIntegrationRgb {
+}
+
+
+message DeviceIntegrationLapMaster {
+  string serial_port_name = 1;
+  uint32 lanes = 2;
+}

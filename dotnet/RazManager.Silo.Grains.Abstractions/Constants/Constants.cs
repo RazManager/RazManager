@@ -16,6 +16,8 @@ namespace RazManager.Silo.Grains
             TrackConfigurationDeviceConfigurationInputs,
             DeviceConfigurationInputs,
             DeviceConfigurationOutputs,
+            DeviceRequest,
+            DeviceResponse,
             Event,
             EventState,
             EventSpeechTexts,

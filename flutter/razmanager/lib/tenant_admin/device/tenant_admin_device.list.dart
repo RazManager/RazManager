@@ -6,6 +6,7 @@ import '../../protobuf/razmanager/protobuf/internal/repository/crud_services/com
 import '../../protobuf/razmanager/protobuf/internal/repository/crud_services/device.pbgrpc.dart';
 import '../../refresh_model.dart';
 import '../../utilities/crud_master_list_base.dart';
+import '../../utilities/date_formatter.dart';
 
 class TenantAdminDeviceList extends StatefulWidget {
   const TenantAdminDeviceList({super.key});
@@ -25,7 +26,7 @@ class _TenantAdminDeviceListState extends CrudMasterListStateBase<DeviceList, Te
   }
 }
 
-class _TenantAdminDeviceListBody extends StatelessWidget {
+class _TenantAdminDeviceListBody extends StatelessWidget with DateFormatter {
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_TenantAdminDeviceListState>()!;
@@ -38,18 +39,27 @@ class _TenantAdminDeviceListBody extends StatelessWidget {
           itemBuilder: (context, index) {
             final item = state.items.elementAt(index);
             return ListTile(
-              leading: const Icon(Icons.devices_other, size: 40),
+              leading: !item.simulated ? const Icon(Icons.devices_other, size: 40) : const Icon(Icons.device_unknown, size: 40),
               title: Text(item.name),
-              subtitle: item.connected ? const Icon(Icons.link) : const Icon(Icons.link_off),
+              subtitle: !item.simulated
+                  ? Row(
+                      children: [
+                        item.connected ? const Icon(Icons.cloud) : const Icon(Icons.cloud_off),
+                        if (item.lastConnectedAt.hasSeconds()) ...[SizedBox(width: 16), Text(dateTimeFormat(item.lastConnectedAt.toDateTime(toLocal: true)))],
+                      ],
+                    )
+                  : null,
               trailing: IntrinsicWidth(
                 child: Row(
                   children: [
                     TextButton(
                       child: const Text('Edit'),
-                      onPressed: () => context.push('/tenant-admin/devices/io/${item.id}?etag=${item.etag}', extra: state.refreshItemsCallback),
+                      onPressed: () => !item.simulated
+                          ? context.push('/tenant-admin/devices/${item.id}?etag=${item.etag}', extra: state.refreshItemsCallback)
+                          : context.push('/tenant-admin/devices/${item.id}/simulated?etag=${item.etag}', extra: state.refreshItemsCallback),
                     ),
                     const SizedBox(width: 16),
-                    TextButton(child: const Text('Monitor'), onPressed: () => context.push('/tenant-admin/devices/io/${item.id}/view')),
+                    TextButton(child: const Text('Monitor'), onPressed: () => context.push('/tenant-admin/devices/${item.id}/view')),
                   ],
                 ),
               ),

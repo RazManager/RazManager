@@ -105,6 +105,10 @@
 			<Link>Protos/internal/repository/system_services/heat.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device.service.v1.proto" GrpcServices="Server">
+			<Link>Protos/public/device.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/event.service.v1.proto" GrpcServices="Server">
 			<Link>Protos/public/event.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
@@ -130,10 +134,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
-		<PackageReference Include="Azure.Identity" Version="1.18.0" />
+		<PackageReference Include="Azure.Identity" Version="1.19.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Orleans.Client" Version="10.0.1" />
 		<PackageReference Include="Microsoft.Orleans.Serialization.Protobuf" Version="10.0.1" />
 		<PackageReference Include="Microsoft.Orleans.Streaming" Version="10.0.1" />

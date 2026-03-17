@@ -24,14 +24,10 @@ export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
 class DeviceInformation extends $pb.GeneratedMessage {
   factory DeviceInformation({
-    $core.String? id,
-    $core.String? name,
     $core.Iterable<DeviceProperty>? deviceProperties,
     $core.Iterable<DeviceConfiguration>? deviceConfigurations,
   }) {
     final result = create();
-    if (id != null) result.id = id;
-    if (name != null) result.name = name;
     if (deviceProperties != null)
       result.deviceProperties.addAll(deviceProperties);
     if (deviceConfigurations != null)
@@ -53,8 +49,6 @@ class DeviceInformation extends $pb.GeneratedMessage {
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
-    ..aOS(2, _omitFieldNames ? '' : 'name')
     ..pPM<DeviceProperty>(3, _omitFieldNames ? '' : 'deviceProperties',
         subBuilder: DeviceProperty.create)
     ..pPM<DeviceConfiguration>(4, _omitFieldNames ? '' : 'deviceConfigurations',
@@ -80,29 +74,13 @@ class DeviceInformation extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<DeviceInformation>(create);
   static DeviceInformation? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearId() => $_clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get name => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set name($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasName() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearName() => $_clearField(2);
-
+  /// string id = 1;
+  /// string name = 2;
   @$pb.TagNumber(3)
-  $pb.PbList<DeviceProperty> get deviceProperties => $_getList(2);
+  $pb.PbList<DeviceProperty> get deviceProperties => $_getList(0);
 
   @$pb.TagNumber(4)
-  $pb.PbList<DeviceConfiguration> get deviceConfigurations => $_getList(3);
+  $pb.PbList<DeviceConfiguration> get deviceConfigurations => $_getList(1);
 }
 
 class DeviceProperty extends $pb.GeneratedMessage {

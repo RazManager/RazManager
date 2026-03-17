@@ -21,6 +21,7 @@ import 'tenant_admin/car/tenant_admin_car.list.dart';
 import 'tenant_admin/car_tag/tenant_admin_car_tag.detail.dart';
 import 'tenant_admin/car_tag/tenant_admin_car_tag.list.dart';
 import 'tenant_admin/device/tenant_admin_device.add.dart';
+import 'tenant_admin/device/tenant_admin_device.detail.dart';
 import 'tenant_admin/device/tenant_admin_device_io_simulated.detail.dart';
 import 'tenant_admin/device/tenant_admin_device.list.dart';
 import 'tenant_admin/device/tenant_admin_device_io_simulated.view.dart';
@@ -151,7 +152,18 @@ final router = GoRouter(
           ),
         ),
         GoRoute(
-          path: 'io/:id',
+          path: ':id',
+          pageBuilder: (context, state) => NoTransitionPage<void>(
+            key: state.pageKey,
+            child: TenantAdminDeviceDetail(
+              id: state.pathParameters['id']!,
+              oldEtag: state.uri.queryParameters['etag'],
+              refreshItems: state.extra as AsyncCallback,
+            ),
+          ),
+        ),
+        GoRoute(
+          path: ':id/simulated',
           pageBuilder: (context, state) => NoTransitionPage<void>(
             key: state.pageKey,
             child: TenantAdminDeviceIoSimulatedDetail(
@@ -162,7 +174,7 @@ final router = GoRouter(
           ),
         ),
         GoRoute(
-          path: 'io/:id/view',
+          path: ':id/view',
           pageBuilder: (context, state) => NoTransitionPage<void>(
             key: state.pageKey,
             child: TenantAdminDeviceIoSimulatedView(id: state.pathParameters['id']!),

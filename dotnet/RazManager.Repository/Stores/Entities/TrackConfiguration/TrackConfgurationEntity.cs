@@ -29,18 +29,18 @@ namespace RazManager.Repository.Stores.Entities.TrackConfiguration
         public short LaptimeMaxSeconds { get; set; } = 30;
 
         [Required]
-        public List<TrackConfigurationDeviceConfiguration.TrackConfigurationDeviceConfigurationEntity> TrackConfigurationDeviceConfigurations { get; set; } = new();
+        public List<TrackConfigurationDeviceConfiguration.TrackConfigurationDeviceConfigurationEntity> TrackConfigurationDeviceConfigurations { get; set; } = [];
 
         [Required]
-        public List<TrackConfigurationRaceFormat.TrackConfigurationRaceFormatEntity> TrackConfigurationRaceFormats { get; set; } = new();
+        public List<TrackConfigurationRaceFormat.TrackConfigurationRaceFormatEntity> TrackConfigurationRaceFormats { get; set; } = [];
 
         [Required]
-        public List<TrackConfigurationIndicator.TrackConfigurationIndicatorEntity> TrackConfigurationIndicators { get; set; } = new();
+        public List<TrackConfigurationIndicator.TrackConfigurationIndicatorEntity> TrackConfigurationIndicators { get; set; } = [];
 
         //[Required]
         //public List<CarTrackConfiguration.CarTrackConfigurationEntity> CarTrackConfigurations { get; set; } = new();
 
         [Required]
-        public List<Race.RaceEntity> Races { get; set; } = new();
+        public List<Race.RaceEntity> Races { get; set; } = [];
     }
 }

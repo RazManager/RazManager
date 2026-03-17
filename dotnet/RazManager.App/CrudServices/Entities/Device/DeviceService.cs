@@ -59,7 +59,14 @@ namespace RazManager.App.CrudServices.Entities.Device
 
         public override async Task<DeviceListResponse> List(ListRequest request, ServerCallContext context)
         {
-            return await _serviceClient.ListAsync(request);
+            var response = await _serviceClient.ListAsync(request);
+
+            foreach (var item in response.Result)
+            {
+                item.Connected = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Device.IDeviceGrain>(new Guid(item.Id)).ConnectedReadAsync();
+            }
+
+            return response;
         }
 
 

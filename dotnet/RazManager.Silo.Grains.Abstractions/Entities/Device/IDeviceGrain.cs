@@ -9,7 +9,9 @@ namespace RazManager.Silo.Grains.Entities.Device
     {
         //Task DeviceInformationAsync(DeviceInformation deviceInformation);
         Task RefreshAsync();
-        //Task ConnectedAsync();
-        //Task DisconnectedAsync();
+        Task<bool> ConnectedReadAsync();
+        Task ConnectedUpdateAsync(bool connected);
+        Task DeviceRequestAsync(DeviceRequest deviceRequest);
+        Task DeviceResponseAsync(DeviceResponse deviceResponse);
     }
 }

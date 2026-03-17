@@ -14,19 +14,14 @@ import '../../utilities/color_definition_field.dart';
 import '../../utilities/crud_master_detail_base.dart';
 
 class TenantAdminTrackDetail extends CrudMasterDetailBase {
-  const TenantAdminTrackDetail(
-      {super.key,
-      required super.id,
-      required super.oldEtag,
-      required super.refreshItems});
+  const TenantAdminTrackDetail({super.key, required super.id, required super.oldEtag, required super.refreshItems});
 
   @override
   State createState() => _TenantAdminTrackDetailState();
 }
 
 class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> {
-  _TenantAdminTrackDetailState()
-      : super(header: 'Track', child: _TenantAdminTrackDetailBody());
+  _TenantAdminTrackDetailState() : super(header: 'Track', child: _TenantAdminTrackDetailBody());
 
   late Iterable<DeviceConfigurationSelect> deviceConfigurations;
   late Iterable<RaceFormatTypeSelect> raceFormatTypes;
@@ -41,18 +36,11 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
   Future<TrackRead> initialize() async {
     final futures = <Future>[];
     futures.add(client().initialize(Empty()));
-    futures.add(DeviceConfigurationServiceClient(clientChannel!,
-            options: callOptionsFromContext(context))
-        .select(Empty()));
-    futures.add(RaceFormatTypeServiceClient(clientChannel!,
-            options: callOptionsFromContext(context))
-        .select(Empty()));
-    futures.add(TrackConfigurationServiceClient(clientChannel!,
-            options: callOptionsFromContext(context))
-        .initialize(Empty()));
+    futures.add(DeviceConfigurationServiceClient(clientChannel!, options: callOptionsFromContext(context)).select(Empty()));
+    futures.add(RaceFormatTypeServiceClient(clientChannel!, options: callOptionsFromContext(context)).select(Empty()));
+    futures.add(TrackConfigurationServiceClient(clientChannel!, options: callOptionsFromContext(context)).initialize(Empty()));
     var response = await Future.wait(futures);
-    deviceConfigurations =
-        (response[1] as DeviceConfigurationSelectResponse).result;
+    deviceConfigurations = (response[1] as DeviceConfigurationSelectResponse).result;
     raceFormatTypes = (response[2] as RaceFormatTypeSelectResponse).result;
     trackConfigurationInitialize = response[3];
 
@@ -63,18 +51,11 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
   Future read(id) async {
     final futures = <Future>[];
     futures.add(client().read(IdRequest(id: id)));
-    futures.add(DeviceConfigurationServiceClient(clientChannel!,
-            options: callOptionsFromContext(context))
-        .select(Empty()));
-    futures.add(RaceFormatTypeServiceClient(clientChannel!,
-            options: callOptionsFromContext(context))
-        .select(Empty()));
-    futures.add(TrackConfigurationServiceClient(clientChannel!,
-            options: callOptionsFromContext(context))
-        .initialize(Empty()));
+    futures.add(DeviceConfigurationServiceClient(clientChannel!, options: callOptionsFromContext(context)).select(Empty()));
+    futures.add(RaceFormatTypeServiceClient(clientChannel!, options: callOptionsFromContext(context)).select(Empty()));
+    futures.add(TrackConfigurationServiceClient(clientChannel!, options: callOptionsFromContext(context)).initialize(Empty()));
     var response = await Future.wait(futures);
-    deviceConfigurations =
-        (response[1] as DeviceConfigurationSelectResponse).result;
+    deviceConfigurations = (response[1] as DeviceConfigurationSelectResponse).result;
     raceFormatTypes = (response[2] as RaceFormatTypeSelectResponse).result;
     trackConfigurationInitialize = response[3];
 
@@ -88,47 +69,33 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
       description: StringValue(value: formGroup.control('description').value),
     );
 
-    final trackConfigurationFormArray =
-        formGroup.control('trackConfigurations') as FormArray;
+    final trackConfigurationFormArray = formGroup.control('trackConfigurations') as FormArray;
     trackConfigurationFormArray.forEachChild((trackConfigurationFormGroup) {
       final trackConfigurationFg = trackConfigurationFormGroup as FormGroup;
 
       final trackdeviceConfigurationProto = TrackConfigurationReadCreateUpdate(
-        id: trackConfigurationFg.control('id').value == null
-            ? null
-            : StringValue(value: trackConfigurationFg.control('id').value),
+        id: trackConfigurationFg.control('id').value == null ? null : StringValue(value: trackConfigurationFg.control('id').value),
         name: StringValue(value: trackConfigurationFg.control('name').value),
-        laptimeMinSeconds:
-            trackConfigurationFg.control('laptimeMinSeconds').value,
-        laptimeMaxSeconds:
-            trackConfigurationFg.control('laptimeMaxSeconds').value,
+        laptimeMinSeconds: trackConfigurationFg.control('laptimeMinSeconds').value,
+        laptimeMaxSeconds: trackConfigurationFg.control('laptimeMaxSeconds').value,
       );
 
-      final deviceConfigurationList =
-          trackConfigurationFg.value['deviceConfigurations'] as List;
-      for (final deviceConfiguration
-          in deviceConfigurationList.where((x) => x['selected'])) {
-        trackdeviceConfigurationProto.deviceConfigurationIds
-            .add(deviceConfiguration['id']);
+      final deviceConfigurationList = trackConfigurationFg.value['deviceConfigurations'] as List;
+      for (final deviceConfiguration in deviceConfigurationList.where((x) => x['selected'])) {
+        trackdeviceConfigurationProto.deviceConfigurationIds.add(deviceConfiguration['id']);
       }
 
-      final raceFormatTypeList =
-          trackConfigurationFg.value['raceFormatTypes'] as List;
-      for (final raceFormatType
-          in raceFormatTypeList.where((x) => x['selected'])) {
-        trackdeviceConfigurationProto.raceFormatTypeIds
-            .add(raceFormatType['id']);
+      final raceFormatTypeList = trackConfigurationFg.value['raceFormatTypes'] as List;
+      for (final raceFormatType in raceFormatTypeList.where((x) => x['selected'])) {
+        trackdeviceConfigurationProto.raceFormatTypeIds.add(raceFormatType['id']);
       }
 
-      final trackConfigurationIndicatorsArray = trackConfigurationFg
-          .control('trackConfigurationIndicators') as FormArray;
+      final trackConfigurationIndicatorsArray = trackConfigurationFg.control('trackConfigurationIndicators') as FormArray;
       trackConfigurationIndicatorsArray.forEachChild((formGroup) {
         final fg = formGroup as FormGroup;
-        trackdeviceConfigurationProto.trackConfigurationIndicators
-            .add(TrackConfigurationIndicatorReadCreateUpdate(
-          indicatorId: fg.control('indicatorId').value,
-          color: fg.control('color').value,
-        ));
+        trackdeviceConfigurationProto.trackConfigurationIndicators.add(
+          TrackConfigurationIndicatorReadCreateUpdate(indicatorId: fg.control('indicatorId').value, color: fg.control('color').value),
+        );
       });
 
       proto.trackConfigurations.add(trackdeviceConfigurationProto);
@@ -137,8 +104,7 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
     if (add) {
       await client().create(proto);
     } else {
-      await client()
-          .update(TrackUpdateRequest(id: id, entity: proto, etag: etag));
+      await client().update(TrackUpdateRequest(id: id, entity: proto, etag: etag));
     }
   }
 
@@ -150,13 +116,8 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
   @override
   Future<void> createFormGroup(readProto) async {
     formGroup = FormGroup({
-      'name': FormControl<String?>(
-          value: readProto.name.hasValue() ? readProto.name.value : null,
-          validators: [Validators.required]),
-      'description': FormControl<String?>(
-          value: readProto.description.hasValue()
-              ? readProto.description.value
-              : null),
+      'name': FormControl<String?>(value: readProto.name.hasValue() ? readProto.name.value : null, validators: [Validators.required]),
+      'description': FormControl<String?>(value: readProto.description.hasValue() ? readProto.description.value : null),
       'trackConfigurations': FormArray([]),
     });
 
@@ -165,73 +126,54 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
     }
   }
 
-  void trackConfigurationAddFormGroup(
-      TrackConfigurationReadCreateUpdate trackConfigurationProto,
-      bool markAsDirty) {
-    final trackConfigurationArray =
-        formGroup.control('trackConfigurations') as FormArray;
+  void trackConfigurationAddFormGroup(TrackConfigurationReadCreateUpdate trackConfigurationProto, bool markAsDirty) {
+    final trackConfigurationArray = formGroup.control('trackConfigurations') as FormArray;
     final trackConfigurationFg = FormGroup({
-      'id': FormControl<String?>(
-          value: trackConfigurationProto.id.hasValue()
-              ? trackConfigurationProto.id.value
-              : null),
+      'id': FormControl<String?>(value: trackConfigurationProto.id.hasValue() ? trackConfigurationProto.id.value : null),
       'name': FormControl<String?>(
-          value: trackConfigurationProto.name.hasValue()
-              ? trackConfigurationProto.name.value
-              : null,
-          validators: [Validators.required]),
-      'laptimeMinSeconds': FormControl<int>(
-          value: trackConfigurationProto.laptimeMinSeconds,
-          validators: [Validators.required]),
-      'laptimeMaxSeconds': FormControl<int>(
-          value: trackConfigurationProto.laptimeMaxSeconds,
-          validators: [Validators.required]),
+        value: trackConfigurationProto.name.hasValue() ? trackConfigurationProto.name.value : null,
+        validators: [Validators.required],
+      ),
+      'laptimeMinSeconds': FormControl<int>(value: trackConfigurationProto.laptimeMinSeconds, validators: [Validators.required]),
+      'laptimeMaxSeconds': FormControl<int>(value: trackConfigurationProto.laptimeMaxSeconds, validators: [Validators.required]),
       'deviceConfigurations': FormArray([]),
       'raceFormatTypes': FormArray([]),
       'trackConfigurationIndicators': FormArray([]),
     });
     trackConfigurationArray.add(trackConfigurationFg);
 
-    final deviceConfigurationsArray =
-        trackConfigurationFg.control('deviceConfigurations') as FormArray;
+    final deviceConfigurationsArray = trackConfigurationFg.control('deviceConfigurations') as FormArray;
     if (deviceConfigurations.isNotEmpty) {
       for (final deviceConfiguration in deviceConfigurations) {
-        deviceConfigurationsArray.add(FormGroup({
-          'id': FormControl<String>(value: deviceConfiguration.id),
-          'name': FormControl<String>(
-              value:
-                  "${deviceConfiguration.device.name} - ${deviceConfiguration.name}"),
-          'selected': FormControl<bool>(
-              value: trackConfigurationProto.deviceConfigurationIds
-                  .contains(deviceConfiguration.id))
-        }));
+        deviceConfigurationsArray.add(
+          FormGroup({
+            'id': FormControl<String>(value: deviceConfiguration.id),
+            'name': FormControl<String>(value: "${deviceConfiguration.device.name} - ${deviceConfiguration.name}"),
+            'selected': FormControl<bool>(value: trackConfigurationProto.deviceConfigurationIds.contains(deviceConfiguration.id)),
+          }),
+        );
       }
     }
 
-    final raceFormatTypesArray =
-        trackConfigurationFg.control('raceFormatTypes') as FormArray;
+    final raceFormatTypesArray = trackConfigurationFg.control('raceFormatTypes') as FormArray;
     for (final raceFormatType in raceFormatTypes) {
-      raceFormatTypesArray.add(FormGroup({
-        'id': FormControl<RaceFormatTypeId>(value: raceFormatType.id),
-        'name': FormControl<String>(value: raceFormatType.name),
-        'selected': FormControl<bool>(
-            value: trackConfigurationProto.raceFormatTypeIds
-                .contains(raceFormatType.id))
-      }));
+      raceFormatTypesArray.add(
+        FormGroup({
+          'id': FormControl<RaceFormatTypeId>(value: raceFormatType.id),
+          'name': FormControl<String>(value: raceFormatType.name),
+          'selected': FormControl<bool>(value: trackConfigurationProto.raceFormatTypeIds.contains(raceFormatType.id)),
+        }),
+      );
     }
 
-    final trackConfigurationIndicatorsArray = trackConfigurationFg
-        .control('trackConfigurationIndicators') as FormArray;
-    for (final trackConfigurationIndicatorProto
-        in trackConfigurationProto.trackConfigurationIndicators) {
-      trackConfigurationIndicatorsArray.add(FormGroup({
-        'indicatorId': FormControl<int>(
-            value: trackConfigurationIndicatorProto.indicatorId,
-            validators: [Validators.required]),
-        'color': FormControl<int>(
-            value: trackConfigurationIndicatorProto.color,
-            validators: [Validators.required])
-      }));
+    final trackConfigurationIndicatorsArray = trackConfigurationFg.control('trackConfigurationIndicators') as FormArray;
+    for (final trackConfigurationIndicatorProto in trackConfigurationProto.trackConfigurationIndicators) {
+      trackConfigurationIndicatorsArray.add(
+        FormGroup({
+          'indicatorId': FormControl<int>(value: trackConfigurationIndicatorProto.indicatorId, validators: [Validators.required]),
+          'color': FormControl<int>(value: trackConfigurationIndicatorProto.color, validators: [Validators.required]),
+        }),
+      );
     }
 
     if (markAsDirty) {
@@ -240,8 +182,7 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
   }
 
   void trackConfigurationDelete(FormGroup trackConfigurationFormGroup) {
-    final trackConfigurationArray =
-        formGroup.control('trackConfigurations') as FormArray;
+    final trackConfigurationArray = formGroup.control('trackConfigurations') as FormArray;
     trackConfigurationArray.remove(trackConfigurationFormGroup);
     trackConfigurationArray.markAsDirty();
   }
@@ -249,14 +190,13 @@ class _TenantAdminTrackDetailState extends CrudMasterDetailStateBase<TrackRead> 
   void trackConfigurationIndicatorAdd(FormArray formArray) {
     final fg = FormGroup({
       'indicatorId': FormControl<int>(validators: [Validators.required]),
-      'color': FormControl<int>(validators: [Validators.required])
+      'color': FormControl<int>(validators: [Validators.required]),
     });
     formArray.add(fg);
     fg.markAsDirty();
   }
 
-  void trackConfigurationIndicatorDelete(
-      FormArray formArray, FormGroup trackConfigurationIndicatorFormGroup) {
+  void trackConfigurationIndicatorDelete(FormArray formArray, FormGroup trackConfigurationIndicatorFormGroup) {
     formArray.remove(trackConfigurationIndicatorFormGroup);
     formArray.markAsDirty();
   }
@@ -266,42 +206,39 @@ class _TenantAdminTrackDetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_TenantAdminTrackDetailState>()!;
-    final trackConfigurationArray =
-        state.formGroup.control('trackConfigurations') as FormArray;
+    final trackConfigurationArray = state.formGroup.control('trackConfigurations') as FormArray;
     return StatefulBuilder(
-      builder: (BuildContext context, StateSetter setState) =>
-          DefaultTabController(
+      builder: (BuildContext context, StateSetter setState) => DefaultTabController(
         length: 1 + trackConfigurationArray.controls.length,
         child: Scaffold(
           appBar: AppBar(
             title: Text(state.header),
             flexibleSpace: const AppProgressIndicator(),
-            bottom: TabBar(isScrollable: true, tabs: [
-              Tab(text: state.header),
-              ...trackConfigurationArray.controls
-                  .map((trackConfigurationFormGroup) {
-                final fg = trackConfigurationFormGroup as FormGroup;
-                final name = fg.control('name').value;
-                return Tab(text: name ?? "New track configuration");
-              })
-            ]),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: [
+                Tab(text: state.header),
+                ...trackConfigurationArray.controls.map((trackConfigurationFormGroup) {
+                  final fg = trackConfigurationFormGroup as FormGroup;
+                  final name = fg.control('name').value;
+                  return Tab(text: name ?? "New track configuration");
+                }),
+              ],
+            ),
           ),
           body: TabBarView(
             children: [
               SingleChildScrollView(
-                child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: _TenantAdminTrackDetailBodyMain()),
+                child: Padding(padding: const EdgeInsets.all(16), child: _TenantAdminTrackDetailBodyMain()),
               ),
               ...trackConfigurationArray.controls.map(
                 (trackConfigurationFormGroup) => Stack(
                   children: [
                     SingleChildScrollView(
                       child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: _TenantAdminTrackConfigurationBody(
-                              formGroup:
-                                  trackConfigurationFormGroup as FormGroup)),
+                        padding: const EdgeInsets.all(16),
+                        child: _TenantAdminTrackConfigurationBody(formGroup: trackConfigurationFormGroup as FormGroup),
+                      ),
                     ),
                     Positioned(
                       bottom: 0,
@@ -309,33 +246,32 @@ class _TenantAdminTrackDetailBody extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: FilledButton.tonalIcon(
-                            icon: const Icon(Icons.delete),
-                            label: const Text('Delete track configuration'),
-                            onPressed: () => setState(() =>
-                                state.trackConfigurationDelete(
-                                    trackConfigurationFormGroup))),
+                          icon: const Icon(Icons.delete),
+                          label: const Text('Delete track configuration'),
+                          onPressed: () => setState(() => state.trackConfigurationDelete(trackConfigurationFormGroup)),
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           bottomNavigationBar: ReactiveFormBottomAppBar(
             widgets: [
               const SizedBox(width: 16),
               FilledButton.tonalIcon(
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add track configuration'),
-                  onPressed: () {
-                    state.tabBarAdded = true;
-                    // state.trackConfigurationAddFormGroup(state.trackConfigurationInitialize, true);
-                    // setState(() {});
+                icon: const Icon(Icons.add),
+                label: const Text('Add track configuration'),
+                onPressed: () {
+                  state.tabBarAdded = true;
+                  // state.trackConfigurationAddFormGroup(state.trackConfigurationInitialize, true);
+                  // setState(() {});
 
-                    //DefaultTabController.of(context).animateTo(1);
-                    setState(() => state.trackConfigurationAddFormGroup(
-                        state.trackConfigurationInitialize, true));
-                  })
+                  //DefaultTabController.of(context).animateTo(1);
+                  setState(() => state.trackConfigurationAddFormGroup(state.trackConfigurationInitialize, true));
+                },
+              ),
             ],
           ),
         ),
@@ -356,9 +292,7 @@ class _TenantAdminTrackDetailBodyMain extends StatelessWidget {
             formControlName: 'name',
             maxLength: 100,
             textCapitalization: TextCapitalization.sentences,
-            validationMessages: {
-              ValidationMessage.required: (error) => 'Please enter a name.'
-            },
+            validationMessages: {ValidationMessage.required: (error) => 'Please enter a name.'},
           ),
         ),
         ReactiveTextField<String?>(
@@ -393,9 +327,7 @@ class _TenantAdminTrackConfigurationBody extends StatelessWidget {
               formControlName: 'name',
               maxLength: 100,
               textCapitalization: TextCapitalization.sentences,
-              validationMessages: {
-                ValidationMessage.required: (error) => 'Please enter a name.'
-              },
+              validationMessages: {ValidationMessage.required: (error) => 'Please enter a name.'},
               decoration: const InputDecoration(labelText: "Name *"),
             ),
           ),
@@ -407,11 +339,11 @@ class _TenantAdminTrackConfigurationBody extends StatelessWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               maxLength: 2,
               decoration: const InputDecoration(
-                  counterText: "",
-                  labelText: 'Min lap time (s) *',
-                  helperMaxLines: 3,
-                  helperText:
-                      'Laps with lap times less than this value can be used to detect false lap counting'),
+                counterText: "",
+                labelText: 'Min lap time (s) *',
+                helperMaxLines: 3,
+                helperText: 'Laps with lap times less than this value can be used to detect false lap counting',
+              ),
             ),
           ),
           ConstrainedBox(
@@ -422,55 +354,58 @@ class _TenantAdminTrackConfigurationBody extends StatelessWidget {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               maxLength: 3,
               decoration: const InputDecoration(
-                  counterText: "",
-                  labelText: 'Max lap time (s) *',
-                  helperMaxLines: 2,
-                  helperText:
-                      'The max lap time is used as a time-out when a heat ends and not all cars have crossed the finish line'),
+                counterText: "",
+                labelText: 'Max lap time (s) *',
+                helperMaxLines: 2,
+                helperText: 'The max lap time is used as a time-out when a heat ends and not all cars have crossed the finish line',
+              ),
             ),
           ),
-          Text('Device configurations',
-              style: Theme.of(context).textTheme.bodyLarge),
+          Text('Device configurations', style: Theme.of(context).textTheme.bodyLarge),
           if (state.deviceConfigurations.isEmpty)
             const Text('(No device configurations defined)')
           else
             ReactiveFormArray(
-                formArrayName: 'deviceConfigurations',
-                builder: (context, formArray, child) {
-                  final children = <Widget>[];
-                  formArray.forEachChild((formGroup) {
-                    final fg = formGroup as FormGroup;
-                    children.add(
-                      ReactiveForm(
-                        formGroup: fg,
-                        child: ReactiveCheckboxListTile(
-                          formControlName: 'selected',
-                          controlAffinity: ListTileControlAffinity.leading,
-                          title: Text(fg.control('name').value,
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                      ),
-                    );
-                  });
-                  return Column(children: children);
-                }),
-          Text('Race formats', style: Theme.of(context).textTheme.bodyLarge),
-          ReactiveFormArray(
-              formArrayName: 'raceFormatTypes',
+              formArrayName: 'deviceConfigurations',
               builder: (context, formArray, child) {
                 final children = <Widget>[];
                 formArray.forEachChild((formGroup) {
                   final fg = formGroup as FormGroup;
-                  children.add(ReactiveForm(
+                  children.add(
+                    ReactiveForm(
                       formGroup: fg,
                       child: ReactiveCheckboxListTile(
-                          formControlName: 'selected',
-                          controlAffinity: ListTileControlAffinity.leading,
-                          title: Text(fg.control('name').value,
-                              overflow: TextOverflow.ellipsis))));
+                        formControlName: 'selected',
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title: Text(fg.control('name').value, overflow: TextOverflow.ellipsis),
+                      ),
+                    ),
+                  );
                 });
                 return Column(children: children);
-              }),
+              },
+            ),
+          Text('Race formats', style: Theme.of(context).textTheme.bodyLarge),
+          ReactiveFormArray(
+            formArrayName: 'raceFormatTypes',
+            builder: (context, formArray, child) {
+              final children = <Widget>[];
+              formArray.forEachChild((formGroup) {
+                final fg = formGroup as FormGroup;
+                children.add(
+                  ReactiveForm(
+                    formGroup: fg,
+                    child: ReactiveCheckboxListTile(
+                      formControlName: 'selected',
+                      controlAffinity: ListTileControlAffinity.leading,
+                      title: Text(fg.control('name').value, overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                );
+              });
+              return Column(children: children);
+            },
+          ),
           _TenantAdminTrackConfigurationIndicator(),
         ],
       ),
@@ -483,60 +418,53 @@ class _TenantAdminTrackConfigurationIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.findAncestorStateOfType<_TenantAdminTrackDetailState>()!;
     return ReactiveFormArray(
-        formArrayName: 'trackConfigurationIndicators',
-        builder: (context, formArray, child) {
-          final children = <Widget>[];
-          children.add(trackConfigurationIndicatorRow(
-              indicator: const Text('Indicator#'), color: const Text('Color')));
-          formArray.forEachChild((formGroup) {
-            final fg = formGroup as FormGroup;
-            children.add(
-              ReactiveForm(
-                key: UniqueKey(),
-                formGroup: fg,
-                child: trackConfigurationIndicatorRow(
-                  indicator: ReactiveTextField<int>(
-                      formControlName: 'indicatorId',
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      maxLength: 2,
-                      textAlign: TextAlign.end,
-                      decoration: const InputDecoration(
-                        counterText: '',
-                      ),
-                      validationMessages: {
-                        ValidationMessage.required: (error) =>
-                            'Please enter an indicator#.'
-                      }),
-                  color: ColorDefinitionField(
-                      formGroup: fg, formControlName: 'color', required: true,),
-                  delete: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => state.trackConfigurationIndicatorDelete(
-                          formArray, fg)),
+      formArrayName: 'trackConfigurationIndicators',
+      builder: (context, formArray, child) {
+        final children = <Widget>[];
+        children.add(trackConfigurationIndicatorRow(indicator: const Text('Indicator#'), color: const Text('Color')));
+        formArray.forEachChild((formGroup) {
+          final fg = formGroup as FormGroup;
+          children.add(
+            ReactiveForm(
+              key: UniqueKey(),
+              formGroup: fg,
+              child: trackConfigurationIndicatorRow(
+                indicator: ReactiveTextField<int>(
+                  formControlName: 'indicatorId',
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  maxLength: 2,
+                  textAlign: TextAlign.end,
+                  decoration: const InputDecoration(counterText: ''),
+                  validationMessages: {ValidationMessage.required: (error) => 'Please enter an indicator#.'},
                 ),
+                color: ColorDefinitionField(formGroup: fg, formControlName: 'color', required: true),
+                delete: IconButton(icon: const Icon(Icons.delete), onPressed: () => state.trackConfigurationIndicatorDelete(formArray, fg)),
               ),
-            );
-          });
-          children.add(const SizedBox(height: 16));
-          children.add(IconButton.filledTonal(
+            ),
+          );
+        });
+        children.add(const SizedBox(height: 16));
+        children.add(
+          IconButton.filledTonal(
             icon: const Icon(Icons.add),
             onPressed: () => state.trackConfigurationIndicatorAdd(formArray),
             tooltip: 'Add a simulated input',
-          ));
-          return Column(children: children);
-        });
+          ),
+        );
+        return Column(children: children);
+      },
+    );
   }
 
-  Row trackConfigurationIndicatorRow(
-      {required Widget indicator, required Widget color, Widget? delete}) {
+  Row trackConfigurationIndicatorRow({required Widget indicator, required Widget color, Widget? delete}) {
     return Row(
       children: [
         SizedBox(width: 100, child: indicator),
         const SizedBox(width: 16),
         SizedBox(width: 300, child: color),
         const SizedBox(width: 16),
-        if (delete != null) delete
+        if (delete != null) delete,
       ],
     );
   }

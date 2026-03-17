@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Google.Protobuf;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Razmanager.Protobuf.Public.V1;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -14,6 +16,7 @@ namespace RazManager.IO.Services.Settings
     public class SettingsService : ISettingsService
     {
         private readonly Channel<bool> _resetChannel;
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<SettingsService> _logger;
         private string _filename = "";
         private SettingsDto _settings = new();
@@ -24,9 +27,11 @@ namespace RazManager.IO.Services.Settings
 
 
         public SettingsService(Channel<bool> resetChannel,
+                               IHostApplicationLifetime hostApplicationLifetime,
                                ILogger<SettingsService> logger)
         {
             _resetChannel = resetChannel;
+            _hostApplicationLifetime = hostApplicationLifetime;
             _logger = logger;
 
             try
@@ -91,14 +96,38 @@ namespace RazManager.IO.Services.Settings
         }
 
 
-        public async Task SaveAsync(bool reset)
+        public DeviceSettings DeviceSettings
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_settings.DeviceSettingsBase64))
+                {
+                    return new DeviceSettings();
+                }
+
+                var parser = DeviceSettings.Descriptor.Parser;
+                var proto = parser.ParseFrom(Convert.FromBase64String(_settings.DeviceSettingsBase64)) as DeviceSettings;
+                if (proto is null)
+                {
+                    return new DeviceSettings();
+                }
+                else
+                {
+                    return proto;
+                }
+            }
+            set
+            {
+                _settings.DeviceSettingsBase64 = Convert.ToBase64String(value.ToByteArray());
+            }
+        }
+
+
+        public async Task SaveAsync()
         {
             File.WriteAllText(_filename, JsonSerializer.Serialize(_settings, _jsonSerializerOptions));
             _logger.LogInformation($"{_filename} saved.");
-            if (reset)
-            {
-                await _resetChannel.Writer.WriteAsync(true);
-            }
+            _hostApplicationLifetime.StopApplication();
         }
     }
 }

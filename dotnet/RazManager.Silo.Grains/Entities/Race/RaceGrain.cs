@@ -1,7 +1,6 @@
 ﻿using Orleans.Streams;
 using Razmanager.Protobuf.Public.V1;
 using System.Resources;
-using System.Xml;
 
 
 namespace RazManager.Silo.Grains.Entities.Race

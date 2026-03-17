@@ -4,6 +4,8 @@ using RazManager.IO.Services.CpuInfo;
 using RazManager.IO.Services.OsRelease;
 using RazManager.IO.Utilities;
 using System;
+using System.IO.Ports;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -35,6 +37,7 @@ namespace RazManager.IO.Services.SystemInformation
                 SoftwareDotNetVersion = Environment.Version.ToString(),
                 SoftwareOsVersion = $"{Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")})",
                 SoftwareOsReleaseVersion = _osReleaseService.OsRelease.PrettyName,
+                
             };
             result.NetworkIpAddresses.AddRange(NetworkInformation.IPAddresses());
             return Task.FromResult(result);

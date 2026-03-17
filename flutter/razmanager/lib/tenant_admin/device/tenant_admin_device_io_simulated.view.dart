@@ -136,8 +136,7 @@ class _TenantAdminDeviceIoSimulatedState
 
     final deviceConfigurationSimulationGetResponse =
         await deviceConfigurationServiceClient()
-            .deviceConfigurationSimulationGet(
-                StringValue(value: deviceConfigurationProto.id));
+            .deviceConfigurationSimulationGet(deviceConfigurationProto.id);
     simulationStarted = deviceConfigurationSimulationGetResponse.value;
 
     return response.entity;
@@ -151,8 +150,7 @@ class _TenantAdminDeviceIoSimulatedState
     }
     deviceConfigurationInputsStreamSubscription =
         deviceConfigurationServiceClient()
-            .deviceConfigurationInputsSubscribe(
-                StringValue(value: deviceConfigurationProto.id))
+            .deviceConfigurationInputsSubscribe(deviceConfigurationProto.id)
             .listen(
                 (data) {
                   for (var item in data.items) {
@@ -230,8 +228,7 @@ class _TenantAdminDeviceIoSimulatedState
       await deviceConfigurationOutputsSubscription!.cancel();
     }
     deviceConfigurationOutputsSubscription = deviceConfigurationServiceClient()
-        .deviceConfigurationOutputsSubscribe(
-            StringValue(value: deviceConfigurationProto.id))
+        .deviceConfigurationOutputsSubscribe(deviceConfigurationProto.id)
         .listen(
             (data) {
               for (var item in data.items) {
@@ -358,7 +355,7 @@ class _TenantAdminDeviceIoSimulatedState
     try {
       await deviceConfigurationServiceClient().deviceConfigurationSimulationSet(
           DeviceConfigurationSetSimulationSetRequest(
-              id: deviceConfigurationProto!.id, value: value));
+              id: deviceConfigurationProto.id.value, value: value));
       simulationStarted = value;
     } on Exception catch (exception) {
       if (!context.mounted) {
@@ -498,7 +495,7 @@ class _TenantAdminDeviceIoSimulatedViewDeviceConfigurationInput
 
               state.deviceConfigurationDeviceConfigurationInput(
                   DeviceConfigurationDeviceConfigurationInput(
-                    id: state.deviceConfigurationProto.id,
+                    id: state.deviceConfigurationProto.id.value,
                     deviceConfigurationInput:
                         deviceConfigurationInputState.deviceConfigurationInput,
                   ),
@@ -539,7 +536,7 @@ class _TenantAdminDeviceIoSimulatedViewDeviceConfigurationInput
 
               state.deviceConfigurationDeviceConfigurationInput(
                   DeviceConfigurationDeviceConfigurationInput(
-                    id: state.deviceConfigurationProto.id,
+                    id: state.deviceConfigurationProto.id.value,
                     deviceConfigurationInput:
                         deviceConfigurationInputState.deviceConfigurationInput,
                   ),
@@ -570,7 +567,7 @@ class _TenantAdminDeviceIoSimulatedViewDeviceConfigurationInput
 
               state.deviceConfigurationDeviceConfigurationInput(
                   DeviceConfigurationDeviceConfigurationInput(
-                    id: state.deviceConfigurationProto.id,
+                    id: state.deviceConfigurationProto.id.value,
                     deviceConfigurationInput:
                         deviceConfigurationInputState.deviceConfigurationInput,
                   ),

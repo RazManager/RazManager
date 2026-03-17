@@ -1,10 +1,15 @@
-﻿namespace RazManager.Silo.Grains.Entities.Device
+﻿using Orleans.Streams;
+using Razmanager.Protobuf.Public.V1;
+
+
+namespace RazManager.Silo.Grains.Entities.Device
 {
     public class DeviceGrain : Grain, IDeviceGrain
     {
         private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.Device.DeviceService.DeviceServiceClient _serviceClient;
-        //private IAsyncStream<DeviceDeviceInformationMessage>? _deviceDeviceInformationStream;
-        //private IAsyncStream<DeviceConnectionStatusMessage>? _deviceConnectionStatusStream;
+        private IAsyncStream<DeviceRequest>? _deviceRequestStream;
+        private IAsyncStream<DeviceResponse>? _deviceResponseStream;
+        private bool _connected = false;
 
 
         public DeviceGrain(Razmanager.Protobuf.Internal.Repository.SystemServices.Device.DeviceService.DeviceServiceClient serviceClient)
@@ -13,14 +18,13 @@
         }
 
 
-        //public override Task OnActivateAsync(CancellationToken cancellationToken)
-        //{
-        //    var streamProvider = this.GetStreamProvider(Constants.StreamProvider);
-        //    _deviceDeviceInformationStream = streamProvider.GetStream<DeviceDeviceInformationMessage>(Constants.StreamName.DeviceDeviceInformation.ToString());
-        //    _deviceConnectionStatusStream = streamProvider.GetStream<DeviceConnectionStatusMessage>(Constants.StreamName.DeviceConnectionStatus.ToString());
-
-        //    return Task.CompletedTask;
-        //}
+        public override Task OnActivateAsync(CancellationToken cancellationToken)
+        {
+            var streamProvider = this.GetStreamProvider(Constants.StreamProvider);
+            _deviceRequestStream = streamProvider.GetStream<DeviceRequest>(Constants.StreamName.DeviceRequest.ToString(), this.GetPrimaryKey());
+            _deviceResponseStream = streamProvider.GetStream<DeviceResponse>(Constants.StreamName.DeviceResponse.ToString(), this.GetPrimaryKey());
+            return Task.CompletedTask;
+        }
 
 
         public async Task RefreshAsync()
@@ -39,34 +43,43 @@
         }
 
 
-        //public async Task DeviceInformationAsync(DeviceInformationMessage deviceInformation)
-        //{
-        //    foreach (var deviceConfiguration in deviceInformation.DeviceConfigurations)
-        //    {
-        //        await GrainFactory.GetGrain<DeviceConfiguration.IDeviceConfigurationGrain>(deviceConfiguration.Id).RefreshAsync();
-        //    }
-
-        //    await _deviceDeviceInformationStream!.OnNextAsync(new DeviceDeviceInformationMessage { DeviceId = this.GetPrimaryKey(), DeviceInformation = deviceInformation });
-        //}
+        public Task<bool> ConnectedReadAsync()
+        {
+            return Task.FromResult(_connected);
+        }
 
 
-        //public async Task ConnectedAsync()
-        //{
-        //    await _serviceClient.ConnectedAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
-        //    await ConnectionStatusChangeAsync(true);
-        //}
+        public async Task ConnectedUpdateAsync(bool connected)
+        {
+            _connected = connected;
+            _ = _deviceResponseStream!.OnNextAsync(new DeviceResponse { CorrelationId = Guid.NewGuid().ToString(), DeviceConnectionResponse = new DeviceConnectionResponse { Connected = _connected } });
+            if (connected)
+            {
+                _ = _serviceClient.UpdateAsync(new Razmanager.Protobuf.Internal.Repository.SystemServices.Device.DeviceUpdateRequest
+                {
+                    Id = this.GetPrimaryKey().ToString(),
+                    LastConnectedAt = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow)
+                });
+            }
+        }
 
 
-        //public async Task DisconnectedAsync()
-        //{
-        //    await _serviceClient.DisconnectedAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
-        //    await ConnectionStatusChangeAsync(false);
-        //}
+        public async Task DeviceRequestAsync(DeviceRequest deviceRequest)
+        {
+            if (deviceRequest.ValueCase == DeviceRequest.ValueOneofCase.DeviceConnectionRequest)
+            {
+                _ = _deviceResponseStream!.OnNextAsync(new DeviceResponse { CorrelationId = deviceRequest.CorrelationId, DeviceConnectionResponse = new DeviceConnectionResponse { Connected = _connected }});
+            }
+            else
+            {
+                _ = _deviceRequestStream!.OnNextAsync(deviceRequest);
+            }
+        }
 
 
-        //private Task ConnectionStatusChangeAsync(bool connected)
-        //{
-        //    return _deviceConnectionStatusStream!.OnNextAsync(new DeviceConnectionStatusMessage { DeviceId = this.GetPrimaryKey(), Connected = connected });
-        //}
+        public async Task DeviceResponseAsync(DeviceResponse deviceResponse)
+        {
+            await _deviceResponseStream!.OnNextAsync(deviceResponse);
+        }
     }
 }

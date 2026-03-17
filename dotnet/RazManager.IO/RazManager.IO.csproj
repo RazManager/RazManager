@@ -26,6 +26,10 @@
 			<Link>Protos/public/device.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device_request_response.v1.proto" GrpcServices="None">
+			<Link>Protos/public/device_request_response.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/device_configuration.service.v1.proto" GrpcServices="Client">
 			<Link>Protos/public/device_configuration.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
@@ -104,6 +108,7 @@
 	<ItemGroup>
 		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
 		<PackageReference Include="System.Device.Gpio" Version="4.1.0" />
+		<PackageReference Include="System.IO.Ports" Version="10.0.5" />
 	</ItemGroup>
 
 

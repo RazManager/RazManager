@@ -4,8 +4,8 @@ import '../app_progress_indicator.dart';
 import 'crud_master_detail_base.dart';
 
 abstract class CrudMasterDetailSingleStateBase<TReadProto> extends CrudMasterDetailStateBase<TReadProto> {
-  CrudMasterDetailSingleStateBase({required String header, required Widget child})
-      : super(header: header, child: _CrudMasterDetailSingleChild(header: header, child: child));
+  CrudMasterDetailSingleStateBase({required super.header, required Widget child})
+      : super(child: _CrudMasterDetailSingleChild(header: header, child: child));
 }
 
 class _CrudMasterDetailSingleChild extends StatelessWidget {

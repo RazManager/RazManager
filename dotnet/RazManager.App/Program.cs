@@ -217,6 +217,7 @@ app.MapGrpcService<RazManager.App.CrudServices.Entities.User.UserService>();
 //app.MapGrpcService<RazManager.Repository.Logic.CrudServices.Entities.UserSystemAdmin.UserSystemAdminService>();
 //app.MapGrpcService<RazManager.Repository.Logic.CrudServices.Entities.Car.CarService>();
 //app.MapGrpcService<RazManager.Repository.Logic.UserServices.Entities.Device.DeviceService>();
+app.MapGrpcService<RazManager.App.PublicServices.Entities.Device.DeviceService>();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Event.EventService>();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Heat.HeatService>();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Race.RaceService>();

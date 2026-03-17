@@ -23,7 +23,9 @@ protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../D
 protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/internal/repository/user_services/tenant.proto
 protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/internal/repository/user_services/tenant_invite.proto
 protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/internal/silo/user_services/device_configuration.proto
+protoc --dart_out="grpc:." --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/device.service.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/device.v1.proto
+protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/device_request_response.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/device_configuration_feature_type_id.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/device_configuration_input.v1.proto
 protoc --dart_out=.        --proto_path=../../../../DotNet/protos  ../../../../DotNet/protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto

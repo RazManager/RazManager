@@ -369,8 +369,8 @@ class DeviceUpdateRequest extends $pb.GeneratedMessage {
 
 class DeviceConfigurationRead extends $pb.GeneratedMessage {
   factory DeviceConfigurationRead({
-    $core.String? id,
-    $core.String? name,
+    $3.StringValue? id,
+    $3.StringValue? name,
     $core.Iterable<$4.DeviceDeviceConfigurationInput>?
         deviceConfigurationInputs,
     $core.Iterable<$4.DeviceDeviceConfigurationOutput>?
@@ -401,8 +401,10 @@ class DeviceConfigurationRead extends $pb.GeneratedMessage {
           ? ''
           : 'razmanager.protobuf.internal.repository.crud_services.device'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'id')
-    ..aOS(2, _omitFieldNames ? '' : 'name')
+    ..aOM<$3.StringValue>(1, _omitFieldNames ? '' : 'id',
+        subBuilder: $3.StringValue.create)
+    ..aOM<$3.StringValue>(2, _omitFieldNames ? '' : 'name',
+        subBuilder: $3.StringValue.create)
     ..pPM<$4.DeviceDeviceConfigurationInput>(
         3, _omitFieldNames ? '' : 'deviceConfigurationInputs',
         subBuilder: $4.DeviceDeviceConfigurationInput.create)
@@ -432,22 +434,26 @@ class DeviceConfigurationRead extends $pb.GeneratedMessage {
   static DeviceConfigurationRead? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.String get id => $_getSZ(0);
+  $3.StringValue get id => $_getN(0);
   @$pb.TagNumber(1)
-  set id($core.String value) => $_setString(0, value);
+  set id($3.StringValue value) => $_setField(1, value);
   @$pb.TagNumber(1)
   $core.bool hasId() => $_has(0);
   @$pb.TagNumber(1)
   void clearId() => $_clearField(1);
+  @$pb.TagNumber(1)
+  $3.StringValue ensureId() => $_ensure(0);
 
   @$pb.TagNumber(2)
-  $core.String get name => $_getSZ(1);
+  $3.StringValue get name => $_getN(1);
   @$pb.TagNumber(2)
-  set name($core.String value) => $_setString(1, value);
+  set name($3.StringValue value) => $_setField(2, value);
   @$pb.TagNumber(2)
   $core.bool hasName() => $_has(1);
   @$pb.TagNumber(2)
   void clearName() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $3.StringValue ensureName() => $_ensure(1);
 
   @$pb.TagNumber(3)
   $pb.PbList<$4.DeviceDeviceConfigurationInput> get deviceConfigurationInputs =>
@@ -460,12 +466,14 @@ class DeviceConfigurationRead extends $pb.GeneratedMessage {
 
 class DeviceConfigurationCreateUpdate extends $pb.GeneratedMessage {
   factory DeviceConfigurationCreateUpdate({
+    $core.String? name,
     $core.Iterable<$4.DeviceDeviceConfigurationInput>?
         deviceConfigurationInputs,
     $core.Iterable<$4.DeviceDeviceConfigurationOutput>?
         deviceConfigurationOutputs,
   }) {
     final result = create();
+    if (name != null) result.name = name;
     if (deviceConfigurationInputs != null)
       result.deviceConfigurationInputs.addAll(deviceConfigurationInputs);
     if (deviceConfigurationOutputs != null)
@@ -488,6 +496,7 @@ class DeviceConfigurationCreateUpdate extends $pb.GeneratedMessage {
           ? ''
           : 'razmanager.protobuf.internal.repository.crud_services.device'),
       createEmptyInstance: create)
+    ..aOS(2, _omitFieldNames ? '' : 'name')
     ..pPM<$4.DeviceDeviceConfigurationInput>(
         3, _omitFieldNames ? '' : 'deviceConfigurationInputs',
         subBuilder: $4.DeviceDeviceConfigurationInput.create)
@@ -519,13 +528,22 @@ class DeviceConfigurationCreateUpdate extends $pb.GeneratedMessage {
           create);
   static DeviceConfigurationCreateUpdate? _defaultInstance;
 
+  @$pb.TagNumber(2)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(2)
+  set name($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(2)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(2)
+  void clearName() => $_clearField(2);
+
   @$pb.TagNumber(3)
   $pb.PbList<$4.DeviceDeviceConfigurationInput> get deviceConfigurationInputs =>
-      $_getList(0);
+      $_getList(1);
 
   @$pb.TagNumber(4)
   $pb.PbList<$4.DeviceDeviceConfigurationOutput>
-      get deviceConfigurationOutputs => $_getList(1);
+      get deviceConfigurationOutputs => $_getList(2);
 }
 
 class DeviceListResponse extends $pb.GeneratedMessage {

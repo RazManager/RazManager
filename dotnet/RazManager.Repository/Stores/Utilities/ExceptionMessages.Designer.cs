@@ -79,6 +79,15 @@ namespace RazManager.Repository.Stores.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Two (or more) device configurations cannot have the same name..
+        /// </summary>
+        internal static string DeviceConfigurationNameDuplicate {
+            get {
+                return ResourceManager.GetString("DeviceConfigurationNameDuplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The device input {0} cannot have an id..
         /// </summary>
         internal static string DeviceDeviceInputDeviceInputIdNone {
