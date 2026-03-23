@@ -78,29 +78,52 @@ namespace RazManager.IO.Services.Device
                         {
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationGpio:
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationOxigen:
                                 for (uint i = 1; i <= deviceIntegration.DeviceIntegrationOxigen.MaxControllerId; i++)
                                 {
                                     deviceConfiguration.DeviceConfigurationInputs.Add(new DeviceDeviceConfigurationInput { DeviceConfigurationInputTypeId = DeviceConfigurationInputTypeId.StartFinishIndicator, DeviceConfigurationInputId = i });
                                 }
-
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationScalextricArc:
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationScalextricApb:
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationScalextricPitPro:
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationPhilipsHue:
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationRgb:
                                 break;
+
                             case DeviceIntegration.ValueOneofCase.DeviceIntegrationLapMaster:
                                 for (uint i = 1; i <= deviceIntegration.DeviceIntegrationLapMaster.Lanes; i++)
                                 {
                                     deviceConfiguration.DeviceConfigurationInputs.Add(new DeviceDeviceConfigurationInput { DeviceConfigurationInputTypeId = DeviceConfigurationInputTypeId.StartFinishIndicator, DeviceConfigurationInputId = i });
                                 }
+                                deviceConfiguration.DeviceConfigurationFeatures.AddRange([
+                                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.LaneBasedId,
+                                ]);
                                 break;
+
+                            case DeviceIntegration.ValueOneofCase.DeviceIntegrationChronoLog:
+                                for (uint i = 1; i <= 20; i++)
+                                {
+                                    deviceConfiguration.DeviceConfigurationInputs.Add(new DeviceDeviceConfigurationInput { DeviceConfigurationInputTypeId = DeviceConfigurationInputTypeId.StartFinishIndicator, DeviceConfigurationInputId = i });
+                                }
+                                deviceConfiguration.DeviceConfigurationFeatures.AddRange([
+                                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.Pitstop,
+                                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.CarOnTrack,
+                                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.ControllerBasedId,
+                                ]);
+
+                                break;
+
                             default:
                                 break;
                         }

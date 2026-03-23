@@ -45,6 +45,9 @@ class DeviceIntegrationTypeId extends $pb.ProtobufEnum {
   static const DeviceIntegrationTypeId DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER =
       DeviceIntegrationTypeId._(
           8, _omitEnumNames ? '' : 'DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER');
+  static const DeviceIntegrationTypeId DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG =
+      DeviceIntegrationTypeId._(
+          100, _omitEnumNames ? '' : 'DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG');
 
   static const $core.List<DeviceIntegrationTypeId> values =
       <DeviceIntegrationTypeId>[
@@ -57,104 +60,108 @@ class DeviceIntegrationTypeId extends $pb.ProtobufEnum {
     DEVICE_INTEGRATION_TYPE_ID_PHILIPS_HUE,
     DEVICE_INTEGRATION_TYPE_ID_RGB,
     DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER,
+    DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG,
   ];
 
-  static final $core.List<DeviceIntegrationTypeId?> _byValue =
-      $pb.ProtobufEnum.$_initByValueList(values, 8);
-  static DeviceIntegrationTypeId? valueOf($core.int value) =>
-      value < 0 || value >= _byValue.length ? null : _byValue[value];
+  static final $core.Map<$core.int, DeviceIntegrationTypeId> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
+  static DeviceIntegrationTypeId? valueOf($core.int value) => _byValue[value];
 
   const DeviceIntegrationTypeId._(super.value, super.name);
 }
 
-class OxigenTxPitlaneLapCountingTypeId extends $pb.ProtobufEnum {
-  static const OxigenTxPitlaneLapCountingTypeId
+class OxigenRxLapTimeTypeId extends $pb.ProtobufEnum {
+  static const OxigenRxLapTimeTypeId OXIGEN_RX_LAP_TIME_TYPE_ID_NONE =
+      OxigenRxLapTimeTypeId._(
+          0, _omitEnumNames ? '' : 'OXIGEN_RX_LAP_TIME_TYPE_ID_NONE');
+  static const OxigenRxLapTimeTypeId OXIGEN_RX_LAP_TIME_TYPE_ID_CONTROLLER =
+      OxigenRxLapTimeTypeId._(
+          1, _omitEnumNames ? '' : 'OXIGEN_RX_LAP_TIME_TYPE_ID_CONTROLLER');
+  static const OxigenRxLapTimeTypeId OXIGEN_RX_LAP_TIME_TYPE_ID_TIMER =
+      OxigenRxLapTimeTypeId._(
+          2, _omitEnumNames ? '' : 'OXIGEN_RX_LAP_TIME_TYPE_ID_TIMER');
+
+  static const $core.List<OxigenRxLapTimeTypeId> values =
+      <OxigenRxLapTimeTypeId>[
+    OXIGEN_RX_LAP_TIME_TYPE_ID_NONE,
+    OXIGEN_RX_LAP_TIME_TYPE_ID_CONTROLLER,
+    OXIGEN_RX_LAP_TIME_TYPE_ID_TIMER,
+  ];
+
+  static final $core.List<OxigenRxLapTimeTypeId?> _byValue =
+      $pb.ProtobufEnum.$_initByValueList(values, 2);
+  static OxigenRxLapTimeTypeId? valueOf($core.int value) =>
+      value < 0 || value >= _byValue.length ? null : _byValue[value];
+
+  const OxigenRxLapTimeTypeId._(super.value, super.name);
+}
+
+class OxigenTxPitLaneLapCountingTypeId extends $pb.ProtobufEnum {
+  static const OxigenTxPitLaneLapCountingTypeId
       OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_ENABLED =
-      OxigenTxPitlaneLapCountingTypeId._(
+      OxigenTxPitLaneLapCountingTypeId._(
           0,
           _omitEnumNames
               ? ''
               : 'OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_ENABLED');
-  static const OxigenTxPitlaneLapCountingTypeId
+  static const OxigenTxPitLaneLapCountingTypeId
       OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_DISABLED =
-      OxigenTxPitlaneLapCountingTypeId._(
+      OxigenTxPitLaneLapCountingTypeId._(
           1,
           _omitEnumNames
               ? ''
               : 'OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_DISABLED');
 
-  static const $core.List<OxigenTxPitlaneLapCountingTypeId> values =
-      <OxigenTxPitlaneLapCountingTypeId>[
+  static const $core.List<OxigenTxPitLaneLapCountingTypeId> values =
+      <OxigenTxPitLaneLapCountingTypeId>[
     OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_ENABLED,
     OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_DISABLED,
   ];
 
-  static final $core.List<OxigenTxPitlaneLapCountingTypeId?> _byValue =
+  static final $core.List<OxigenTxPitLaneLapCountingTypeId?> _byValue =
       $pb.ProtobufEnum.$_initByValueList(values, 1);
-  static OxigenTxPitlaneLapCountingTypeId? valueOf($core.int value) =>
+  static OxigenTxPitLaneLapCountingTypeId? valueOf($core.int value) =>
       value < 0 || value >= _byValue.length ? null : _byValue[value];
 
-  const OxigenTxPitlaneLapCountingTypeId._(super.value, super.name);
+  const OxigenTxPitLaneLapCountingTypeId._(super.value, super.name);
 }
 
-class OxigenTxPitlaneLapTriggerTypeId extends $pb.ProtobufEnum {
-  static const OxigenTxPitlaneLapTriggerTypeId
+class OxigenTxPitLaneLapTriggerTypeId extends $pb.ProtobufEnum {
+  static const OxigenTxPitLaneLapTriggerTypeId
       OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_UNDEFINED =
-      OxigenTxPitlaneLapTriggerTypeId._(
+      OxigenTxPitLaneLapTriggerTypeId._(
           0,
           _omitEnumNames
               ? ''
               : 'OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_UNDEFINED');
-  static const OxigenTxPitlaneLapTriggerTypeId
+  static const OxigenTxPitLaneLapTriggerTypeId
       OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_ENTRY =
-      OxigenTxPitlaneLapTriggerTypeId._(
+      OxigenTxPitLaneLapTriggerTypeId._(
           1,
           _omitEnumNames
               ? ''
               : 'OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_ENTRY');
-  static const OxigenTxPitlaneLapTriggerTypeId
+  static const OxigenTxPitLaneLapTriggerTypeId
       OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_EXIT =
-      OxigenTxPitlaneLapTriggerTypeId._(
+      OxigenTxPitLaneLapTriggerTypeId._(
           2,
           _omitEnumNames
               ? ''
               : 'OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_EXIT');
 
-  static const $core.List<OxigenTxPitlaneLapTriggerTypeId> values =
-      <OxigenTxPitlaneLapTriggerTypeId>[
+  static const $core.List<OxigenTxPitLaneLapTriggerTypeId> values =
+      <OxigenTxPitLaneLapTriggerTypeId>[
     OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_UNDEFINED,
     OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_ENTRY,
     OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_EXIT,
   ];
 
-  static final $core.List<OxigenTxPitlaneLapTriggerTypeId?> _byValue =
+  static final $core.List<OxigenTxPitLaneLapTriggerTypeId?> _byValue =
       $pb.ProtobufEnum.$_initByValueList(values, 2);
-  static OxigenTxPitlaneLapTriggerTypeId? valueOf($core.int value) =>
+  static OxigenTxPitLaneLapTriggerTypeId? valueOf($core.int value) =>
       value < 0 || value >= _byValue.length ? null : _byValue[value];
 
-  const OxigenTxPitlaneLapTriggerTypeId._(super.value, super.name);
-}
-
-class OxigenRxLapTimesTypeId extends $pb.ProtobufEnum {
-  static const OxigenRxLapTimesTypeId OXIGEN_RX_LAP_TIMES_TYPE_ID_CONTROLLER =
-      OxigenRxLapTimesTypeId._(
-          0, _omitEnumNames ? '' : 'OXIGEN_RX_LAP_TIMES_TYPE_ID_CONTROLLER');
-  static const OxigenRxLapTimesTypeId OXIGEN_RX_LAP_TIMES_TYPE_ID_TIMER =
-      OxigenRxLapTimesTypeId._(
-          1, _omitEnumNames ? '' : 'OXIGEN_RX_LAP_TIMES_TYPE_ID_TIMER');
-
-  static const $core.List<OxigenRxLapTimesTypeId> values =
-      <OxigenRxLapTimesTypeId>[
-    OXIGEN_RX_LAP_TIMES_TYPE_ID_CONTROLLER,
-    OXIGEN_RX_LAP_TIMES_TYPE_ID_TIMER,
-  ];
-
-  static final $core.List<OxigenRxLapTimesTypeId?> _byValue =
-      $pb.ProtobufEnum.$_initByValueList(values, 1);
-  static OxigenRxLapTimesTypeId? valueOf($core.int value) =>
-      value < 0 || value >= _byValue.length ? null : _byValue[value];
-
-  const OxigenRxLapTimesTypeId._(super.value, super.name);
+  const OxigenTxPitLaneLapTriggerTypeId._(super.value, super.name);
 }
 
 const $core.bool _omitEnumNames =

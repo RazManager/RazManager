@@ -4,16 +4,12 @@ using Microsoft.Extensions.Logging;
 using Razmanager.Protobuf.Public.V1;
 using RazManager.IO.Services.Settings;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.Intrinsics.X86;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-using static Razmanager.Protobuf.Public.V1.HeatService;
 
 
 namespace RazManager.IO.Services.ChronoLog
@@ -40,14 +36,17 @@ namespace RazManager.IO.Services.ChronoLog
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var heatStateTypeId = HeatStateTypeId.Closed;
+            var deviceSettings = _settingsService.DeviceSettings;
 
-
-            if (!_settingsService.IsCommissioned)
+            var deviceConfigurationSettings = deviceSettings.DeviceConfigurationSettings.Where(x => x.DeviceIntegrations.Any(x => x.ValueCase == DeviceIntegration.ValueOneofCase.DeviceIntegrationChronoLog)).SingleOrDefault(x => x.Id == _settingsService.Settings.DeviceConfigurationId.ToString());
+            var deviceIntegrationChronoLog = deviceConfigurationSettings?.DeviceIntegrations?.SingleOrDefault(x => x.ValueCase == DeviceIntegration.ValueOneofCase.DeviceIntegrationChronoLog)?.DeviceIntegrationChronoLog;
+            if (deviceIntegrationChronoLog is null)
             {
-                _logger.LogWarning("Not yet commissioned.");
                 return;
             }
+            var deviceConfigurationId = deviceConfigurationSettings!.Id;
+
+            var heatStateTypeId = HeatStateTypeId.Closed;
 
             var httpClientHandler = new HttpClientHandler
             {
@@ -102,34 +101,6 @@ namespace RazManager.IO.Services.ChronoLog
             {
                 _logger.LogInformation("Channel created.");
 
-                var certificate = _settingsService.Certificate;
-
-                var deviceInformation = new Razmanager.Protobuf.Public.V1.DeviceInformation();
-                var deviceConfiguration = new Razmanager.Protobuf.Public.V1.DeviceConfiguration
-                {
-                    Id = _settingsService.Settings.DeviceConfigurations.First().Id.ToString(),
-                    Name = this.GetType().Name
-                };
-                deviceInformation.DeviceConfigurations.Add(deviceConfiguration);
-                for (byte i = 1; i <= 20; i++)
-                {
-                    deviceConfiguration.DeviceConfigurationInputs.Add(new Razmanager.Protobuf.Public.V1.DeviceDeviceConfigurationInput
-                    {
-                        DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicator,
-                        DeviceConfigurationInputId = i
-                    });
-                    //deviceConfiguration.DeviceConfigurationInputs.Add(new Razmanager.Protobuf.Public.V1.DeviceDeviceConfigurationInput
-                    //{
-                    //    DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.ExtraIndicator,
-                    //    DeviceConfigurationInputId = i
-                    //});
-                }
-                deviceConfiguration.DeviceConfigurationFeatures.AddRange([
-                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.Pitstop,
-                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.CarOnTrack,
-                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.ControllerBasedId,
-                ]);
-
                 _logger.LogInformation("File opening...");
                 _logger.LogInformation("_chronoLogOptions.CronoLogFilename");
                 var lines = await System.IO.File.ReadAllLinesAsync(_chronoLogOptions.CronoLogFilename, stoppingToken);
@@ -141,9 +112,8 @@ namespace RazManager.IO.Services.ChronoLog
                 var deviceServiceClient = new Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceClient(deviceChannel);
                 var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(deviceChannel);
 
-                await deviceServiceClient.DeviceInformationAsync(deviceInformation);
-
                 var timerStart = DateTime.UtcNow;
+                TimeSpan lastRunningEvent = TimeSpan.Zero;
 
                 foreach (var line in lines)
                 {
@@ -249,7 +219,7 @@ namespace RazManager.IO.Services.ChronoLog
 
                             using (var appChannel = GrpcChannel.ForAddress(_chronoLogOptions.AppClientAddress.ToString(), grpcChannelOptions))
                             {
-                                _logger.LogInformation($"Yellow flag heat {_chronoLogOptions.HeatId}");
+                                _logger.LogInformation($"Red flag heat {_chronoLogOptions.HeatId}");
                                 var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
                                 await heatServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
                                 {
@@ -270,7 +240,16 @@ namespace RazManager.IO.Services.ChronoLog
                         {
                             //Console.WriteLine($"{car} {laps} {lastEvent}");
 
-                            var timeStamp = timerStart.Add(lastEvent);
+                            DateTime timeStamp;
+                            if (heatStateTypeId == HeatStateTypeId.Red)
+                            {
+                                timeStamp = timerStart.Add(lastRunningEvent);
+                            }
+                            else
+                            {
+                                timeStamp = timerStart.Add(lastEvent);
+                                lastRunningEvent = lastEvent;
+                            }
 
                             await Task.Delay(Convert.ToInt32(Math.Max(0, (timeStamp - DateTime.UtcNow).TotalMilliseconds)));
 
@@ -339,8 +318,8 @@ namespace RazManager.IO.Services.ChronoLog
                                     Console.WriteLine($"{car}\t{teamColumn}\t{laps}\t{lapDifference}\t{lastLapColumn}\t{lastEventColumn}");
                                 }
 
-                                //if (car != 4 && car != 13 && car != 12)
-                                //{
+                                if (car != 4 && car != 13 && car != 12)
+                                {
                                     ignoreLap = laps > 1 && lapDifference <= 0;
                                     if (!ignoreLap)
                                     {
@@ -352,7 +331,7 @@ namespace RazManager.IO.Services.ChronoLog
                                             {
                                                 deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                                 {
-                                                    DeviceConfigurationId = deviceConfiguration.Id,
+                                                    DeviceConfigurationId = deviceConfigurationId,
                                                     CorrelationId = Guid.NewGuid().ToString(),
                                                     Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
                                                     DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
@@ -361,7 +340,7 @@ namespace RazManager.IO.Services.ChronoLog
                                             }
                                         }
                                     }
-                                //}
+                                }
                             }
 
                             if (!ignoreLap)
@@ -372,7 +351,7 @@ namespace RazManager.IO.Services.ChronoLog
                                     {
                                         deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                         {
-                                            DeviceConfigurationId = deviceConfiguration.Id,
+                                            DeviceConfigurationId = deviceConfigurationId,
                                             CorrelationId = Guid.NewGuid().ToString(),
                                             Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
                                             DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.PitlaneEntry,
@@ -380,7 +359,7 @@ namespace RazManager.IO.Services.ChronoLog
                                         });
                                         deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                         {
-                                            DeviceConfigurationId = deviceConfiguration.Id,
+                                            DeviceConfigurationId = deviceConfigurationId,
                                             CorrelationId = Guid.NewGuid().ToString(),
                                             Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
                                             DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.PitlaneExit,
@@ -391,7 +370,7 @@ namespace RazManager.IO.Services.ChronoLog
                                     {
                                         deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                         {
-                                            DeviceConfigurationId = deviceConfiguration.Id,
+                                            DeviceConfigurationId = deviceConfigurationId,
                                             CorrelationId = Guid.NewGuid().ToString(),
                                             Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
                                             DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.CarOnTrack,
@@ -400,7 +379,7 @@ namespace RazManager.IO.Services.ChronoLog
                                         });
                                         deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                         {
-                                            DeviceConfigurationId = deviceConfiguration.Id,
+                                            DeviceConfigurationId = deviceConfigurationId,
                                             CorrelationId = Guid.NewGuid().ToString(),
                                             Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
                                             DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.CarOnTrack,
@@ -416,7 +395,7 @@ namespace RazManager.IO.Services.ChronoLog
                                 }
                                 deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                 {
-                                    DeviceConfigurationId = deviceConfiguration.Id,
+                                    DeviceConfigurationId = deviceConfigurationId,
                                     CorrelationId = Guid.NewGuid().ToString(),
                                     Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
                                     DeviceConfigurationInputTypeId = !ignoreLapTime ? Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicator : Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
@@ -425,12 +404,12 @@ namespace RazManager.IO.Services.ChronoLog
                                 });
 
                                 await deviceConfigurationServiceClient.DeviceConfigurationInputsPublishAsync(deviceConfigurationInputs, null, null, stoppingToken);
+
                                 latestCarLaps[car] = (laps, lapDifference);
                             }
                         }
                     }
                 }
-
             }
 
             await Task.Delay(TimeSpan.FromMinutes(1));

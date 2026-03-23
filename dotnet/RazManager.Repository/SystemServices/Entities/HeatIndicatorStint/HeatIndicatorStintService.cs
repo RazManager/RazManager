@@ -43,24 +43,27 @@ namespace RazManager.Repository.SystemServices.Entities.HeatIndicatorStint
 
         public override async Task<Empty> Create(HeatIndicatorStintCreate request, ServerCallContext context)
         {
-
             var entity = new HeatIndicatorStintEntity
             {
                 HeatIndicatorId = new Guid(request.HeatIndicatorId),
-                Lap = request.Lap
+                Lap = request.Lap,
             };
-
-            var heatIndicatorEventUserEventUsers = await _repositoryDbContext.HeatIndicators
-                .Include(x => x.EventUser.EventUsers)
-                .SingleOrDefaultAsync(x => x.Id == new Guid(request.HeatIndicatorId) && x.EventUser != null);
-            if (heatIndicatorEventUserEventUsers is not null && heatIndicatorEventUserEventUsers.EventUser!.EventUsers.Count >= 2)
+            if (!string.IsNullOrEmpty(request.EventUserId))
             {
-                var teamEventUser = heatIndicatorEventUserEventUsers.EventUser.EventUsers[new Random().Next(heatIndicatorEventUserEventUsers.EventUser!.EventUsers.Count)];
-                if (teamEventUser is not null)
-                {
-                    entity.EventUserId = teamEventUser.Id;
-                }
+                entity.EventUserId = new Guid(request.EventUserId);
             }
+
+            //var heatIndicatorEventUserEventUsers = await _repositoryDbContext.HeatIndicators
+            //    .Include(x => x.EventUser.EventUsers)
+            //    .SingleOrDefaultAsync(x => x.Id == new Guid(request.HeatIndicatorId) && x.EventUser != null);
+            //if (heatIndicatorEventUserEventUsers is not null && heatIndicatorEventUserEventUsers.EventUser!.EventUsers.Count >= 2)
+            //{
+            //    var teamEventUser = heatIndicatorEventUserEventUsers.EventUser.EventUsers[new Random().Next(heatIndicatorEventUserEventUsers.EventUser!.EventUsers.Count)];
+            //    if (teamEventUser is not null)
+            //    {
+            //        entity.EventUserId = teamEventUser.Id;
+            //    }
+            //}
 
             _repositoryDbContext.Add(entity);
             try

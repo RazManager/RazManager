@@ -28,6 +28,7 @@ const DeviceIntegrationTypeId$json = {
     {'1': 'DEVICE_INTEGRATION_TYPE_ID_PHILIPS_HUE', '2': 6},
     {'1': 'DEVICE_INTEGRATION_TYPE_ID_RGB', '2': 7},
     {'1': 'DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER', '2': 8},
+    {'1': 'DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG', '2': 100},
   ],
 };
 
@@ -40,27 +41,44 @@ final $typed_data.Uint8List deviceIntegrationTypeIdDescriptor = $convert.base64D
     'Q0FMRVhUUklDX0FQQhAEEjEKLURFVklDRV9JTlRFR1JBVElPTl9UWVBFX0lEX1NDQUxFWFRSSU'
     'NfUElUX1BSTxAFEioKJkRFVklDRV9JTlRFR1JBVElPTl9UWVBFX0lEX1BISUxJUFNfSFVFEAYS'
     'IgoeREVWSUNFX0lOVEVHUkFUSU9OX1RZUEVfSURfUkdCEAcSKQolREVWSUNFX0lOVEVHUkFUSU'
-    '9OX1RZUEVfSURfTEFQX01BU1RFUhAI');
+    '9OX1RZUEVfSURfTEFQX01BU1RFUhAIEikKJURFVklDRV9JTlRFR1JBVElPTl9UWVBFX0lEX0NI'
+    'Uk9OT19MT0cQZA==');
 
-@$core.Deprecated('Use oxigenTxPitlaneLapCountingTypeIdDescriptor instead')
-const OxigenTxPitlaneLapCountingTypeId$json = {
-  '1': 'OxigenTxPitlaneLapCountingTypeId',
+@$core.Deprecated('Use oxigenRxLapTimeTypeIdDescriptor instead')
+const OxigenRxLapTimeTypeId$json = {
+  '1': 'OxigenRxLapTimeTypeId',
+  '2': [
+    {'1': 'OXIGEN_RX_LAP_TIME_TYPE_ID_NONE', '2': 0},
+    {'1': 'OXIGEN_RX_LAP_TIME_TYPE_ID_CONTROLLER', '2': 1},
+    {'1': 'OXIGEN_RX_LAP_TIME_TYPE_ID_TIMER', '2': 2},
+  ],
+};
+
+/// Descriptor for `OxigenRxLapTimeTypeId`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List oxigenRxLapTimeTypeIdDescriptor = $convert.base64Decode(
+    'ChVPeGlnZW5SeExhcFRpbWVUeXBlSWQSIwofT1hJR0VOX1JYX0xBUF9USU1FX1RZUEVfSURfTk'
+    '9ORRAAEikKJU9YSUdFTl9SWF9MQVBfVElNRV9UWVBFX0lEX0NPTlRST0xMRVIQARIkCiBPWElH'
+    'RU5fUlhfTEFQX1RJTUVfVFlQRV9JRF9USU1FUhAC');
+
+@$core.Deprecated('Use oxigenTxPitLaneLapCountingTypeIdDescriptor instead')
+const OxigenTxPitLaneLapCountingTypeId$json = {
+  '1': 'OxigenTxPitLaneLapCountingTypeId',
   '2': [
     {'1': 'OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_ENABLED', '2': 0},
     {'1': 'OXIGEN_TX_PIT_LANE_LAP_COUNTING_TYPE_ID_DISABLED', '2': 1},
   ],
 };
 
-/// Descriptor for `OxigenTxPitlaneLapCountingTypeId`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List oxigenTxPitlaneLapCountingTypeIdDescriptor =
+/// Descriptor for `OxigenTxPitLaneLapCountingTypeId`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List oxigenTxPitLaneLapCountingTypeIdDescriptor =
     $convert.base64Decode(
-        'CiBPeGlnZW5UeFBpdGxhbmVMYXBDb3VudGluZ1R5cGVJZBIzCi9PWElHRU5fVFhfUElUX0xBTk'
+        'CiBPeGlnZW5UeFBpdExhbmVMYXBDb3VudGluZ1R5cGVJZBIzCi9PWElHRU5fVFhfUElUX0xBTk'
         'VfTEFQX0NPVU5USU5HX1RZUEVfSURfRU5BQkxFRBAAEjQKME9YSUdFTl9UWF9QSVRfTEFORV9M'
         'QVBfQ09VTlRJTkdfVFlQRV9JRF9ESVNBQkxFRBAB');
 
-@$core.Deprecated('Use oxigenTxPitlaneLapTriggerTypeIdDescriptor instead')
-const OxigenTxPitlaneLapTriggerTypeId$json = {
-  '1': 'OxigenTxPitlaneLapTriggerTypeId',
+@$core.Deprecated('Use oxigenTxPitLaneLapTriggerTypeIdDescriptor instead')
+const OxigenTxPitLaneLapTriggerTypeId$json = {
+  '1': 'OxigenTxPitLaneLapTriggerTypeId',
   '2': [
     {'1': 'OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_UNDEFINED', '2': 0},
     {'1': 'OXIGEN_TX_PIT_LANE_LAP_TRIGGER_TYPE_ID_PIT_LANE_ENTRY', '2': 1},
@@ -68,27 +86,13 @@ const OxigenTxPitlaneLapTriggerTypeId$json = {
   ],
 };
 
-/// Descriptor for `OxigenTxPitlaneLapTriggerTypeId`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List oxigenTxPitlaneLapTriggerTypeIdDescriptor =
+/// Descriptor for `OxigenTxPitLaneLapTriggerTypeId`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List oxigenTxPitLaneLapTriggerTypeIdDescriptor =
     $convert.base64Decode(
-        'Ch9PeGlnZW5UeFBpdGxhbmVMYXBUcmlnZ2VyVHlwZUlkEjQKME9YSUdFTl9UWF9QSVRfTEFORV'
+        'Ch9PeGlnZW5UeFBpdExhbmVMYXBUcmlnZ2VyVHlwZUlkEjQKME9YSUdFTl9UWF9QSVRfTEFORV'
         '9MQVBfVFJJR0dFUl9UWVBFX0lEX1VOREVGSU5FRBAAEjkKNU9YSUdFTl9UWF9QSVRfTEFORV9M'
         'QVBfVFJJR0dFUl9UWVBFX0lEX1BJVF9MQU5FX0VOVFJZEAESOAo0T1hJR0VOX1RYX1BJVF9MQU'
         '5FX0xBUF9UUklHR0VSX1RZUEVfSURfUElUX0xBTkVfRVhJVBAC');
-
-@$core.Deprecated('Use oxigenRxLapTimesTypeIdDescriptor instead')
-const OxigenRxLapTimesTypeId$json = {
-  '1': 'OxigenRxLapTimesTypeId',
-  '2': [
-    {'1': 'OXIGEN_RX_LAP_TIMES_TYPE_ID_CONTROLLER', '2': 0},
-    {'1': 'OXIGEN_RX_LAP_TIMES_TYPE_ID_TIMER', '2': 1},
-  ],
-};
-
-/// Descriptor for `OxigenRxLapTimesTypeId`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List oxigenRxLapTimesTypeIdDescriptor = $convert.base64Decode(
-    'ChZPeGlnZW5SeExhcFRpbWVzVHlwZUlkEioKJk9YSUdFTl9SWF9MQVBfVElNRVNfVFlQRV9JRF'
-    '9DT05UUk9MTEVSEAASJQohT1hJR0VOX1JYX0xBUF9USU1FU19UWVBFX0lEX1RJTUVSEAE=');
 
 @$core.Deprecated('Use deviceRequestDescriptor instead')
 const DeviceRequest$json = {
@@ -484,6 +488,15 @@ const DeviceIntegration$json = {
       '9': 0,
       '10': 'deviceIntegrationLapMaster'
     },
+    {
+      '1': 'device_integration_chrono_log',
+      '3': 100,
+      '4': 1,
+      '5': 11,
+      '6': '.razmanager.protobuf.public.v1.DeviceIntegrationChronoLog',
+      '9': 0,
+      '10': 'deviceIntegrationChronoLog'
+    },
   ],
   '8': [
     {'1': 'value'},
@@ -510,8 +523,10 @@ final $typed_data.Uint8List deviceIntegrationDescriptor = $convert.base64Decode(
     'Rpb25fcmdiGAcgASgLMjMucmF6bWFuYWdlci5wcm90b2J1Zi5wdWJsaWMudjEuRGV2aWNlSW50'
     'ZWdyYXRpb25SZ2JIAFIUZGV2aWNlSW50ZWdyYXRpb25SZ2ISfgodZGV2aWNlX2ludGVncmF0aW'
     '9uX2xhcF9tYXN0ZXIYCCABKAsyOS5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5EZXZp'
-    'Y2VJbnRlZ3JhdGlvbkxhcE1hc3RlckgAUhpkZXZpY2VJbnRlZ3JhdGlvbkxhcE1hc3RlckIHCg'
-    'V2YWx1ZQ==');
+    'Y2VJbnRlZ3JhdGlvbkxhcE1hc3RlckgAUhpkZXZpY2VJbnRlZ3JhdGlvbkxhcE1hc3RlchJ+Ch'
+    '1kZXZpY2VfaW50ZWdyYXRpb25fY2hyb25vX2xvZxhkIAEoCzI5LnJhem1hbmFnZXIucHJvdG9i'
+    'dWYucHVibGljLnYxLkRldmljZUludGVncmF0aW9uQ2hyb25vTG9nSABSGmRldmljZUludGVncm'
+    'F0aW9uQ2hyb25vTG9nQgcKBXZhbHVl');
 
 @$core.Deprecated('Use deviceIntegrationGpioDescriptor instead')
 const DeviceIntegrationGpio$json = {
@@ -528,28 +543,28 @@ const DeviceIntegrationOxigen$json = {
   '2': [
     {'1': 'serial_port_name', '3': 1, '4': 1, '5': 9, '10': 'serialPortName'},
     {
-      '1': 'oxigen_tx_pit_lane_lap_counting_type_id',
+      '1': 'oxigen_rx_lap_time_type_id',
       '3': 2,
       '4': 1,
       '5': 14,
-      '6': '.razmanager.protobuf.public.v1.OxigenTxPitlaneLapCountingTypeId',
+      '6': '.razmanager.protobuf.public.v1.OxigenRxLapTimeTypeId',
+      '10': 'oxigenRxLapTimeTypeId'
+    },
+    {
+      '1': 'oxigen_tx_pit_lane_lap_counting_type_id',
+      '3': 3,
+      '4': 1,
+      '5': 14,
+      '6': '.razmanager.protobuf.public.v1.OxigenTxPitLaneLapCountingTypeId',
       '10': 'oxigenTxPitLaneLapCountingTypeId'
     },
     {
       '1': 'oxigen_tx_pit_lane_lap_trigger_type_id',
-      '3': 3,
-      '4': 1,
-      '5': 14,
-      '6': '.razmanager.protobuf.public.v1.OxigenTxPitlaneLapTriggerTypeId',
-      '10': 'oxigenTxPitLaneLapTriggerTypeId'
-    },
-    {
-      '1': 'oxigen_rx_lap_times_type_id',
       '3': 4,
       '4': 1,
       '5': 14,
-      '6': '.razmanager.protobuf.public.v1.OxigenRxLapTimesTypeId',
-      '10': 'oxigenRxLapTimesTypeId'
+      '6': '.razmanager.protobuf.public.v1.OxigenTxPitLaneLapTriggerTypeId',
+      '10': 'oxigenTxPitLaneLapTriggerTypeId'
     },
     {
       '1': 'max_controller_id',
@@ -564,15 +579,15 @@ const DeviceIntegrationOxigen$json = {
 /// Descriptor for `DeviceIntegrationOxigen`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List deviceIntegrationOxigenDescriptor = $convert.base64Decode(
     'ChdEZXZpY2VJbnRlZ3JhdGlvbk94aWdlbhIoChBzZXJpYWxfcG9ydF9uYW1lGAEgASgJUg5zZX'
-    'JpYWxQb3J0TmFtZRKSAQonb3hpZ2VuX3R4X3BpdF9sYW5lX2xhcF9jb3VudGluZ190eXBlX2lk'
-    'GAIgASgOMj8ucmF6bWFuYWdlci5wcm90b2J1Zi5wdWJsaWMudjEuT3hpZ2VuVHhQaXRsYW5lTG'
-    'FwQ291bnRpbmdUeXBlSWRSIG94aWdlblR4UGl0TGFuZUxhcENvdW50aW5nVHlwZUlkEo8BCiZv'
-    'eGlnZW5fdHhfcGl0X2xhbmVfbGFwX3RyaWdnZXJfdHlwZV9pZBgDIAEoDjI+LnJhem1hbmFnZX'
-    'IucHJvdG9idWYucHVibGljLnYxLk94aWdlblR4UGl0bGFuZUxhcFRyaWdnZXJUeXBlSWRSH294'
-    'aWdlblR4UGl0TGFuZUxhcFRyaWdnZXJUeXBlSWQScgobb3hpZ2VuX3J4X2xhcF90aW1lc190eX'
-    'BlX2lkGAQgASgOMjUucmF6bWFuYWdlci5wcm90b2J1Zi5wdWJsaWMudjEuT3hpZ2VuUnhMYXBU'
-    'aW1lc1R5cGVJZFIWb3hpZ2VuUnhMYXBUaW1lc1R5cGVJZBIqChFtYXhfY29udHJvbGxlcl9pZB'
-    'gFIAEoDVIPbWF4Q29udHJvbGxlcklk');
+    'JpYWxQb3J0TmFtZRJvChpveGlnZW5fcnhfbGFwX3RpbWVfdHlwZV9pZBgCIAEoDjI0LnJhem1h'
+    'bmFnZXIucHJvdG9idWYucHVibGljLnYxLk94aWdlblJ4TGFwVGltZVR5cGVJZFIVb3hpZ2VuUn'
+    'hMYXBUaW1lVHlwZUlkEpIBCidveGlnZW5fdHhfcGl0X2xhbmVfbGFwX2NvdW50aW5nX3R5cGVf'
+    'aWQYAyABKA4yPy5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52MS5PeGlnZW5UeFBpdExhbm'
+    'VMYXBDb3VudGluZ1R5cGVJZFIgb3hpZ2VuVHhQaXRMYW5lTGFwQ291bnRpbmdUeXBlSWQSjwEK'
+    'Jm94aWdlbl90eF9waXRfbGFuZV9sYXBfdHJpZ2dlcl90eXBlX2lkGAQgASgOMj4ucmF6bWFuYW'
+    'dlci5wcm90b2J1Zi5wdWJsaWMudjEuT3hpZ2VuVHhQaXRMYW5lTGFwVHJpZ2dlclR5cGVJZFIf'
+    'b3hpZ2VuVHhQaXRMYW5lTGFwVHJpZ2dlclR5cGVJZBIqChFtYXhfY29udHJvbGxlcl9pZBgFIA'
+    'EoDVIPbWF4Q29udHJvbGxlcklk');
 
 @$core.Deprecated('Use deviceIntegrationScalextricArcDescriptor instead')
 const DeviceIntegrationScalextricArc$json = {
@@ -643,3 +658,12 @@ final $typed_data.Uint8List deviceIntegrationLapMasterDescriptor =
     $convert.base64Decode(
         'ChpEZXZpY2VJbnRlZ3JhdGlvbkxhcE1hc3RlchIoChBzZXJpYWxfcG9ydF9uYW1lGAEgASgJUg'
         '5zZXJpYWxQb3J0TmFtZRIUCgVsYW5lcxgCIAEoDVIFbGFuZXM=');
+
+@$core.Deprecated('Use deviceIntegrationChronoLogDescriptor instead')
+const DeviceIntegrationChronoLog$json = {
+  '1': 'DeviceIntegrationChronoLog',
+};
+
+/// Descriptor for `DeviceIntegrationChronoLog`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List deviceIntegrationChronoLogDescriptor =
+    $convert.base64Decode('ChpEZXZpY2VJbnRlZ3JhdGlvbkNocm9ub0xvZw==');

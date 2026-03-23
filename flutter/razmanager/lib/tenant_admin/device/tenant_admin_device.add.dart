@@ -161,7 +161,7 @@ class _TenantAdminDeviceAddState extends State<TenantAdminDeviceAdd> with Except
               label: const Text('Add a simulated IO device'),
               onPressed: () {
                 context.pop();
-                context.push('/tenant-admin/devices/io/add', extra: widget.refreshItems);
+                context.push('/tenant-admin/devices/add/simulated', extra: widget.refreshItems);
               },
             ),
           ],

@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualBasic;
+﻿using Razmanager.Protobuf.Public.V1;
+using RazManager.IO.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Resources;
-using System;
 using System.Device.Gpio;
 using System.Linq;
-using RazManager.IO.Utilities;
+using System.Resources;
 using Constants = RazManager.IO.Utilities.Constants;
-using Razmanager.Protobuf.Public.V1;
 
 
 namespace RazManager.IO.Services.Settings
@@ -17,7 +16,7 @@ namespace RazManager.IO.Services.Settings
         public string? CertificatePem { get; set; }
         public string KeyPem { get; set; } = null!;
         public string DeviceSettingsBase64 { get; set; } = null!;
-        public List<DeviceConfiguration> DeviceConfigurations { get; set; } = [];
+        public Guid? DeviceConfigurationId { get; set; }
     }
 
 

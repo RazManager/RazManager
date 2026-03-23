@@ -2,18 +2,19 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Razmanager.Protobuf.Internal.Repository.SystemServices.Heat;
 using Razmanager.Protobuf.Public.V1;
-using RazManager.Repository.Stores.Context;
 using RazManager.Repository.Stores.Entities.HeatIndicatorStint;
 using RazManager.Repository.Stores.Entities.HeatJournal;
 using RazManager.Repository.Stores.Utilities;
 using RazManager.Utilities.Exceptions;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using static Grpc.Core.Metadata;
 
 
 namespace RazManager.Repository.SystemServices.Entities.Heat
@@ -22,13 +23,15 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
     {
         private readonly Stores.Context.RepositoryDbContext _repositoryDbContext;
         private readonly AutoMapper.IMapper _mapper;
-
+        private readonly ILogger<HeatService> _logger;
 
         public HeatService(Stores.Context.RepositoryDbContext dbContext,
-                           AutoMapper.IMapper mapper)
+                           AutoMapper.IMapper mapper,
+                           ILogger<HeatService> logger)
         {
             _repositoryDbContext = dbContext;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -38,6 +41,7 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
                 .Include(x => x.Race).ThenInclude(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationIndicators)
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.Car).ThenInclude(x => x.CarImages.Where(x => x.ImageSize == ImageSize.Avatar))
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.HeatIndicatorStints.OrderBy(x => x.Lap))
+                .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.EventUser.EventUsers)
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == new Guid(request.Value));
             if (entity is null)
@@ -45,7 +49,58 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
                 throw new NotFoundException();
             }
 
-            return _mapper.Map<Razmanager.Protobuf.Public.V1.Heat>(entity);
+            var result = _mapper.Map<Razmanager.Protobuf.Public.V1.Heat>(entity);
+
+            if (!string.IsNullOrEmpty(entity.PreconfiguredIndicatorsJson))
+            {
+                var jsonSerializerOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                };
+                var preconfiguredIndicators = JsonSerializer.Deserialize<List<PreconfiguredIndicator>>(entity.PreconfiguredIndicatorsJson, jsonSerializerOptions);
+                if (preconfiguredIndicators is null)
+                {
+                    _logger.LogWarning("preconfiguredIndicators is null.");
+                }
+                else
+                {
+                    foreach (var heatIndicator in entity.HeatIndicators)
+                    {
+                        var heatIndicatorProto = result.HeatIndicators.SingleOrDefault(x => x.Id == heatIndicator!.Id.ToString());
+                        if (heatIndicatorProto is not null)
+                        {
+                            var preconfiguredIndicator = preconfiguredIndicators
+                                .SingleOrDefault(x => x.IndicatorId == heatIndicator.IndicatorId);
+                            if (preconfiguredIndicator is null)
+                            {
+                                _logger.LogWarning($"preconfiguredIndicators is missing a definition for IndicatorId={heatIndicator.IndicatorId}.");
+                            }
+                            else
+                            {
+                                foreach (var preconfiguredLapTeamEventUser in preconfiguredIndicator.PreconfiguredLapTeamEventUsers)
+                                {
+                                    var teamEventUser = heatIndicator?.EventUser?.EventUsers
+                                        .SingleOrDefault(x => x.ShortName == preconfiguredLapTeamEventUser.TeamEventUserShortName);
+                                    if (teamEventUser is null)
+                                    {
+                                        _logger.LogWarning($"preconfiguredIndicators and IndicatorId={heatIndicator!.IndicatorId} doesn't have an eventUser with the short name {preconfiguredLapTeamEventUser.TeamEventUserShortName}.");
+                                    }
+                                    else
+                                    {
+                                        heatIndicatorProto.PreconfiguredLaps.Add(new HeatStintEventUsersIndicatorLap
+                                        {
+                                            Lap = preconfiguredLapTeamEventUser.Lap,
+                                            EventUserId = teamEventUser.Id.ToString()
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
 
@@ -110,6 +165,7 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
 
             var heatIndicators = _repositoryDbContext.HeatIndicators
                 .Where(x => x.HeatId == new Guid(request.Value))
+                .Include(x => x.Heat)
                 .Include(x => x.EventUser.EventUsers)
                 .AsAsyncEnumerable()
                 .ConfigureAwait(false);
@@ -121,14 +177,56 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
                     Lap = 1
                 };
 
-                if (heatIndicator.EventUser is not null && heatIndicator.EventUser.EventUsers.Count >= 2)
+                if (!string.IsNullOrEmpty(heatIndicator.Heat.PreconfiguredIndicatorsJson))
                 {
-                    var teamEventUser = heatIndicator.EventUser.EventUsers[new Random().Next(heatIndicator.EventUser!.EventUsers.Count)];
-                    if (teamEventUser is not null)
+                    var jsonSerializerOptions = new JsonSerializerOptions
                     {
-                        heatIndicatorStint.EventUserId = teamEventUser.Id;
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    };
+                    var preconfiguredIndicators = JsonSerializer.Deserialize<List<PreconfiguredIndicator>>(heatIndicator.Heat.PreconfiguredIndicatorsJson, jsonSerializerOptions);
+                    if (preconfiguredIndicators is null)
+                    {
+                        _logger.LogWarning("preconfiguredIndicators is null.");
+                        return new Empty();
                     }
+
+                    var preconfiguredIndicator = preconfiguredIndicators
+                        .SingleOrDefault(x => x.IndicatorId == heatIndicator.IndicatorId);
+                    if (preconfiguredIndicator is null)
+                    {
+                        _logger.LogWarning($"preconfiguredIndicators is missing a definition for IndicatorId={heatIndicator.IndicatorId}.");
+                        return new Empty();
+                    }
+
+                    var preconfiguredLapTeamEventUser = preconfiguredIndicator.PreconfiguredLapTeamEventUsers
+                        .SingleOrDefault(x => x.Lap == 1);
+                    if (preconfiguredLapTeamEventUser is null)
+                    {
+                        _logger.LogWarning($"preconfiguredIndicators and IndicatorId={heatIndicator.IndicatorId} is missing an EventUser for lap 1.");
+                        return new Empty();
+                    }
+
+                    var teamEventUser = heatIndicator?.EventUser?.EventUsers
+                        .SingleOrDefault(x => x.ShortName == preconfiguredLapTeamEventUser.TeamEventUserShortName);
+                    if (teamEventUser is null)
+                    {
+                        _logger.LogWarning($"preconfiguredIndicators and IndicatorId={heatIndicator.IndicatorId} doesn't have an eventUser with the short name {preconfiguredLapTeamEventUser.TeamEventUserShortName}.");
+                        return new Empty();
+                    }
+
+                    heatIndicatorStint.EventUserId = teamEventUser.Id;
                 }
+                //else
+                //{
+                //    if (heatIndicator.EventUser is not null && heatIndicator.EventUser.EventUsers.Count >= 2)
+                //    {
+                //        var teamEventUser = heatIndicator.EventUser.EventUsers[new Random().Next(heatIndicator.EventUser!.EventUsers.Count)];
+                //        if (teamEventUser is not null)
+                //        {
+                //            heatIndicatorStint.EventUserId = teamEventUser.Id;
+                //        }
+                //    }
+                //}
 
                 _repositoryDbContext.Add(heatIndicatorStint);
             }
@@ -136,5 +234,23 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
 
             return new Empty();
         }
+    }
+
+    public class PreconfiguredIndicator
+    {
+        [Required]
+        public int IndicatorId { get; set; }
+
+        public List<PreconfiguredLapTeamEventUser> PreconfiguredLapTeamEventUsers { get; set; } = [];
+    }
+
+
+    public class PreconfiguredLapTeamEventUser
+    {
+        [Required]
+        public uint Lap { get; set; }
+
+        [Required]
+        public string TeamEventUserShortName { get; set; } = null!;
     }
 }

@@ -22,7 +22,6 @@ import '../../utilities/date_time_field.dart';
 import '../../utilities/image_avatar_field.dart';
 import '../../utilities/image_field.dart';
 import '../../utilities/uppercase_textformatter.dart';
-import '../../utilities/color_definition_field.dart';
 
 class TenantAdminEventDetail extends CrudMasterDetailBase {
   const TenantAdminEventDetail({super.key, required super.id, required super.oldEtag, required super.refreshItems});

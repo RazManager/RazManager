@@ -86,6 +86,7 @@ message HeatIndicator {
   google.protobuf.UInt32Value car_class_color = 5;
   google.protobuf.BytesValue car_image = 6;
   repeated HeatIndicatorStint heat_indicator_stints = 7;
+  repeated HeatStintEventUsersIndicatorLap preconfigured_laps = 10;
 }
 
 

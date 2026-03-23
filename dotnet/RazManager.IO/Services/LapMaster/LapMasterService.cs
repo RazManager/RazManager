@@ -25,6 +25,8 @@ namespace RazManager.IO.Services.LapMaster
         private SerialPort? _serialPort;
         private Queue<byte>? _dataQueue;
         private GrpcChannel? _grpcChannel;
+        private int? lapMasterTimerOffset = null;
+        private DateTime? lapMasterDateTimeOffset = null;
 
 
         public LapMasterService(Settings.ISettingsService settingsService,
@@ -40,72 +42,79 @@ namespace RazManager.IO.Services.LapMaster
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var deviceSettings = _settingsService.DeviceSettings;
-
-            var deviceConfigurationSettings = deviceSettings.DeviceConfigurationSettings.Where(x => x.DeviceIntegrations.Any(x => x.ValueCase == DeviceIntegration.ValueOneofCase.DeviceIntegrationLapMaster)).SingleOrDefault();
-            var deviceIntegrationLapMaster = deviceConfigurationSettings?.DeviceIntegrations?.SingleOrDefault(x => x.ValueCase == DeviceIntegration.ValueOneofCase.DeviceIntegrationLapMaster)?.DeviceIntegrationLapMaster;
-            if (deviceIntegrationLapMaster is null)
+            try
             {
-                return;
+                var deviceSettings = _settingsService.DeviceSettings;
+
+                var deviceConfigurationSettings = deviceSettings.DeviceConfigurationSettings.Where(x => x.DeviceIntegrations.Any(x => x.ValueCase == DeviceIntegration.ValueOneofCase.DeviceIntegrationLapMaster)).SingleOrDefault(x => x.Id == _settingsService.Settings.DeviceConfigurationId.ToString());
+                var deviceIntegrationLapMaster = deviceConfigurationSettings?.DeviceIntegrations?.SingleOrDefault(x => x.ValueCase == DeviceIntegration.ValueOneofCase.DeviceIntegrationLapMaster)?.DeviceIntegrationLapMaster;
+                if (deviceIntegrationLapMaster is null)
+                {
+                    return;
+                }
+                _deviceConfigurationId = deviceConfigurationSettings!.Id;
+
+                _logger.LogInformation($"Opening {deviceIntegrationLapMaster.SerialPortName}...");
+                _serialPort = new SerialPort(deviceIntegrationLapMaster.SerialPortName)
+                {
+                    BaudRate = 9600,
+                    //DataBits = 8,
+                    //Parity = Parity.None,
+                    //StopBits = StopBits.One,
+                    //ReceivedBytesThreshold = 6
+                };
+                //_serialPort.ReadBufferSize = 65536;
+                //serialPort.ReadTimeout = 300;
+                //_serialPort.Handshake = Handshake.XOnXOff;
+                //_serialPort.DtrEnable = true;
+                //_serialPort.RtsEnable = false;
+                _serialPort.DataReceived += serialPort_Rx;
+                _serialPort.ErrorReceived += serialPort_ErrorReceived;
+                _serialPort.Open();
+                _logger.LogInformation($"{_serialPort.PortName} opened.");
+
+                _serialPort.Write(">R");
+                _serialPort.Write([Convert.ToByte('>'), Convert.ToByte('M'), 255], 0, 3);
+                _serialPort.Write(">F");
+                _serialPort.Write([Convert.ToByte('>'), Convert.ToByte('M'), 255], 0, 3);
+                _serialPort.Write(">N");
+
+                var httpClientHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                };
+                httpClientHandler.ClientCertificates.Add(_settingsService.Certificate);
+
+                var grpcChannelOptions = new GrpcChannelOptions
+                {
+                    HttpHandler = httpClientHandler,
+                };
+
+                _logger.LogInformation("Channel creating...");
+                _grpcChannel = GrpcChannel.ForAddress(_connectionOptions.DeviceClientAddress.ToString(), grpcChannelOptions);
+                _logger.LogInformation("Channel created.");
+
+                await Task.Delay(Timeout.Infinite, stoppingToken);
             }
-            _deviceConfigurationId = deviceConfigurationSettings!.Id;
-
-            _logger.LogInformation($"Opening {deviceIntegrationLapMaster.SerialPortName}...");
-            _serialPort = new SerialPort(deviceIntegrationLapMaster.SerialPortName)
+            catch (Exception exception)
             {
-                BaudRate = 9600,
-                //DataBits = 8,
-                //Parity = Parity.None,
-                //StopBits = StopBits.One,
-                //ReceivedBytesThreshold = 6
-            };
-            //_serialPort.ReadBufferSize = 65536;
-            //serialPort.ReadTimeout = 300;
-            //_serialPort.Handshake = Handshake.XOnXOff;
-            //_serialPort.DtrEnable = true;
-            //_serialPort.RtsEnable = false;
-            _serialPort.DataReceived += serialPort_Rx;
-            _serialPort.ErrorReceived += serialPort_ErrorReceived;
-            _serialPort.Open();
-            Console.WriteLine($"{_serialPort.PortName} opened.");
-
-            _serialPort.Write(">R");
-            _serialPort.Write([Convert.ToByte('>'), Convert.ToByte('M'), 255], 0, 3);
-            _serialPort.Write(">F");
-            _serialPort.Write([Convert.ToByte('>'), Convert.ToByte('M'), 255], 0, 3);
-            _serialPort.Write(">N");
-
-            var httpClientHandler = new HttpClientHandler
+                _logger.LogError(exception, exception.Message);
+            }
+            finally
             {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-            };
-            httpClientHandler.ClientCertificates.Add(_settingsService.Certificate);
-
-            var grpcChannelOptions = new GrpcChannelOptions
-            {
-                HttpHandler = httpClientHandler,
-            };
-
-            _logger.LogInformation("Channel creating...");
-            _grpcChannel = GrpcChannel.ForAddress(_connectionOptions.DeviceClientAddress.ToString(), grpcChannelOptions);
-            _logger.LogInformation("Channel created.");
-
-
-            //    var deviceServiceClient = new Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceClient(deviceChannel);
-            //    _logger.LogInformation("DeviceInformationAsync...");
-            //    await deviceServiceClient.DeviceInformationAsync(deviceInformation, null, null, stoppingToken);
-
-
-            //    await Task.Delay(Timeout.Infinite, stoppingToken);
-            //}
-            await Task.Delay(Timeout.Infinite, stoppingToken);
+                if (_serialPort is not null && _serialPort.IsOpen)
+                {
+                    _serialPort.Close();
+                }
+                _grpcChannel?.Dispose();
+            }
         }
 
         private void serialPort_Rx(object sender, SerialDataReceivedEventArgs e)
         {
             try
             {
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 var buffer = new byte[_serialPort!.BytesToRead];
                 _serialPort.Read(buffer, 0, buffer.Length);
                 Console.WriteLine($"{buffer.Length} bytes received.");
@@ -165,10 +174,8 @@ namespace RazManager.IO.Services.LapMaster
                                 Console.Write(response);
                                 Console.Write(" ");
                                 var timer = message[2] * 16777216 + message[3] * 65536 + message[4] * 256 + message[5];
-                                Console.Write(timer);
-                                Console.Write(" \t");
-
-
+                                Console.WriteLine(timer);
+                                //Console.Write(" \t");
 
                                 //if (_latestTimers.ContainsKey(response))
                                 //{
@@ -182,22 +189,31 @@ namespace RazManager.IO.Services.LapMaster
                                 //}
                                 //_latestTimers[response] = timer;
 
-                                Console.WriteLine();
-
-                                if (response >= '1' && response <= '8')
+                                if (response == 'N')
                                 {
-                                    var deviceConfigurationInputs = new DeviceConfigurationInputs();
-                                    deviceConfigurationInputs.Items.Add(new DeviceConfigurationInput
+                                    lapMasterTimerOffset = timer;
+                                    lapMasterDateTimeOffset = now;
+                                }
+                                else if (response >= '1' && response <= '8')
+                                {
+                                    if (!lapMasterTimerOffset.HasValue || !lapMasterDateTimeOffset.HasValue)
                                     {
-                                        DeviceConfigurationId = _deviceConfigurationId,
-                                        CorrelationId = Guid.NewGuid().ToString(),
-                                        Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
-                                        DeviceConfigurationInputTypeId = DeviceConfigurationInputTypeId.StartFinishIndicator,
-                                        DeviceConfigurationInputId = Convert.ToByte(response.ToString())
-                                    });
-
-                                    var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(_grpcChannel);
-                                    deviceConfigurationServiceClient.DeviceConfigurationInputsPublish(deviceConfigurationInputs);
+                                        _logger.LogWarning("LapMaster not initialized.");
+                                    }
+                                    else
+                                    {
+                                        var deviceConfigurationInputs = new DeviceConfigurationInputs();
+                                        deviceConfigurationInputs.Items.Add(new DeviceConfigurationInput
+                                        {
+                                            DeviceConfigurationId = _deviceConfigurationId,
+                                            CorrelationId = Guid.NewGuid().ToString(),
+                                            Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(lapMasterDateTimeOffset.Value.AddMilliseconds(timer - lapMasterTimerOffset.Value)),
+                                            DeviceConfigurationInputTypeId = DeviceConfigurationInputTypeId.StartFinishIndicator,
+                                            DeviceConfigurationInputId = Convert.ToByte(response.ToString())
+                                        });
+                                        var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(_grpcChannel);
+                                        deviceConfigurationServiceClient.DeviceConfigurationInputsPublish(deviceConfigurationInputs);
+                                    }
                                 }
 
                                 break;

@@ -199,7 +199,6 @@ namespace RazManager.Repository.CrudServices.Entities.Race
                             entity.Heats.Add(heat);
                         }
 
-
                         foreach (var raceEventUser in entity.RaceEventUsers.Select((x, index) => new { Item = x, Index = index }))
                         {
                             foreach (var raceIndicator in entity.RaceIndicators.Select((x, index) => new { Item = x, Index = index }))
@@ -241,18 +240,18 @@ namespace RazManager.Repository.CrudServices.Entities.Race
                         {
                             var heatIndicatorStint = new HeatIndicatorStintEntity { Lap = 1 };
 
-                            var heatIndicatorEventUserEventUsers = RepositoryDbContext.EventUsers
-                                .Include(x => x.EventUsers)
-                                .SingleOrDefault(x => x.Id == raceIndicatorEventUser.EventUserId);
+                            //var heatIndicatorEventUserEventUsers = RepositoryDbContext.EventUsers
+                            //    .Include(x => x.EventUsers)
+                            //    .SingleOrDefault(x => x.Id == raceIndicatorEventUser.EventUserId);
 
-                            if (heatIndicatorEventUserEventUsers is not null && heatIndicatorEventUserEventUsers.EventUsers.Count >= 2)
-                            {
-                                var teamEventUser = heatIndicatorEventUserEventUsers.EventUsers[new Random().Next(heatIndicatorEventUserEventUsers.EventUsers.Count)];
-                                if (teamEventUser is not null)
-                                {
-                                    heatIndicatorStint.EventUserId = teamEventUser.Id;
-                                }
-                            }
+                            //if (heatIndicatorEventUserEventUsers is not null && heatIndicatorEventUserEventUsers.EventUsers.Count >= 2)
+                            //{
+                            //    var teamEventUser = heatIndicatorEventUserEventUsers.EventUsers[new Random().Next(heatIndicatorEventUserEventUsers.EventUsers.Count)];
+                            //    if (teamEventUser is not null)
+                            //    {
+                            //        heatIndicatorStint.EventUserId = teamEventUser.Id;
+                            //    }
+                            //}
 
                             heat.HeatIndicators.Add(new HeatIndicatorEntity
                             {

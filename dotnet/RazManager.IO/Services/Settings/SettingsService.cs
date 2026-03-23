@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Razmanager.Protobuf.Public.V1;
 using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -52,13 +51,13 @@ namespace RazManager.IO.Services.Settings
                 {
                 }
 
-                if (!_settings.DeviceConfigurations.Any())
-                {
-                    _settings.DeviceConfigurations.Add(new DeviceConfiguration
-                    {
-                        Id = Guid.NewGuid()
-                    });
-                }
+                //if (!_settings.DeviceConfigurations.Any())
+                //{
+                //    _settings.DeviceConfigurations.Add(new DeviceConfiguration
+                //    {
+                //        Id = Guid.NewGuid()
+                //    });
+                //}
             }
             catch (Exception exception)
             {

@@ -1391,6 +1391,26 @@ namespace RazManager.Silo.Grains.Entities.Heat
                             {
                                 _ = RaiseHeatStateTypeAsync(HeatStateTypeId.Ended);
                             }
+
+                            if (!replay)
+                            {
+                                var heatIndicator = _heat!.HeatIndicators.SingleOrDefault(x => x.IndicatorId == indicatorId);
+                                if (heatIndicator is not null && heatIndicator.PreconfiguredLaps.Any())
+                                {
+                                    var preconfiguredStint = heatIndicator.PreconfiguredLaps.SingleOrDefault(x => x.Lap == heatStateIndicator.Laps);
+                                    if (preconfiguredStint is not null)
+                                    {
+                                        _logger.LogInformation($"Creating stint for indicatorId={indicatorId} HeatIndicatorId={heatStateIndicator.Id} Lap={heatStateIndicator.Laps!.Value}");
+                                        _heatIndicatorStintServiceClient.Create(new Razmanager.Protobuf.Internal.Repository.SystemServices.HeatIndicatorStint.HeatIndicatorStintCreate
+                                        {
+                                            HeatIndicatorId = heatStateIndicator.Id,
+                                            Lap = heatStateIndicator.Laps!.Value,
+                                            EventUserId = preconfiguredStint.EventUserId
+                                        });
+                                        _ = RefreshHeatIndicatorStintsAsync(new Guid(heatStateIndicator.Id));
+                                    }
+                                }
+                            }
                         }
 
                         break;
@@ -1445,16 +1465,16 @@ namespace RazManager.Silo.Grains.Entities.Heat
                         {
                             heatStateIndicator.Pitlane = true;
                             heatStateIndicator.LapPitlanes++;
-                            if (!replay)
-                            {
-                                //_logger.LogInformation($"Creating stint for indicatorId={indicatorId} HeatIndicatorId={heatStateIndicator.Id} Lap={heatStateIndicator.Laps!.Value}");
-                                _heatIndicatorStintServiceClient.Create(new Razmanager.Protobuf.Internal.Repository.SystemServices.HeatIndicatorStint.HeatIndicatorStintCreate
-                                {
-                                    HeatIndicatorId = heatStateIndicator.Id,
-                                    Lap = heatStateIndicator.Laps!.Value
-                                });
-                                _ = RefreshHeatIndicatorStintsAsync(new Guid(heatStateIndicator.Id));
-                            }
+                            //if (!replay)
+                            //{
+                            //    //_logger.LogInformation($"Creating stint for indicatorId={indicatorId} HeatIndicatorId={heatStateIndicator.Id} Lap={heatStateIndicator.Laps!.Value}");
+                            //    _heatIndicatorStintServiceClient.Create(new Razmanager.Protobuf.Internal.Repository.SystemServices.HeatIndicatorStint.HeatIndicatorStintCreate
+                            //    {
+                            //        HeatIndicatorId = heatStateIndicator.Id,
+                            //        Lap = heatStateIndicator.Laps!.Value
+                            //    });
+                            //    _ = RefreshHeatIndicatorStintsAsync(new Guid(heatStateIndicator.Id));
+                            //}
                         }
                         break;
 

@@ -21,4 +21,5 @@ message HeatIndicatorStintReadResponse {
 message HeatIndicatorStintCreate {
   string heat_indicator_id = 2;
   uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
 }

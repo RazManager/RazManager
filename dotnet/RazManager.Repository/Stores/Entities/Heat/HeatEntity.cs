@@ -23,9 +23,11 @@ namespace RazManager.Repository.Stores.Entities.Heat
         public Razmanager.Protobuf.Public.V1.SessionTypeId SessionTypeId { get; set; }
 
         [Required]
-        public List<HeatIndicator.HeatIndicatorEntity> HeatIndicators { get; set; } = new();
+        public List<HeatIndicator.HeatIndicatorEntity> HeatIndicators { get; set; } = [];
 
         [Required]
-        public List<HeatJournal.HeatJournalEntity> HeatJournals { get; set; } = new();
+        public List<HeatJournal.HeatJournalEntity> HeatJournals { get; set; } = [];
+
+        public string? PreconfiguredIndicatorsJson { get; set; }
     }
 }

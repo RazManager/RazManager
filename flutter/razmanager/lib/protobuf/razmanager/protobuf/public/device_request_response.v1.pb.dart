@@ -929,6 +929,7 @@ enum DeviceIntegration_Value {
   deviceIntegrationPhilipsHue,
   deviceIntegrationRgb,
   deviceIntegrationLapMaster,
+  deviceIntegrationChronoLog,
   notSet
 }
 
@@ -942,6 +943,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
     DeviceIntegrationPhilipsHue? deviceIntegrationPhilipsHue,
     DeviceIntegrationRgb? deviceIntegrationRgb,
     DeviceIntegrationLapMaster? deviceIntegrationLapMaster,
+    DeviceIntegrationChronoLog? deviceIntegrationChronoLog,
   }) {
     final result = create();
     if (deviceIntegrationGpio != null)
@@ -961,6 +963,8 @@ class DeviceIntegration extends $pb.GeneratedMessage {
       result.deviceIntegrationRgb = deviceIntegrationRgb;
     if (deviceIntegrationLapMaster != null)
       result.deviceIntegrationLapMaster = deviceIntegrationLapMaster;
+    if (deviceIntegrationChronoLog != null)
+      result.deviceIntegrationChronoLog = deviceIntegrationChronoLog;
     return result;
   }
 
@@ -983,6 +987,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
     6: DeviceIntegration_Value.deviceIntegrationPhilipsHue,
     7: DeviceIntegration_Value.deviceIntegrationRgb,
     8: DeviceIntegration_Value.deviceIntegrationLapMaster,
+    100: DeviceIntegration_Value.deviceIntegrationChronoLog,
     0: DeviceIntegration_Value.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
@@ -990,7 +995,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8])
+    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 100])
     ..aOM<DeviceIntegrationGpio>(
         1, _omitFieldNames ? '' : 'deviceIntegrationGpio',
         subBuilder: DeviceIntegrationGpio.create)
@@ -1015,6 +1020,9 @@ class DeviceIntegration extends $pb.GeneratedMessage {
     ..aOM<DeviceIntegrationLapMaster>(
         8, _omitFieldNames ? '' : 'deviceIntegrationLapMaster',
         subBuilder: DeviceIntegrationLapMaster.create)
+    ..aOM<DeviceIntegrationChronoLog>(
+        100, _omitFieldNames ? '' : 'deviceIntegrationChronoLog',
+        subBuilder: DeviceIntegrationChronoLog.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1044,6 +1052,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   @$pb.TagNumber(7)
   @$pb.TagNumber(8)
+  @$pb.TagNumber(100)
   DeviceIntegration_Value whichValue() =>
       _DeviceIntegration_ValueByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
@@ -1054,6 +1063,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
   @$pb.TagNumber(6)
   @$pb.TagNumber(7)
   @$pb.TagNumber(8)
+  @$pb.TagNumber(100)
   void clearValue() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -1158,6 +1168,18 @@ class DeviceIntegration extends $pb.GeneratedMessage {
   void clearDeviceIntegrationLapMaster() => $_clearField(8);
   @$pb.TagNumber(8)
   DeviceIntegrationLapMaster ensureDeviceIntegrationLapMaster() => $_ensure(7);
+
+  @$pb.TagNumber(100)
+  DeviceIntegrationChronoLog get deviceIntegrationChronoLog => $_getN(8);
+  @$pb.TagNumber(100)
+  set deviceIntegrationChronoLog(DeviceIntegrationChronoLog value) =>
+      $_setField(100, value);
+  @$pb.TagNumber(100)
+  $core.bool hasDeviceIntegrationChronoLog() => $_has(8);
+  @$pb.TagNumber(100)
+  void clearDeviceIntegrationChronoLog() => $_clearField(100);
+  @$pb.TagNumber(100)
+  DeviceIntegrationChronoLog ensureDeviceIntegrationChronoLog() => $_ensure(8);
 }
 
 class DeviceIntegrationGpio extends $pb.GeneratedMessage {
@@ -1203,20 +1225,20 @@ class DeviceIntegrationGpio extends $pb.GeneratedMessage {
 class DeviceIntegrationOxigen extends $pb.GeneratedMessage {
   factory DeviceIntegrationOxigen({
     $core.String? serialPortName,
-    OxigenTxPitlaneLapCountingTypeId? oxigenTxPitLaneLapCountingTypeId,
-    OxigenTxPitlaneLapTriggerTypeId? oxigenTxPitLaneLapTriggerTypeId,
-    OxigenRxLapTimesTypeId? oxigenRxLapTimesTypeId,
+    OxigenRxLapTimeTypeId? oxigenRxLapTimeTypeId,
+    OxigenTxPitLaneLapCountingTypeId? oxigenTxPitLaneLapCountingTypeId,
+    OxigenTxPitLaneLapTriggerTypeId? oxigenTxPitLaneLapTriggerTypeId,
     $core.int? maxControllerId,
   }) {
     final result = create();
     if (serialPortName != null) result.serialPortName = serialPortName;
+    if (oxigenRxLapTimeTypeId != null)
+      result.oxigenRxLapTimeTypeId = oxigenRxLapTimeTypeId;
     if (oxigenTxPitLaneLapCountingTypeId != null)
       result.oxigenTxPitLaneLapCountingTypeId =
           oxigenTxPitLaneLapCountingTypeId;
     if (oxigenTxPitLaneLapTriggerTypeId != null)
       result.oxigenTxPitLaneLapTriggerTypeId = oxigenTxPitLaneLapTriggerTypeId;
-    if (oxigenRxLapTimesTypeId != null)
-      result.oxigenRxLapTimesTypeId = oxigenRxLapTimesTypeId;
     if (maxControllerId != null) result.maxControllerId = maxControllerId;
     return result;
   }
@@ -1236,15 +1258,15 @@ class DeviceIntegrationOxigen extends $pb.GeneratedMessage {
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'serialPortName')
-    ..aE<OxigenTxPitlaneLapCountingTypeId>(
-        2, _omitFieldNames ? '' : 'oxigenTxPitLaneLapCountingTypeId',
-        enumValues: OxigenTxPitlaneLapCountingTypeId.values)
-    ..aE<OxigenTxPitlaneLapTriggerTypeId>(
-        3, _omitFieldNames ? '' : 'oxigenTxPitLaneLapTriggerTypeId',
-        enumValues: OxigenTxPitlaneLapTriggerTypeId.values)
-    ..aE<OxigenRxLapTimesTypeId>(
-        4, _omitFieldNames ? '' : 'oxigenRxLapTimesTypeId',
-        enumValues: OxigenRxLapTimesTypeId.values)
+    ..aE<OxigenRxLapTimeTypeId>(
+        2, _omitFieldNames ? '' : 'oxigenRxLapTimeTypeId',
+        enumValues: OxigenRxLapTimeTypeId.values)
+    ..aE<OxigenTxPitLaneLapCountingTypeId>(
+        3, _omitFieldNames ? '' : 'oxigenTxPitLaneLapCountingTypeId',
+        enumValues: OxigenTxPitLaneLapCountingTypeId.values)
+    ..aE<OxigenTxPitLaneLapTriggerTypeId>(
+        4, _omitFieldNames ? '' : 'oxigenTxPitLaneLapTriggerTypeId',
+        enumValues: OxigenTxPitLaneLapTriggerTypeId.values)
     ..aI(5, _omitFieldNames ? '' : 'maxControllerId',
         fieldType: $pb.PbFieldType.OU3)
     ..hasRequiredFields = false;
@@ -1279,37 +1301,37 @@ class DeviceIntegrationOxigen extends $pb.GeneratedMessage {
   void clearSerialPortName() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  OxigenTxPitlaneLapCountingTypeId get oxigenTxPitLaneLapCountingTypeId =>
-      $_getN(1);
+  OxigenRxLapTimeTypeId get oxigenRxLapTimeTypeId => $_getN(1);
   @$pb.TagNumber(2)
-  set oxigenTxPitLaneLapCountingTypeId(
-          OxigenTxPitlaneLapCountingTypeId value) =>
+  set oxigenRxLapTimeTypeId(OxigenRxLapTimeTypeId value) =>
       $_setField(2, value);
   @$pb.TagNumber(2)
-  $core.bool hasOxigenTxPitLaneLapCountingTypeId() => $_has(1);
+  $core.bool hasOxigenRxLapTimeTypeId() => $_has(1);
   @$pb.TagNumber(2)
-  void clearOxigenTxPitLaneLapCountingTypeId() => $_clearField(2);
+  void clearOxigenRxLapTimeTypeId() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  OxigenTxPitlaneLapTriggerTypeId get oxigenTxPitLaneLapTriggerTypeId =>
+  OxigenTxPitLaneLapCountingTypeId get oxigenTxPitLaneLapCountingTypeId =>
       $_getN(2);
   @$pb.TagNumber(3)
-  set oxigenTxPitLaneLapTriggerTypeId(OxigenTxPitlaneLapTriggerTypeId value) =>
+  set oxigenTxPitLaneLapCountingTypeId(
+          OxigenTxPitLaneLapCountingTypeId value) =>
       $_setField(3, value);
   @$pb.TagNumber(3)
-  $core.bool hasOxigenTxPitLaneLapTriggerTypeId() => $_has(2);
+  $core.bool hasOxigenTxPitLaneLapCountingTypeId() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOxigenTxPitLaneLapTriggerTypeId() => $_clearField(3);
+  void clearOxigenTxPitLaneLapCountingTypeId() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  OxigenRxLapTimesTypeId get oxigenRxLapTimesTypeId => $_getN(3);
+  OxigenTxPitLaneLapTriggerTypeId get oxigenTxPitLaneLapTriggerTypeId =>
+      $_getN(3);
   @$pb.TagNumber(4)
-  set oxigenRxLapTimesTypeId(OxigenRxLapTimesTypeId value) =>
+  set oxigenTxPitLaneLapTriggerTypeId(OxigenTxPitLaneLapTriggerTypeId value) =>
       $_setField(4, value);
   @$pb.TagNumber(4)
-  $core.bool hasOxigenRxLapTimesTypeId() => $_has(3);
+  $core.bool hasOxigenTxPitLaneLapTriggerTypeId() => $_has(3);
   @$pb.TagNumber(4)
-  void clearOxigenRxLapTimesTypeId() => $_clearField(4);
+  void clearOxigenTxPitLaneLapTriggerTypeId() => $_clearField(4);
 
   @$pb.TagNumber(5)
   $core.int get maxControllerId => $_getIZ(4);
@@ -1629,6 +1651,47 @@ class DeviceIntegrationLapMaster extends $pb.GeneratedMessage {
   $core.bool hasLanes() => $_has(1);
   @$pb.TagNumber(2)
   void clearLanes() => $_clearField(2);
+}
+
+class DeviceIntegrationChronoLog extends $pb.GeneratedMessage {
+  factory DeviceIntegrationChronoLog() => create();
+
+  DeviceIntegrationChronoLog._();
+
+  factory DeviceIntegrationChronoLog.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory DeviceIntegrationChronoLog.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'DeviceIntegrationChronoLog',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  DeviceIntegrationChronoLog clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  DeviceIntegrationChronoLog copyWith(
+          void Function(DeviceIntegrationChronoLog) updates) =>
+      super.copyWith(
+              (message) => updates(message as DeviceIntegrationChronoLog))
+          as DeviceIntegrationChronoLog;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static DeviceIntegrationChronoLog create() => DeviceIntegrationChronoLog._();
+  @$core.override
+  DeviceIntegrationChronoLog createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static DeviceIntegrationChronoLog getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DeviceIntegrationChronoLog>(create);
+  static DeviceIntegrationChronoLog? _defaultInstance;
 }
 
 const $core.bool _omitFieldNames =

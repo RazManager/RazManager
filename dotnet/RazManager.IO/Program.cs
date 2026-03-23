@@ -156,6 +156,11 @@ namespace RazManager.IO
                         )
                     );
 
+                    services.Configure<HostOptions>(hostOptions =>
+                    {
+                        hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+                    });
+
                     services.AddHostedService<RazManager.IO.Services.Device.DeviceService>();
                     services.AddHostedService<RazManager.IO.Services.LapMaster.LapMasterService>();
                 });
