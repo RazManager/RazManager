@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
+import '../../protobuf/razmanager/protobuf/public/event.v1.pb.dart';
 import '../../protobuf/razmanager/protobuf/public/heat.v1.pb.dart';
 import '../../utilities/exception_message.dart';
 import '../../utilities/loading.dart';
@@ -137,6 +138,12 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                 .where((x) => x.indicatorId == heatIndicator.indicatorId)
                                 .singleOrNull;
                             final heatUser = heatModel.heatUsers[heatIndicator.indicatorId];
+                            TeamUser? teamDriver;
+                            if (publicHeatChildState.heatModel.teamHeat && heatLeaderboardIndicator!.teamEventUserId.hasValue()) {
+                              teamDriver = publicHeatChildState.heatModel.teamUsers
+                                  .where((teamUser) => teamUser.id == heatLeaderboardIndicator.teamEventUserId.value)
+                                  .singleOrNull;
+                            }
                             final timeTypeTimeLap = heatLeaderboardIndicator!.timeTypeTimes
                                 .where((x) => x.timeTypeId == HeatIndicatorTimeTypeId.HEAT_INDICATOR_TIME_TYPE_ID_LAP)
                                 .singleOrNull;
@@ -155,54 +162,100 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                     );
                                     return Column(
                                       children: [
-                                        Row(
+                                        Table(
+                                          columnWidths: const {
+                                            0: FlexColumnWidth(),
+                                            1: IntrinsicColumnWidth(),
+                                            2: IntrinsicColumnWidth(),
+                                            3: IntrinsicColumnWidth(),
+                                            4: IntrinsicColumnWidth(),
+                                            5: FlexColumnWidth(),
+                                            6: IntrinsicColumnWidth(),
+                                          },
+                                          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                           children: [
-                                            Expanded(
-                                              child: Center(
-                                                child: IntrinsicWidth(
-                                                  child: Row(
-                                                    children: [
-                                                      if (raceModel.showIndicators) ...[
+                                            TableRow(
+                                              children: [
+                                                TableCell(child: Container()),
+                                                if (raceModel.showIndicators)
+                                                  TableCell(
+                                                    child: Row(
+                                                      children: [
                                                         if (heatIndicator.hasColor())
                                                           CircleAvatar(backgroundColor: Color(heatIndicator.color.value), radius: nameFontSize / 2)
                                                         else
                                                           Text(heatIndicator.indicatorId.toString(), style: TextStyle(fontSize: nameFontSize)),
                                                         SizedBox(width: 8),
                                                       ],
-                                                      if (heatIndicator.hasCarImage() && heatIndicator.carImage.value.isNotEmpty) ...[
+                                                    ),
+                                                  )
+                                                else
+                                                  TableCell(child: Container()),
+                                                if (heatIndicator.hasCarImage() && heatIndicator.carImage.value.isNotEmpty)
+                                                  TableCell(
+                                                    child: Row(
+                                                      children: [
                                                         CircleAvatar(
                                                           foregroundImage: MemoryImage(Uint8List.fromList(heatIndicator.carImage.value)),
                                                           radius: nameFontSize / 2,
                                                         ),
                                                         SizedBox(width: 8),
                                                       ],
-                                                      if (heatUser != null && heatUser.hasImage() && heatUser.image.value.isNotEmpty) ...[
+                                                    ),
+                                                  )
+                                                else
+                                                  TableCell(child: Container()),
+                                                if (heatUser != null && heatUser.hasImage() && heatUser.image.value.isNotEmpty)
+                                                  TableCell(
+                                                    child: Row(
+                                                      children: [
                                                         CircleAvatar(
                                                           foregroundImage: MemoryImage(Uint8List.fromList(heatUser.image.value)),
                                                           radius: nameFontSize / 2,
                                                         ),
                                                         SizedBox(width: 8),
                                                       ],
-                                                      Text(
-                                                        heatUser?.name.value ?? '?',
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(fontSize: nameFontSize),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                    ),
+                                                  )
+                                                else
+                                                  TableCell(child: Container()),
+                                                Text(
+                                                  heatUser?.name.value ?? '?',
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(fontSize: nameFontSize),
                                                 ),
-                                              ),
+
+                                                TableCell(child: Container()),
+                                                Row(
+                                                  children: heatLeaderboardIndicator.flags.map((x) {
+                                                    switch (x) {
+                                                      case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED:
+                                                        return Icon(Icons.sports_score, size: nameFontSize);
+                                                      case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FASTEST_LAP:
+                                                        return Icon(Icons.timer, size: nameFontSize, color: Colors.purpleAccent);
+                                                      default:
+                                                        return Icon(Icons.question_mark, size: nameFontSize);
+                                                    }
+                                                  }).toList(),
+                                                ),
+                                              ],
                                             ),
-                                            ...heatLeaderboardIndicator.flags.map((x) {
-                                              switch (x) {
-                                                case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED:
-                                                  return Icon(Icons.sports_score, size: nameFontSize);
-                                                case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FASTEST_LAP:
-                                                  return Icon(Icons.timer, size: nameFontSize, color: Colors.purpleAccent);
-                                                default:
-                                                  return Icon(Icons.question_mark, size: nameFontSize);
-                                              }
-                                            }),
+                                            if (teamDriver != null)
+                                              TableRow(
+                                                children: [
+                                                  TableCell(child: Container()),
+                                                  TableCell(child: Container()),
+                                                  TableCell(child: Container()),
+                                                  TableCell(child: Container()),
+                                                  Text(
+                                                    teamDriver.name.value,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(fontSize: nameFontSize),
+                                                  ),
+                                                  TableCell(child: Container()),
+                                                  TableCell(child: Container()),
+                                                ],
+                                              ),
                                           ],
                                         ),
                                         Expanded(
@@ -504,7 +557,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                             ],
                                           ),
                                         ),
-                                        if (constraints.maxHeight > 300 && !eventModel.driverBoardMinimal) ...[
+                                        if (constraints.maxHeight > 300 + (teamDriver != null ? nameFontSize : 0)  && !eventModel.driverBoardMinimal) ...[
                                           SizedBox(height: 16),
                                           Consumer<HeatAnalysisLoadingModel>(
                                             builder: (context, model, _) {

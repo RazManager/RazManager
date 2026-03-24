@@ -178,12 +178,6 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                     .where((x) => x.value!.image.hasValue() && x.value!.image.value.isNotEmpty)
                     .isNotEmpty;
 
-                var teamHeat = publicHeatChildState.heatModel.heatUsers.entries
-                    .where((x) => x.value!.eventUserTypeId == EventUserTypeId.EVENT_USER_TYPE_ID_TEAM)
-                    .isNotEmpty;
-
-                var teamUsers = publicHeatChildState.heatModel.heatUsers.entries.expand((x) => x.value!.teamUsers);
-
                 // Try to size the layout using a fontsize that fits all rows horizontially
                 var fontSize = constraints.maxHeight / (2 * (publicHeatChildState.heatModel.heatProto!.heatIndicators.length + 2) + 0.5);
                 var useShortName = false;
@@ -191,8 +185,8 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                   fontSize: fontSize,
                   useShortName: useShortName,
                   hasUserImage: hasUserImage,
-                  teamHeat: teamHeat,
-                  teamUsers: teamUsers,
+                  teamHeat: publicHeatChildState.heatModel.teamHeat,
+                  teamUsers: publicHeatChildState.heatModel.teamUsers,
                 );
                 var leftMargin = leaderBoardLeftMargin(constraints.maxWidth, leaderboardColumns);
 
@@ -205,8 +199,8 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                     fontSize: fontSize,
                     useShortName: useShortName,
                     hasUserImage: hasUserImage,
-                    teamHeat: teamHeat,
-                    teamUsers: teamUsers,
+                    teamHeat: publicHeatChildState.heatModel.teamHeat,
+                    teamUsers: publicHeatChildState.heatModel.teamUsers,
                   );
                   leftMargin = leaderBoardLeftMargin(constraints.maxWidth, leaderboardColumns);
                 }
@@ -218,8 +212,8 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                     fontSize: fontSize,
                     useShortName: useShortName,
                     hasUserImage: hasUserImage,
-                    teamHeat: teamHeat,
-                    teamUsers: teamUsers,
+                    teamHeat: publicHeatChildState.heatModel.teamHeat,
+                    teamUsers: publicHeatChildState.heatModel.teamUsers,
                   );
                   leftMargin = leaderBoardLeftMargin(constraints.maxWidth, leaderboardColumns);
                 }
@@ -389,7 +383,7 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                                 final heatUser = publicHeatChildState.heatModel.heatUsers[heatLeaderboardIndicator.indicatorId];
                                 final teamUsers = publicHeatChildState.heatModel.heatUsers[heatLeaderboardIndicator.indicatorId]?.teamUsers;
                                 TeamUser? teamDriver;
-                                if (teamHeat && heatLeaderboardIndicator.teamEventUserId.hasValue()) {
+                                if (publicHeatChildState.heatModel.teamHeat && heatLeaderboardIndicator.teamEventUserId.hasValue()) {
                                   teamDriver = teamUsers!.where((teamUser) => teamUser.id == heatLeaderboardIndicator.teamEventUserId.value).singleOrNull;
                                 }
                                 final timeTypeTimeLap = heatLeaderboardIndicator.timeTypeTimes

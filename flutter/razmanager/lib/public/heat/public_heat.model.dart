@@ -22,6 +22,7 @@ class HeatModel extends ChangeNotifier with GrpcClient {
   Heat? heatProto;
   StreamSubscription<Heat>? _heatStreamSubscription;
   Map<int, EventUser?> heatUsers = {};
+  late Iterable<TeamUser> teamUsers;
   late bool teamHeat;
   Map<int, Color?> heatIndicatorColors = {};
 
@@ -66,9 +67,10 @@ class HeatModel extends ChangeNotifier with GrpcClient {
 
           heatUsers.clear();
           heatUsers.addEntries(heatProto!.heatIndicators
-              .map((x) => MapEntry(x.indicatorId, _eventModel!.eventProto!.eventUsers.where((eventUser) => eventUser.id == x.eventUserId).singleOrNull)));
+              .map((x) => MapEntry(x.indicatorId, _eventModel!.eventProto!.eventUsers.where((eventUser) => eventUser .id == x.eventUserId).singleOrNull)));
 
-          teamHeat = heatUsers.entries.expand((x) => x.value!.teamUsers).isNotEmpty;
+          teamUsers = heatUsers.entries.expand((x) => x.value!.teamUsers);
+          teamHeat = teamUsers.isNotEmpty;
 
           final defaultHeatIndicatorColors = ColorDefinitions.ordered.toList();
 
