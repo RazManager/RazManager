@@ -930,6 +930,7 @@ enum DeviceIntegration_Value {
   deviceIntegrationRgb,
   deviceIntegrationLapMaster,
   deviceIntegrationChronoLog,
+  deviceIntegrationPerformanceTest,
   notSet
 }
 
@@ -944,6 +945,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
     DeviceIntegrationRgb? deviceIntegrationRgb,
     DeviceIntegrationLapMaster? deviceIntegrationLapMaster,
     DeviceIntegrationChronoLog? deviceIntegrationChronoLog,
+    DeviceIntegrationPerformanceTest? deviceIntegrationPerformanceTest,
   }) {
     final result = create();
     if (deviceIntegrationGpio != null)
@@ -965,6 +967,9 @@ class DeviceIntegration extends $pb.GeneratedMessage {
       result.deviceIntegrationLapMaster = deviceIntegrationLapMaster;
     if (deviceIntegrationChronoLog != null)
       result.deviceIntegrationChronoLog = deviceIntegrationChronoLog;
+    if (deviceIntegrationPerformanceTest != null)
+      result.deviceIntegrationPerformanceTest =
+          deviceIntegrationPerformanceTest;
     return result;
   }
 
@@ -988,6 +993,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
     7: DeviceIntegration_Value.deviceIntegrationRgb,
     8: DeviceIntegration_Value.deviceIntegrationLapMaster,
     100: DeviceIntegration_Value.deviceIntegrationChronoLog,
+    101: DeviceIntegration_Value.deviceIntegrationPerformanceTest,
     0: DeviceIntegration_Value.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
@@ -995,7 +1001,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 100])
+    ..oo(0, [1, 2, 3, 4, 5, 6, 7, 8, 100, 101])
     ..aOM<DeviceIntegrationGpio>(
         1, _omitFieldNames ? '' : 'deviceIntegrationGpio',
         subBuilder: DeviceIntegrationGpio.create)
@@ -1023,6 +1029,9 @@ class DeviceIntegration extends $pb.GeneratedMessage {
     ..aOM<DeviceIntegrationChronoLog>(
         100, _omitFieldNames ? '' : 'deviceIntegrationChronoLog',
         subBuilder: DeviceIntegrationChronoLog.create)
+    ..aOM<DeviceIntegrationPerformanceTest>(
+        101, _omitFieldNames ? '' : 'deviceIntegrationPerformanceTest',
+        subBuilder: DeviceIntegrationPerformanceTest.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1053,6 +1062,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
   @$pb.TagNumber(7)
   @$pb.TagNumber(8)
   @$pb.TagNumber(100)
+  @$pb.TagNumber(101)
   DeviceIntegration_Value whichValue() =>
       _DeviceIntegration_ValueByTag[$_whichOneof(0)]!;
   @$pb.TagNumber(1)
@@ -1064,6 +1074,7 @@ class DeviceIntegration extends $pb.GeneratedMessage {
   @$pb.TagNumber(7)
   @$pb.TagNumber(8)
   @$pb.TagNumber(100)
+  @$pb.TagNumber(101)
   void clearValue() => $_clearField($_whichOneof(0));
 
   @$pb.TagNumber(1)
@@ -1180,6 +1191,21 @@ class DeviceIntegration extends $pb.GeneratedMessage {
   void clearDeviceIntegrationChronoLog() => $_clearField(100);
   @$pb.TagNumber(100)
   DeviceIntegrationChronoLog ensureDeviceIntegrationChronoLog() => $_ensure(8);
+
+  @$pb.TagNumber(101)
+  DeviceIntegrationPerformanceTest get deviceIntegrationPerformanceTest =>
+      $_getN(9);
+  @$pb.TagNumber(101)
+  set deviceIntegrationPerformanceTest(
+          DeviceIntegrationPerformanceTest value) =>
+      $_setField(101, value);
+  @$pb.TagNumber(101)
+  $core.bool hasDeviceIntegrationPerformanceTest() => $_has(9);
+  @$pb.TagNumber(101)
+  void clearDeviceIntegrationPerformanceTest() => $_clearField(101);
+  @$pb.TagNumber(101)
+  DeviceIntegrationPerformanceTest ensureDeviceIntegrationPerformanceTest() =>
+      $_ensure(9);
 }
 
 class DeviceIntegrationGpio extends $pb.GeneratedMessage {
@@ -1692,6 +1718,50 @@ class DeviceIntegrationChronoLog extends $pb.GeneratedMessage {
   static DeviceIntegrationChronoLog getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<DeviceIntegrationChronoLog>(create);
   static DeviceIntegrationChronoLog? _defaultInstance;
+}
+
+class DeviceIntegrationPerformanceTest extends $pb.GeneratedMessage {
+  factory DeviceIntegrationPerformanceTest() => create();
+
+  DeviceIntegrationPerformanceTest._();
+
+  factory DeviceIntegrationPerformanceTest.fromBuffer(
+          $core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory DeviceIntegrationPerformanceTest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'DeviceIntegrationPerformanceTest',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  DeviceIntegrationPerformanceTest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  DeviceIntegrationPerformanceTest copyWith(
+          void Function(DeviceIntegrationPerformanceTest) updates) =>
+      super.copyWith(
+              (message) => updates(message as DeviceIntegrationPerformanceTest))
+          as DeviceIntegrationPerformanceTest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static DeviceIntegrationPerformanceTest create() =>
+      DeviceIntegrationPerformanceTest._();
+  @$core.override
+  DeviceIntegrationPerformanceTest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static DeviceIntegrationPerformanceTest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DeviceIntegrationPerformanceTest>(
+          create);
+  static DeviceIntegrationPerformanceTest? _defaultInstance;
 }
 
 const $core.bool _omitFieldNames =

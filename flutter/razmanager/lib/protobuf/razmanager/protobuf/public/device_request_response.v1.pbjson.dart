@@ -29,6 +29,7 @@ const DeviceIntegrationTypeId$json = {
     {'1': 'DEVICE_INTEGRATION_TYPE_ID_RGB', '2': 7},
     {'1': 'DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER', '2': 8},
     {'1': 'DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG', '2': 100},
+    {'1': 'DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST', '2': 101},
   ],
 };
 
@@ -42,7 +43,8 @@ final $typed_data.Uint8List deviceIntegrationTypeIdDescriptor = $convert.base64D
     'NfUElUX1BSTxAFEioKJkRFVklDRV9JTlRFR1JBVElPTl9UWVBFX0lEX1BISUxJUFNfSFVFEAYS'
     'IgoeREVWSUNFX0lOVEVHUkFUSU9OX1RZUEVfSURfUkdCEAcSKQolREVWSUNFX0lOVEVHUkFUSU'
     '9OX1RZUEVfSURfTEFQX01BU1RFUhAIEikKJURFVklDRV9JTlRFR1JBVElPTl9UWVBFX0lEX0NI'
-    'Uk9OT19MT0cQZA==');
+    'Uk9OT19MT0cQZBIvCitERVZJQ0VfSU5URUdSQVRJT05fVFlQRV9JRF9QRVJGT1JNQU5DRV9URV'
+    'NUEGU=');
 
 @$core.Deprecated('Use oxigenRxLapTimeTypeIdDescriptor instead')
 const OxigenRxLapTimeTypeId$json = {
@@ -497,6 +499,15 @@ const DeviceIntegration$json = {
       '9': 0,
       '10': 'deviceIntegrationChronoLog'
     },
+    {
+      '1': 'device_integration_performance_test',
+      '3': 101,
+      '4': 1,
+      '5': 11,
+      '6': '.razmanager.protobuf.public.v1.DeviceIntegrationPerformanceTest',
+      '9': 0,
+      '10': 'deviceIntegrationPerformanceTest'
+    },
   ],
   '8': [
     {'1': 'value'},
@@ -526,7 +537,10 @@ final $typed_data.Uint8List deviceIntegrationDescriptor = $convert.base64Decode(
     'Y2VJbnRlZ3JhdGlvbkxhcE1hc3RlckgAUhpkZXZpY2VJbnRlZ3JhdGlvbkxhcE1hc3RlchJ+Ch'
     '1kZXZpY2VfaW50ZWdyYXRpb25fY2hyb25vX2xvZxhkIAEoCzI5LnJhem1hbmFnZXIucHJvdG9i'
     'dWYucHVibGljLnYxLkRldmljZUludGVncmF0aW9uQ2hyb25vTG9nSABSGmRldmljZUludGVncm'
-    'F0aW9uQ2hyb25vTG9nQgcKBXZhbHVl');
+    'F0aW9uQ2hyb25vTG9nEpABCiNkZXZpY2VfaW50ZWdyYXRpb25fcGVyZm9ybWFuY2VfdGVzdBhl'
+    'IAEoCzI/LnJhem1hbmFnZXIucHJvdG9idWYucHVibGljLnYxLkRldmljZUludGVncmF0aW9uUG'
+    'VyZm9ybWFuY2VUZXN0SABSIGRldmljZUludGVncmF0aW9uUGVyZm9ybWFuY2VUZXN0QgcKBXZh'
+    'bHVl');
 
 @$core.Deprecated('Use deviceIntegrationGpioDescriptor instead')
 const DeviceIntegrationGpio$json = {
@@ -667,3 +681,12 @@ const DeviceIntegrationChronoLog$json = {
 /// Descriptor for `DeviceIntegrationChronoLog`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List deviceIntegrationChronoLogDescriptor =
     $convert.base64Decode('ChpEZXZpY2VJbnRlZ3JhdGlvbkNocm9ub0xvZw==');
+
+@$core.Deprecated('Use deviceIntegrationPerformanceTestDescriptor instead')
+const DeviceIntegrationPerformanceTest$json = {
+  '1': 'DeviceIntegrationPerformanceTest',
+};
+
+/// Descriptor for `DeviceIntegrationPerformanceTest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List deviceIntegrationPerformanceTestDescriptor =
+    $convert.base64Decode('CiBEZXZpY2VJbnRlZ3JhdGlvblBlcmZvcm1hbmNlVGVzdA==');

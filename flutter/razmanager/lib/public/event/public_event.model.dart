@@ -46,6 +46,7 @@ class EventModel extends ChangeNotifier with GrpcClient {
   List<String> eventUserIds = [];
 
   bool leaderBoardUseMaxFontSize = true;
+  int leaderBoardIndicatorColumns = 1;
 
   DriverBoardSelection driverBoardSelection = DriverBoardSelection.all;
   bool driverBoardMinimal = false;
@@ -85,6 +86,11 @@ class EventModel extends ChangeNotifier with GrpcClient {
     final sharedPreferenceLeaderBoardUseMaxFontSize = sharedPreferences.getBool('leaderBoardUseMaxFontSize');
     if (sharedPreferenceLeaderBoardUseMaxFontSize != null) {
       leaderBoardUseMaxFontSize = sharedPreferenceLeaderBoardUseMaxFontSize;
+    }
+
+    final sharedPreferenceLeaderBoardIndicatorColumns = sharedPreferences.getInt('leaderBoardIndicatorColumns');
+    if (sharedPreferenceLeaderBoardIndicatorColumns != null) {
+      leaderBoardIndicatorColumns = sharedPreferenceLeaderBoardIndicatorColumns;
     }
 
     final sharedPreferenceDriverBoardMinimal = sharedPreferences.getBool('driverBoardMinimal');
@@ -492,6 +498,15 @@ class EventModel extends ChangeNotifier with GrpcClient {
 
     final sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setBool('leaderBoardUseMaxFontSize', value);
+
+    notifyListeners();
+  }
+
+  Future<void> leaderBoardIndicatorColumnsNotify(int value) async {
+    leaderBoardIndicatorColumns = value;
+
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setInt('leaderBoardIndicatorColumns', value);
 
     notifyListeners();
   }

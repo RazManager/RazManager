@@ -48,6 +48,10 @@ class DeviceIntegrationTypeId extends $pb.ProtobufEnum {
   static const DeviceIntegrationTypeId DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG =
       DeviceIntegrationTypeId._(
           100, _omitEnumNames ? '' : 'DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG');
+  static const DeviceIntegrationTypeId
+      DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST = DeviceIntegrationTypeId._(
+          101,
+          _omitEnumNames ? '' : 'DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST');
 
   static const $core.List<DeviceIntegrationTypeId> values =
       <DeviceIntegrationTypeId>[
@@ -61,6 +65,7 @@ class DeviceIntegrationTypeId extends $pb.ProtobufEnum {
     DEVICE_INTEGRATION_TYPE_ID_RGB,
     DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER,
     DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG,
+    DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST,
   ];
 
   static final $core.Map<$core.int, DeviceIntegrationTypeId> _byValue =

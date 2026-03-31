@@ -67,30 +67,5 @@ class RaceStateTypeId extends $pb.ProtobufEnum {
   const RaceStateTypeId._(super.value, super.name);
 }
 
-class RaceIndicatorFlag extends $pb.ProtobufEnum {
-  static const RaceIndicatorFlag RACE_INDICATOR_FLAG_RUNNING =
-      RaceIndicatorFlag._(
-          0, _omitEnumNames ? '' : 'RACE_INDICATOR_FLAG_RUNNING');
-  static const RaceIndicatorFlag RACE_INDICATOR_FLAG_FINISHED =
-      RaceIndicatorFlag._(
-          1, _omitEnumNames ? '' : 'RACE_INDICATOR_FLAG_FINISHED');
-  static const RaceIndicatorFlag RACE_INDICATOR_FLAG_FASTEST_LAP =
-      RaceIndicatorFlag._(
-          2, _omitEnumNames ? '' : 'RACE_INDICATOR_FLAG_FASTEST_LAP');
-
-  static const $core.List<RaceIndicatorFlag> values = <RaceIndicatorFlag>[
-    RACE_INDICATOR_FLAG_RUNNING,
-    RACE_INDICATOR_FLAG_FINISHED,
-    RACE_INDICATOR_FLAG_FASTEST_LAP,
-  ];
-
-  static final $core.List<RaceIndicatorFlag?> _byValue =
-      $pb.ProtobufEnum.$_initByValueList(values, 2);
-  static RaceIndicatorFlag? valueOf($core.int value) =>
-      value < 0 || value >= _byValue.length ? null : _byValue[value];
-
-  const RaceIndicatorFlag._(super.value, super.name);
-}
-
 const $core.bool _omitEnumNames =
     $core.bool.fromEnvironment('protobuf.omit_enum_names');

@@ -148,66 +148,69 @@ namespace RazManager.Repository.CrudServices.Entities.Device
                 validationResults.Add(new ValidationResult(ExceptionMessages.DeviceNameDuplicate));
             }
 
-            foreach(var deviceConfiguration in entity.DeviceConfigurations)
+            if (entity.Simulated)
             {
-                if (await RepositoryDbContext.DeviceConfigurations.AnyAsync(x => x.DeviceId == deviceConfiguration.DeviceId && x.Id != entity.Id && x.Name == entity.Name))
+                foreach (var deviceConfiguration in entity.DeviceConfigurations)
                 {
-                    validationResults.Add(new ValidationResult(ExceptionMessages.DeviceConfigurationNameDuplicate));
-                }
+                    if (await RepositoryDbContext.DeviceConfigurations.AnyAsync(x => x.DeviceId == deviceConfiguration.DeviceId && x.Id != entity.Id && x.Name == entity.Name))
+                    {
+                        validationResults.Add(new ValidationResult(ExceptionMessages.DeviceConfigurationNameDuplicate));
+                    }
 
-                foreach (var item in deviceConfiguration.DeviceConfigurationInputs
-                    .Where(x => !x.DeviceConfigurationInputId.HasValue &&
-                                  Constants.DeviceConfigurationInputTypes.First(t => t.DeviceConfigurationInputTypeId == x.DeviceConfigurationInputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.Required)))
-                {
-                    validationResults.Add(new ValidationResult(
-                        string.Format(ExceptionMessages.DeviceDeviceInputDeviceInputIdRequired,
-                                      new ResourceManager(typeof(DeviceInputType)).GetString(item.DeviceConfigurationInputTypeId.ToString()))));
-                }
+                    foreach (var item in deviceConfiguration.DeviceConfigurationInputs
+                        .Where(x => !x.DeviceConfigurationInputId.HasValue &&
+                                      Constants.DeviceConfigurationInputTypes.First(t => t.DeviceConfigurationInputTypeId == x.DeviceConfigurationInputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.Required)))
+                    {
+                        validationResults.Add(new ValidationResult(
+                            string.Format(ExceptionMessages.DeviceDeviceInputDeviceInputIdRequired,
+                                          new ResourceManager(typeof(DeviceInputType)).GetString(item.DeviceConfigurationInputTypeId.ToString()))));
+                    }
 
-                foreach (var item in deviceConfiguration.DeviceConfigurationInputs
-                    .Where(x => x.DeviceConfigurationInputId.HasValue &&
-                                Constants.DeviceConfigurationInputTypes.First(t => t.DeviceConfigurationInputTypeId == x.DeviceConfigurationInputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.None)))
-                {
-                    validationResults.Add(new ValidationResult(
-                        string.Format(ExceptionMessages.DeviceDeviceInputDeviceInputIdNone,
-                        new ResourceManager(typeof(DeviceInputType)).GetString(item.DeviceConfigurationInputTypeId.ToString()))));
-                }
+                    foreach (var item in deviceConfiguration.DeviceConfigurationInputs
+                        .Where(x => x.DeviceConfigurationInputId.HasValue &&
+                                    Constants.DeviceConfigurationInputTypes.First(t => t.DeviceConfigurationInputTypeId == x.DeviceConfigurationInputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.None)))
+                    {
+                        validationResults.Add(new ValidationResult(
+                            string.Format(ExceptionMessages.DeviceDeviceInputDeviceInputIdNone,
+                            new ResourceManager(typeof(DeviceInputType)).GetString(item.DeviceConfigurationInputTypeId.ToString()))));
+                    }
 
-                if (deviceConfiguration.DeviceConfigurationInputs
-                    .GroupBy(x => new { x.DeviceConfigurationInputTypeId, x.DeviceConfigurationInputId })
-                    .Any(x => x.Count() > 1))
-                {
-                    validationResults.Add(new ValidationResult(ExceptionMessages.DeviceDeviceInputDuplicate));
-                }
+                    if (deviceConfiguration.DeviceConfigurationInputs
+                        .GroupBy(x => new { x.DeviceConfigurationInputTypeId, x.DeviceConfigurationInputId })
+                        .Any(x => x.Count() > 1))
+                    {
+                        validationResults.Add(new ValidationResult(ExceptionMessages.DeviceDeviceInputDuplicate));
+                    }
 
-                foreach (var item in deviceConfiguration.DeviceConfigurationOutputs
-                    .Where(x => !x.DeviceConfigurationOutputId.HasValue &&
-                                Constants.DeviceConfigurationOutputTypes.First(t => t.DeviceConfigurationOutputTypeId == x.DeviceConfigurationOutputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.Required)))
-                {
-                    validationResults.Add(new ValidationResult(
-                        string.Format(ExceptionMessages.DeviceDeviceOutputDeviceOutputIdRequired,
-                                      new ResourceManager(typeof(DeviceOutputType)).GetString(item.DeviceConfigurationOutputTypeId.ToString()))));
-                }
+                    foreach (var item in deviceConfiguration.DeviceConfigurationOutputs
+                        .Where(x => !x.DeviceConfigurationOutputId.HasValue &&
+                                    Constants.DeviceConfigurationOutputTypes.First(t => t.DeviceConfigurationOutputTypeId == x.DeviceConfigurationOutputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.Required)))
+                    {
+                        validationResults.Add(new ValidationResult(
+                            string.Format(ExceptionMessages.DeviceDeviceOutputDeviceOutputIdRequired,
+                                          new ResourceManager(typeof(DeviceOutputType)).GetString(item.DeviceConfigurationOutputTypeId.ToString()))));
+                    }
 
-                foreach (var item in deviceConfiguration.DeviceConfigurationOutputs
-                    .Where(x => x.DeviceConfigurationOutputId.HasValue &&
-                                Constants.DeviceConfigurationOutputTypes.First(t => t.DeviceConfigurationOutputTypeId == x.DeviceConfigurationOutputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.None)))
-                {
-                    validationResults.Add(new ValidationResult(
-                        string.Format(ExceptionMessages.DeviceDeviceOutputDeviceOutputIdNone,
-                        new ResourceManager(typeof(DeviceOutputType)).GetString(item.DeviceConfigurationOutputTypeId.ToString()))));
-                }
+                    foreach (var item in deviceConfiguration.DeviceConfigurationOutputs
+                        .Where(x => x.DeviceConfigurationOutputId.HasValue &&
+                                    Constants.DeviceConfigurationOutputTypes.First(t => t.DeviceConfigurationOutputTypeId == x.DeviceConfigurationOutputTypeId).DeviceConfigurationInputOutputIdTypeId.Equals(DeviceConfigurationInputOutputIdTypeId.None)))
+                    {
+                        validationResults.Add(new ValidationResult(
+                            string.Format(ExceptionMessages.DeviceDeviceOutputDeviceOutputIdNone,
+                            new ResourceManager(typeof(DeviceOutputType)).GetString(item.DeviceConfigurationOutputTypeId.ToString()))));
+                    }
 
-                if (deviceConfiguration.DeviceConfigurationOutputs
-                    .GroupBy(x => new { x.DeviceConfigurationOutputTypeId, x.DeviceConfigurationOutputId })
-                    .Any(x => x.Count() > 1))
-                {
-                    validationResults.Add(new ValidationResult(ExceptionMessages.DeviceDeviceOutputDuplicate));
-                }
+                    if (deviceConfiguration.DeviceConfigurationOutputs
+                        .GroupBy(x => new { x.DeviceConfigurationOutputTypeId, x.DeviceConfigurationOutputId })
+                        .Any(x => x.Count() > 1))
+                    {
+                        validationResults.Add(new ValidationResult(ExceptionMessages.DeviceDeviceOutputDuplicate));
+                    }
 
-                if (validationResults.Any())
-                {
-                    throw new ValidationException(string.Join(" ", validationResults.Select(x => x.ErrorMessage)));
+                    if (validationResults.Any())
+                    {
+                        throw new ValidationException(string.Join(" ", validationResults.Select(x => x.ErrorMessage)));
+                    }
                 }
             }
         }

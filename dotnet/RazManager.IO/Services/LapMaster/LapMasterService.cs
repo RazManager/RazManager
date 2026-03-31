@@ -74,10 +74,15 @@ namespace RazManager.IO.Services.LapMaster
                 _logger.LogInformation($"{_serialPort.PortName} opened.");
 
                 _serialPort.Write(">R");
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+
                 _serialPort.Write([Convert.ToByte('>'), Convert.ToByte('M'), 255], 0, 3);
                 _serialPort.Write(">F");
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+
                 _serialPort.Write([Convert.ToByte('>'), Convert.ToByte('M'), 255], 0, 3);
                 _serialPort.Write(">N");
+                await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
                 var httpClientHandler = new HttpClientHandler
                 {
@@ -170,6 +175,9 @@ namespace RazManager.IO.Services.LapMaster
                             case '6':
                             case '7':
                             case '8':
+
+                                //Console.Beep();
+    
                                 Console.Write(preamble);
                                 Console.Write(response);
                                 Console.Write(" ");

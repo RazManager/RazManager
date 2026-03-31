@@ -131,6 +131,10 @@ namespace RazManager.IO
                     Validator.ValidateObject(connectionOptions!, new ValidationContext(connectionOptions!), true);
                     services.AddSingleton<Utilities.ConnectionOptions>(connectionOptions!);
 
+                    var chronoLogOptions = hostBuilderContext.Configuration.Get<Services.ChronoLog.ChronoLogOptions>();
+                    Validator.ValidateObject(chronoLogOptions!, new ValidationContext(chronoLogOptions!), true);
+                    services.AddSingleton<Services.ChronoLog.ChronoLogOptions>(chronoLogOptions!);
+
                     services.AddSingleton(serviceProvider =>
                         Channel.CreateUnbounded<bool>(new UnboundedChannelOptions
                         {
@@ -163,6 +167,8 @@ namespace RazManager.IO
 
                     services.AddHostedService<RazManager.IO.Services.Device.DeviceService>();
                     services.AddHostedService<RazManager.IO.Services.LapMaster.LapMasterService>();
+                    services.AddHostedService<RazManager.IO.Services.ChronoLog.ChronoLogService>();
+                    services.AddHostedService<RazManager.IO.Services.PerformanceTest.PerformanceTestService>();
                 });
 
                 var app = builder.Build();

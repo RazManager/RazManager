@@ -49,22 +49,6 @@ final $typed_data.Uint8List raceStateTypeIdDescriptor = $convert.base64Decode(
     'NFX1NUQVRFX1RZUEVfSURfU1RBUlRFRBABEh0KGVJBQ0VfU1RBVEVfVFlQRV9JRF9QQVVTRUQQ'
     'AhIcChhSQUNFX1NUQVRFX1RZUEVfSURfRU5ERUQQAw==');
 
-@$core.Deprecated('Use raceIndicatorFlagDescriptor instead')
-const RaceIndicatorFlag$json = {
-  '1': 'RaceIndicatorFlag',
-  '2': [
-    {'1': 'RACE_INDICATOR_FLAG_RUNNING', '2': 0},
-    {'1': 'RACE_INDICATOR_FLAG_FINISHED', '2': 1},
-    {'1': 'RACE_INDICATOR_FLAG_FASTEST_LAP', '2': 2},
-  ],
-};
-
-/// Descriptor for `RaceIndicatorFlag`. Decode as a `google.protobuf.EnumDescriptorProto`.
-final $typed_data.Uint8List raceIndicatorFlagDescriptor = $convert.base64Decode(
-    'ChFSYWNlSW5kaWNhdG9yRmxhZxIfChtSQUNFX0lORElDQVRPUl9GTEFHX1JVTk5JTkcQABIgCh'
-    'xSQUNFX0lORElDQVRPUl9GTEFHX0ZJTklTSEVEEAESIwofUkFDRV9JTkRJQ0FUT1JfRkxBR19G'
-    'QVNURVNUX0xBUBAC');
-
 @$core.Deprecated('Use raceCommandPermissionsDescriptor instead')
 const RaceCommandPermissions$json = {
   '1': 'RaceCommandPermissions',
@@ -243,37 +227,76 @@ const RaceLeaderboardEventUser$json = {
   '1': 'RaceLeaderboardEventUser',
   '2': [
     {'1': 'event_user_id', '3': 1, '4': 1, '5': 9, '10': 'eventUserId'},
-    {'1': 'position', '3': 2, '4': 1, '5': 13, '10': 'position'},
     {
-      '1': 'laps',
-      '3': 3,
+      '1': 'position',
+      '3': 2,
       '4': 1,
       '5': 11,
       '6': '.google.protobuf.UInt32Value',
+      '10': 'position'
+    },
+    {
+      '1': 'laps',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.DoubleValue',
       '10': 'laps'
     },
     {
+      '1': 'laps_estimate',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.DoubleValue',
+      '10': 'lapsEstimate'
+    },
+    {
       '1': 'points',
-      '3': 4,
+      '3': 6,
       '4': 1,
       '5': 11,
       '6': '.google.protobuf.UInt32Value',
       '10': 'points'
     },
     {
-      '1': 'indicators',
-      '3': 5,
-      '4': 3,
+      '1': 'points_estimate',
+      '3': 7,
+      '4': 1,
       '5': 11,
-      '6': '.razmanager.protobuf.public.v1.RaceLeaderboardHeatIndicator',
-      '10': 'indicators'
+      '6': '.google.protobuf.UInt32Value',
+      '10': 'pointsEstimate'
+    },
+    {
+      '1': 'gap_leader',
+      '3': 8,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.StringValue',
+      '10': 'gapLeader'
+    },
+    {
+      '1': 'gap_interval',
+      '3': 9,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.StringValue',
+      '10': 'gapInterval'
+    },
+    {
+      '1': 'gap_interval_fraction',
+      '3': 10,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.DoubleValue',
+      '10': 'gapIntervalFraction'
     },
     {
       '1': 'flags',
-      '3': 6,
+      '3': 11,
       '4': 3,
       '5': 14,
-      '6': '.razmanager.protobuf.public.v1.RaceIndicatorFlag',
+      '6': '.razmanager.protobuf.public.v1.HeatIndicatorFlag',
       '10': 'flags'
     },
   ],
@@ -282,32 +305,46 @@ const RaceLeaderboardEventUser$json = {
 /// Descriptor for `RaceLeaderboardEventUser`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List raceLeaderboardEventUserDescriptor = $convert.base64Decode(
     'ChhSYWNlTGVhZGVyYm9hcmRFdmVudFVzZXISIgoNZXZlbnRfdXNlcl9pZBgBIAEoCVILZXZlbn'
-    'RVc2VySWQSGgoIcG9zaXRpb24YAiABKA1SCHBvc2l0aW9uEjAKBGxhcHMYAyABKAsyHC5nb29n'
-    'bGUucHJvdG9idWYuVUludDMyVmFsdWVSBGxhcHMSNAoGcG9pbnRzGAQgASgLMhwuZ29vZ2xlLn'
-    'Byb3RvYnVmLlVJbnQzMlZhbHVlUgZwb2ludHMSWwoKaW5kaWNhdG9ycxgFIAMoCzI7LnJhem1h'
-    'bmFnZXIucHJvdG9idWYucHVibGljLnYxLlJhY2VMZWFkZXJib2FyZEhlYXRJbmRpY2F0b3JSCm'
-    'luZGljYXRvcnMSRgoFZmxhZ3MYBiADKA4yMC5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52'
-    'MS5SYWNlSW5kaWNhdG9yRmxhZ1IFZmxhZ3M=');
+    'RVc2VySWQSOAoIcG9zaXRpb24YAiABKAsyHC5nb29nbGUucHJvdG9idWYuVUludDMyVmFsdWVS'
+    'CHBvc2l0aW9uEjAKBGxhcHMYBCABKAsyHC5nb29nbGUucHJvdG9idWYuRG91YmxlVmFsdWVSBG'
+    'xhcHMSQQoNbGFwc19lc3RpbWF0ZRgFIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5Eb3VibGVWYWx1'
+    'ZVIMbGFwc0VzdGltYXRlEjQKBnBvaW50cxgGIAEoCzIcLmdvb2dsZS5wcm90b2J1Zi5VSW50Mz'
+    'JWYWx1ZVIGcG9pbnRzEkUKD3BvaW50c19lc3RpbWF0ZRgHIAEoCzIcLmdvb2dsZS5wcm90b2J1'
+    'Zi5VSW50MzJWYWx1ZVIOcG9pbnRzRXN0aW1hdGUSOwoKZ2FwX2xlYWRlchgIIAEoCzIcLmdvb2'
+    'dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZVIJZ2FwTGVhZGVyEj8KDGdhcF9pbnRlcnZhbBgJIAEo'
+    'CzIcLmdvb2dsZS5wcm90b2J1Zi5TdHJpbmdWYWx1ZVILZ2FwSW50ZXJ2YWwSUAoVZ2FwX2ludG'
+    'VydmFsX2ZyYWN0aW9uGAogASgLMhwuZ29vZ2xlLnByb3RvYnVmLkRvdWJsZVZhbHVlUhNnYXBJ'
+    'bnRlcnZhbEZyYWN0aW9uEkYKBWZsYWdzGAsgAygOMjAucmF6bWFuYWdlci5wcm90b2J1Zi5wdW'
+    'JsaWMudjEuSGVhdEluZGljYXRvckZsYWdSBWZsYWdz');
 
-@$core.Deprecated('Use raceLeaderboardHeatIndicatorDescriptor instead')
-const RaceLeaderboardHeatIndicator$json = {
-  '1': 'RaceLeaderboardHeatIndicator',
+@$core.Deprecated('Use raceLeaderboardEventUserHeatUpdateDescriptor instead')
+const RaceLeaderboardEventUserHeatUpdate$json = {
+  '1': 'RaceLeaderboardEventUserHeatUpdate',
   '2': [
-    {'1': 'indicator_id', '3': 1, '4': 1, '5': 13, '10': 'indicatorId'},
+    {'1': 'event_user_id', '3': 1, '4': 1, '5': 9, '10': 'eventUserId'},
     {
-      '1': 'color',
-      '3': 2,
+      '1': 'laps',
+      '3': 4,
       '4': 1,
       '5': 11,
-      '6': '.google.protobuf.UInt32Value',
-      '10': 'color'
+      '6': '.google.protobuf.DoubleValue',
+      '10': 'laps'
+    },
+    {
+      '1': 'flags',
+      '3': 11,
+      '4': 3,
+      '5': 14,
+      '6': '.razmanager.protobuf.public.v1.HeatIndicatorFlag',
+      '10': 'flags'
     },
   ],
 };
 
-/// Descriptor for `RaceLeaderboardHeatIndicator`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List raceLeaderboardHeatIndicatorDescriptor =
+/// Descriptor for `RaceLeaderboardEventUserHeatUpdate`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List raceLeaderboardEventUserHeatUpdateDescriptor =
     $convert.base64Decode(
-        'ChxSYWNlTGVhZGVyYm9hcmRIZWF0SW5kaWNhdG9yEiEKDGluZGljYXRvcl9pZBgBIAEoDVILaW'
-        '5kaWNhdG9ySWQSMgoFY29sb3IYAiABKAsyHC5nb29nbGUucHJvdG9idWYuVUludDMyVmFsdWVS'
-        'BWNvbG9y');
+        'CiJSYWNlTGVhZGVyYm9hcmRFdmVudFVzZXJIZWF0VXBkYXRlEiIKDWV2ZW50X3VzZXJfaWQYAS'
+        'ABKAlSC2V2ZW50VXNlcklkEjAKBGxhcHMYBCABKAsyHC5nb29nbGUucHJvdG9idWYuRG91Ymxl'
+        'VmFsdWVSBGxhcHMSRgoFZmxhZ3MYCyADKA4yMC5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy'
+        '52MS5IZWF0SW5kaWNhdG9yRmxhZ1IFZmxhZ3M=');

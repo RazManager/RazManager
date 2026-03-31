@@ -339,6 +339,7 @@ class HeatIndicator extends $pb.GeneratedMessage {
     $0.UInt32Value? carClassColor,
     $0.BytesValue? carImage,
     $core.Iterable<HeatIndicatorStint>? heatIndicatorStints,
+    $core.Iterable<HeatStintEventUsersIndicatorLap>? preconfiguredLaps,
   }) {
     final result = create();
     if (id != null) result.id = id;
@@ -349,6 +350,8 @@ class HeatIndicator extends $pb.GeneratedMessage {
     if (carImage != null) result.carImage = carImage;
     if (heatIndicatorStints != null)
       result.heatIndicatorStints.addAll(heatIndicatorStints);
+    if (preconfiguredLaps != null)
+      result.preconfiguredLaps.addAll(preconfiguredLaps);
     return result;
   }
 
@@ -378,6 +381,9 @@ class HeatIndicator extends $pb.GeneratedMessage {
         subBuilder: $0.BytesValue.create)
     ..pPM<HeatIndicatorStint>(7, _omitFieldNames ? '' : 'heatIndicatorStints',
         subBuilder: HeatIndicatorStint.create)
+    ..pPM<HeatStintEventUsersIndicatorLap>(
+        10, _omitFieldNames ? '' : 'preconfiguredLaps',
+        subBuilder: HeatStintEventUsersIndicatorLap.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -461,6 +467,10 @@ class HeatIndicator extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(7)
   $pb.PbList<HeatIndicatorStint> get heatIndicatorStints => $_getList(6);
+
+  @$pb.TagNumber(10)
+  $pb.PbList<HeatStintEventUsersIndicatorLap> get preconfiguredLaps =>
+      $_getList(7);
 }
 
 class HeatIndicatorStint extends $pb.GeneratedMessage {

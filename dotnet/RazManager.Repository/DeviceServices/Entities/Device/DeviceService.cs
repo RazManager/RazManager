@@ -55,15 +55,13 @@ namespace RazManager.Repository.DeviceServices.Entities.Device
                 var deviceConfigurationEntity = entity.DeviceConfigurations.SingleOrDefault(x => x.Id == new Guid(deviceConfigurationProto.Id));
                 if (deviceConfigurationEntity is null)
                 {
-                    entity.DeviceConfigurations.Add(_mapper.Map<Stores.Entities.DeviceConfiguration.DeviceConfigurationEntity>(deviceConfigurationProto));
+                    deviceConfigurationEntity = _mapper.Map<Stores.Entities.DeviceConfiguration.DeviceConfigurationEntity>(deviceConfigurationProto);
+                    entity.DeviceConfigurations.Add(deviceConfigurationEntity);
                 }
-                else
-                {
-                    deviceConfigurationEntity.DeviceConfigurationInputs.RemoveAll(x => true);
-                    deviceConfigurationEntity.DeviceConfigurationOutputs.RemoveAll(x => true);
-                    deviceConfigurationEntity.DeviceConfigurationFeatures.RemoveAll(x => true);
-                    _mapper.Map(deviceConfigurationProto, deviceConfigurationEntity);
-                }
+                deviceConfigurationEntity.DeviceConfigurationInputs.RemoveAll(x => true);
+                deviceConfigurationEntity.DeviceConfigurationOutputs.RemoveAll(x => true);
+                deviceConfigurationEntity.DeviceConfigurationFeatures.RemoveAll(x => true);
+                _mapper.Map(deviceConfigurationProto, deviceConfigurationEntity);
             }
 
             await _repositoryDbContext.SaveChangesAsync().ConfigureAwait(false);

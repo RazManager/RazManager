@@ -439,18 +439,27 @@ class RaceLeaderboard extends $pb.GeneratedMessage {
 class RaceLeaderboardEventUser extends $pb.GeneratedMessage {
   factory RaceLeaderboardEventUser({
     $core.String? eventUserId,
-    $core.int? position,
-    $0.UInt32Value? laps,
+    $0.UInt32Value? position,
+    $0.DoubleValue? laps,
+    $0.DoubleValue? lapsEstimate,
     $0.UInt32Value? points,
-    $core.Iterable<RaceLeaderboardHeatIndicator>? indicators,
-    $core.Iterable<RaceIndicatorFlag>? flags,
+    $0.UInt32Value? pointsEstimate,
+    $0.StringValue? gapLeader,
+    $0.StringValue? gapInterval,
+    $0.DoubleValue? gapIntervalFraction,
+    $core.Iterable<$3.HeatIndicatorFlag>? flags,
   }) {
     final result = create();
     if (eventUserId != null) result.eventUserId = eventUserId;
     if (position != null) result.position = position;
     if (laps != null) result.laps = laps;
+    if (lapsEstimate != null) result.lapsEstimate = lapsEstimate;
     if (points != null) result.points = points;
-    if (indicators != null) result.indicators.addAll(indicators);
+    if (pointsEstimate != null) result.pointsEstimate = pointsEstimate;
+    if (gapLeader != null) result.gapLeader = gapLeader;
+    if (gapInterval != null) result.gapInterval = gapInterval;
+    if (gapIntervalFraction != null)
+      result.gapIntervalFraction = gapIntervalFraction;
     if (flags != null) result.flags.addAll(flags);
     return result;
   }
@@ -470,18 +479,27 @@ class RaceLeaderboardEventUser extends $pb.GeneratedMessage {
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'eventUserId')
-    ..aI(2, _omitFieldNames ? '' : 'position', fieldType: $pb.PbFieldType.OU3)
-    ..aOM<$0.UInt32Value>(3, _omitFieldNames ? '' : 'laps',
+    ..aOM<$0.UInt32Value>(2, _omitFieldNames ? '' : 'position',
         subBuilder: $0.UInt32Value.create)
-    ..aOM<$0.UInt32Value>(4, _omitFieldNames ? '' : 'points',
+    ..aOM<$0.DoubleValue>(4, _omitFieldNames ? '' : 'laps',
+        subBuilder: $0.DoubleValue.create)
+    ..aOM<$0.DoubleValue>(5, _omitFieldNames ? '' : 'lapsEstimate',
+        subBuilder: $0.DoubleValue.create)
+    ..aOM<$0.UInt32Value>(6, _omitFieldNames ? '' : 'points',
         subBuilder: $0.UInt32Value.create)
-    ..pPM<RaceLeaderboardHeatIndicator>(5, _omitFieldNames ? '' : 'indicators',
-        subBuilder: RaceLeaderboardHeatIndicator.create)
-    ..pc<RaceIndicatorFlag>(
-        6, _omitFieldNames ? '' : 'flags', $pb.PbFieldType.KE,
-        valueOf: RaceIndicatorFlag.valueOf,
-        enumValues: RaceIndicatorFlag.values,
-        defaultEnumValue: RaceIndicatorFlag.RACE_INDICATOR_FLAG_RUNNING)
+    ..aOM<$0.UInt32Value>(7, _omitFieldNames ? '' : 'pointsEstimate',
+        subBuilder: $0.UInt32Value.create)
+    ..aOM<$0.StringValue>(8, _omitFieldNames ? '' : 'gapLeader',
+        subBuilder: $0.StringValue.create)
+    ..aOM<$0.StringValue>(9, _omitFieldNames ? '' : 'gapInterval',
+        subBuilder: $0.StringValue.create)
+    ..aOM<$0.DoubleValue>(10, _omitFieldNames ? '' : 'gapIntervalFraction',
+        subBuilder: $0.DoubleValue.create)
+    ..pc<$3.HeatIndicatorFlag>(
+        11, _omitFieldNames ? '' : 'flags', $pb.PbFieldType.KE,
+        valueOf: $3.HeatIndicatorFlag.valueOf,
+        enumValues: $3.HeatIndicatorFlag.values,
+        defaultEnumValue: $3.HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -514,117 +532,183 @@ class RaceLeaderboardEventUser extends $pb.GeneratedMessage {
   void clearEventUserId() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $core.int get position => $_getIZ(1);
+  $0.UInt32Value get position => $_getN(1);
   @$pb.TagNumber(2)
-  set position($core.int value) => $_setUnsignedInt32(1, value);
+  set position($0.UInt32Value value) => $_setField(2, value);
   @$pb.TagNumber(2)
   $core.bool hasPosition() => $_has(1);
   @$pb.TagNumber(2)
   void clearPosition() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $0.UInt32Value ensurePosition() => $_ensure(1);
 
-  @$pb.TagNumber(3)
-  $0.UInt32Value get laps => $_getN(2);
-  @$pb.TagNumber(3)
-  set laps($0.UInt32Value value) => $_setField(3, value);
-  @$pb.TagNumber(3)
+  /// uint32 position_estimate = 3;
+  @$pb.TagNumber(4)
+  $0.DoubleValue get laps => $_getN(2);
+  @$pb.TagNumber(4)
+  set laps($0.DoubleValue value) => $_setField(4, value);
+  @$pb.TagNumber(4)
   $core.bool hasLaps() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearLaps() => $_clearField(3);
-  @$pb.TagNumber(3)
-  $0.UInt32Value ensureLaps() => $_ensure(2);
+  @$pb.TagNumber(4)
+  void clearLaps() => $_clearField(4);
+  @$pb.TagNumber(4)
+  $0.DoubleValue ensureLaps() => $_ensure(2);
 
-  @$pb.TagNumber(4)
-  $0.UInt32Value get points => $_getN(3);
-  @$pb.TagNumber(4)
-  set points($0.UInt32Value value) => $_setField(4, value);
-  @$pb.TagNumber(4)
-  $core.bool hasPoints() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearPoints() => $_clearField(4);
-  @$pb.TagNumber(4)
-  $0.UInt32Value ensurePoints() => $_ensure(3);
-
-  /// google.protobuf.StringValue gap_leader = 5;
-  /// google.protobuf.StringValue gap_interval = 6;
   @$pb.TagNumber(5)
-  $pb.PbList<RaceLeaderboardHeatIndicator> get indicators => $_getList(4);
+  $0.DoubleValue get lapsEstimate => $_getN(3);
+  @$pb.TagNumber(5)
+  set lapsEstimate($0.DoubleValue value) => $_setField(5, value);
+  @$pb.TagNumber(5)
+  $core.bool hasLapsEstimate() => $_has(3);
+  @$pb.TagNumber(5)
+  void clearLapsEstimate() => $_clearField(5);
+  @$pb.TagNumber(5)
+  $0.DoubleValue ensureLapsEstimate() => $_ensure(3);
 
   @$pb.TagNumber(6)
-  $pb.PbList<RaceIndicatorFlag> get flags => $_getList(5);
+  $0.UInt32Value get points => $_getN(4);
+  @$pb.TagNumber(6)
+  set points($0.UInt32Value value) => $_setField(6, value);
+  @$pb.TagNumber(6)
+  $core.bool hasPoints() => $_has(4);
+  @$pb.TagNumber(6)
+  void clearPoints() => $_clearField(6);
+  @$pb.TagNumber(6)
+  $0.UInt32Value ensurePoints() => $_ensure(4);
+
+  @$pb.TagNumber(7)
+  $0.UInt32Value get pointsEstimate => $_getN(5);
+  @$pb.TagNumber(7)
+  set pointsEstimate($0.UInt32Value value) => $_setField(7, value);
+  @$pb.TagNumber(7)
+  $core.bool hasPointsEstimate() => $_has(5);
+  @$pb.TagNumber(7)
+  void clearPointsEstimate() => $_clearField(7);
+  @$pb.TagNumber(7)
+  $0.UInt32Value ensurePointsEstimate() => $_ensure(5);
+
+  @$pb.TagNumber(8)
+  $0.StringValue get gapLeader => $_getN(6);
+  @$pb.TagNumber(8)
+  set gapLeader($0.StringValue value) => $_setField(8, value);
+  @$pb.TagNumber(8)
+  $core.bool hasGapLeader() => $_has(6);
+  @$pb.TagNumber(8)
+  void clearGapLeader() => $_clearField(8);
+  @$pb.TagNumber(8)
+  $0.StringValue ensureGapLeader() => $_ensure(6);
+
+  @$pb.TagNumber(9)
+  $0.StringValue get gapInterval => $_getN(7);
+  @$pb.TagNumber(9)
+  set gapInterval($0.StringValue value) => $_setField(9, value);
+  @$pb.TagNumber(9)
+  $core.bool hasGapInterval() => $_has(7);
+  @$pb.TagNumber(9)
+  void clearGapInterval() => $_clearField(9);
+  @$pb.TagNumber(9)
+  $0.StringValue ensureGapInterval() => $_ensure(7);
+
+  @$pb.TagNumber(10)
+  $0.DoubleValue get gapIntervalFraction => $_getN(8);
+  @$pb.TagNumber(10)
+  set gapIntervalFraction($0.DoubleValue value) => $_setField(10, value);
+  @$pb.TagNumber(10)
+  $core.bool hasGapIntervalFraction() => $_has(8);
+  @$pb.TagNumber(10)
+  void clearGapIntervalFraction() => $_clearField(10);
+  @$pb.TagNumber(10)
+  $0.DoubleValue ensureGapIntervalFraction() => $_ensure(8);
+
+  @$pb.TagNumber(11)
+  $pb.PbList<$3.HeatIndicatorFlag> get flags => $_getList(9);
 }
 
-class RaceLeaderboardHeatIndicator extends $pb.GeneratedMessage {
-  factory RaceLeaderboardHeatIndicator({
-    $core.int? indicatorId,
-    $0.UInt32Value? color,
+class RaceLeaderboardEventUserHeatUpdate extends $pb.GeneratedMessage {
+  factory RaceLeaderboardEventUserHeatUpdate({
+    $core.String? eventUserId,
+    $0.DoubleValue? laps,
+    $core.Iterable<$3.HeatIndicatorFlag>? flags,
   }) {
     final result = create();
-    if (indicatorId != null) result.indicatorId = indicatorId;
-    if (color != null) result.color = color;
+    if (eventUserId != null) result.eventUserId = eventUserId;
+    if (laps != null) result.laps = laps;
+    if (flags != null) result.flags.addAll(flags);
     return result;
   }
 
-  RaceLeaderboardHeatIndicator._();
+  RaceLeaderboardEventUserHeatUpdate._();
 
-  factory RaceLeaderboardHeatIndicator.fromBuffer($core.List<$core.int> data,
+  factory RaceLeaderboardEventUserHeatUpdate.fromBuffer(
+          $core.List<$core.int> data,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(data, registry);
-  factory RaceLeaderboardHeatIndicator.fromJson($core.String json,
+  factory RaceLeaderboardEventUserHeatUpdate.fromJson($core.String json,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'RaceLeaderboardHeatIndicator',
+      _omitMessageNames ? '' : 'RaceLeaderboardEventUserHeatUpdate',
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
-    ..aI(1, _omitFieldNames ? '' : 'indicatorId',
-        fieldType: $pb.PbFieldType.OU3)
-    ..aOM<$0.UInt32Value>(2, _omitFieldNames ? '' : 'color',
-        subBuilder: $0.UInt32Value.create)
+    ..aOS(1, _omitFieldNames ? '' : 'eventUserId')
+    ..aOM<$0.DoubleValue>(4, _omitFieldNames ? '' : 'laps',
+        subBuilder: $0.DoubleValue.create)
+    ..pc<$3.HeatIndicatorFlag>(
+        11, _omitFieldNames ? '' : 'flags', $pb.PbFieldType.KE,
+        valueOf: $3.HeatIndicatorFlag.valueOf,
+        enumValues: $3.HeatIndicatorFlag.values,
+        defaultEnumValue: $3.HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  RaceLeaderboardHeatIndicator clone() => deepCopy();
+  RaceLeaderboardEventUserHeatUpdate clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  RaceLeaderboardHeatIndicator copyWith(
-          void Function(RaceLeaderboardHeatIndicator) updates) =>
-      super.copyWith(
-              (message) => updates(message as RaceLeaderboardHeatIndicator))
-          as RaceLeaderboardHeatIndicator;
+  RaceLeaderboardEventUserHeatUpdate copyWith(
+          void Function(RaceLeaderboardEventUserHeatUpdate) updates) =>
+      super.copyWith((message) =>
+              updates(message as RaceLeaderboardEventUserHeatUpdate))
+          as RaceLeaderboardEventUserHeatUpdate;
 
   @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static RaceLeaderboardHeatIndicator create() =>
-      RaceLeaderboardHeatIndicator._();
+  static RaceLeaderboardEventUserHeatUpdate create() =>
+      RaceLeaderboardEventUserHeatUpdate._();
   @$core.override
-  RaceLeaderboardHeatIndicator createEmptyInstance() => create();
+  RaceLeaderboardEventUserHeatUpdate createEmptyInstance() => create();
   @$core.pragma('dart2js:noInline')
-  static RaceLeaderboardHeatIndicator getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<RaceLeaderboardHeatIndicator>(create);
-  static RaceLeaderboardHeatIndicator? _defaultInstance;
+  static RaceLeaderboardEventUserHeatUpdate getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RaceLeaderboardEventUserHeatUpdate>(
+          create);
+  static RaceLeaderboardEventUserHeatUpdate? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.int get indicatorId => $_getIZ(0);
+  $core.String get eventUserId => $_getSZ(0);
   @$pb.TagNumber(1)
-  set indicatorId($core.int value) => $_setUnsignedInt32(0, value);
+  set eventUserId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(1)
-  $core.bool hasIndicatorId() => $_has(0);
+  $core.bool hasEventUserId() => $_has(0);
   @$pb.TagNumber(1)
-  void clearIndicatorId() => $_clearField(1);
+  void clearEventUserId() => $_clearField(1);
 
-  @$pb.TagNumber(2)
-  $0.UInt32Value get color => $_getN(1);
-  @$pb.TagNumber(2)
-  set color($0.UInt32Value value) => $_setField(2, value);
-  @$pb.TagNumber(2)
-  $core.bool hasColor() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearColor() => $_clearField(2);
-  @$pb.TagNumber(2)
-  $0.UInt32Value ensureColor() => $_ensure(1);
+  /// google.protobuf.UInt32Value position = 2;
+  /// uint32 position_estimate = 3;
+  @$pb.TagNumber(4)
+  $0.DoubleValue get laps => $_getN(1);
+  @$pb.TagNumber(4)
+  set laps($0.DoubleValue value) => $_setField(4, value);
+  @$pb.TagNumber(4)
+  $core.bool hasLaps() => $_has(1);
+  @$pb.TagNumber(4)
+  void clearLaps() => $_clearField(4);
+  @$pb.TagNumber(4)
+  $0.DoubleValue ensureLaps() => $_ensure(1);
+
+  @$pb.TagNumber(11)
+  $pb.PbList<$3.HeatIndicatorFlag> get flags => $_getList(2);
 }
 
 const $core.bool _omitFieldNames =

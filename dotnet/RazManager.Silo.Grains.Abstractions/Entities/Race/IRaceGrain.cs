@@ -13,5 +13,6 @@ namespace RazManager.Silo.Grains.Entities.Race
         Task<Razmanager.Protobuf.Public.V1.RaceLeaderboard> ReadRaceLeaderboardAsync();
         Task CommandAsync(Razmanager.Protobuf.Public.V1.RaceCommandTypeId raceCommandTypeId);
         Task HeatClosedAsync();
+        Task RaceLeaderboardEventUserHeatUpdateAsync(Razmanager.Protobuf.Public.V1.RaceLeaderboardEventUserHeatUpdate update);
     }
 }

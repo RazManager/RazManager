@@ -101,7 +101,7 @@
 		<Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Client">
 			<Link>Protos/public/race.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
-		</Protobuf>
+		</Protobuf>		
 	</ItemGroup>
 
 

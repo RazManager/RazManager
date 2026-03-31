@@ -8,5 +8,7 @@ namespace RazManager.IO.Utilities
     {
         [Required]
         public Uri DeviceClientAddress { get; set; } = null!;
+
+        public Uri AppClientAddress { get; set; } = null!;
     }
 }

@@ -85,6 +85,7 @@ enum DeviceIntegrationTypeId {
   DEVICE_INTEGRATION_TYPE_ID_RGB = 7;
   DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER = 8;
   DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG = 100;
+  DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST = 101;
 }
 
 message DeviceIntegration {
@@ -98,6 +99,7 @@ message DeviceIntegration {
     DeviceIntegrationRgb device_integration_rgb = 7;
     DeviceIntegrationLapMaster device_integration_lap_master = 8;
     DeviceIntegrationChronoLog device_integration_chrono_log = 100;
+    DeviceIntegrationPerformanceTest device_integration_performance_test = 101;
   }
 }
 
@@ -161,4 +163,8 @@ message DeviceIntegrationLapMaster {
 
 
 message DeviceIntegrationChronoLog {
+}
+
+
+message DeviceIntegrationPerformanceTest {
 }

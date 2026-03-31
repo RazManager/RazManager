@@ -224,6 +224,10 @@ class _TenantAdminDeviceDetailState extends CrudMasterDetailStateBase<crud.Devic
             deviceIntegrationProto.deviceIntegrationChronoLog = public.DeviceIntegrationChronoLog();
             break;
 
+          case public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST:
+            deviceIntegrationProto.deviceIntegrationPerformanceTest = public.DeviceIntegrationPerformanceTest();
+            break;
+
           default:
         }
 
@@ -386,8 +390,23 @@ class _TenantAdminDeviceDetailState extends CrudMasterDetailStateBase<crud.Devic
         });
         break;
 
+      case public.DeviceIntegration_Value.deviceIntegrationPerformanceTest:
+        deviceIntegrationFg = FormGroup({
+          'deviceIntegrationTypeId': FormControl<public.DeviceIntegrationTypeId?>(
+            value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST,
+            validators: [Validators.required],
+          ),
+        });
+        break;
+
       default:
-        deviceIntegrationFg = FormGroup({});
+        //deviceIntegrationFg = FormGroup({});
+        deviceIntegrationFg = FormGroup({
+          'deviceIntegrationTypeId': FormControl<public.DeviceIntegrationTypeId?>(
+            value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_UNDEFINED,
+            validators: [Validators.required],
+          ),
+        });
     }
     deviceIntegrationArray.add(deviceIntegrationFg);
   }
@@ -716,8 +735,9 @@ class _TenantAdminDeviceIntegrationBody extends StatelessWidget {
                           ),
                           DropdownMenuItem(value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_PHILIPS_HUE, child: Text('Philips Hue')),
                           DropdownMenuItem(value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_RGB, child: Text('RGB LED Matrix')),
-                          DropdownMenuItem(value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER, child: Text('Lap Master')),
+                          DropdownMenuItem(value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_LAP_MASTER, child: Text('LapMaster')),
                           DropdownMenuItem(value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG, child: Text('Chrono log file')),
+                          DropdownMenuItem(value: public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST, child: Text('Performance test')),
                         ],
                         onChanged: (control) => setState(() {}),
                       ),
@@ -809,7 +829,9 @@ class _TenantAdminDeviceIntegrationBody extends StatelessWidget {
                   ReactiveRadioListTile<int?>(formControlName: "lanes", value: 4, title: const Text('4')),
                   ReactiveRadioListTile<int?>(formControlName: "lanes", value: 8, title: const Text('8')),
                 ] else if (formGroup.control('deviceIntegrationTypeId').value == public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_CHRONO_LOG)
-                  Text('Chrono log file settings...'),
+                  Text('Chrono log file settings...')
+                else if (formGroup.control('deviceIntegrationTypeId').value == public.DeviceIntegrationTypeId.DEVICE_INTEGRATION_TYPE_ID_PERFORMANCE_TEST)
+                  Text('Performance test...'),
               ],
             ),
           ),

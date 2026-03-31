@@ -427,6 +427,23 @@ class _PublicEventSettingsLeaderboard extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 16),
+              RadioGroup<int>(
+                groupValue: model.leaderBoardIndicatorColumns,
+                onChanged: (value) async {
+                  if (value != null) {
+                    await model.leaderBoardIndicatorColumnsNotify(value);
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Number of columns"),
+                    RadioListTile(value: 1, title: Text('1')),
+                    RadioListTile(value: 2, title: Text('2')),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

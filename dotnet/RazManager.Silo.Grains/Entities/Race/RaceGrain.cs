@@ -1,5 +1,6 @@
 ﻿using Orleans.Streams;
 using Razmanager.Protobuf.Public.V1;
+using System.Globalization;
 using System.Resources;
 
 
@@ -11,6 +12,8 @@ namespace RazManager.Silo.Grains.Entities.Race
         private Razmanager.Protobuf.Public.V1.Race? _race;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.Race>? _raceStream;
         private Guid? _heatId = null;
+        private Dictionary<Guid, RaceEventUser> _raceEventUsers = [];
+        private string _trackLaptimeDecimalsFormat = "F2";
 
 
         public RaceGrain(Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceService.RaceServiceClient serviceClient)
@@ -71,7 +74,7 @@ namespace RazManager.Silo.Grains.Entities.Race
 
         public Task<RaceLeaderboard> ReadRaceLeaderboardAsync()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(RaceLeaderboard());
         }
 
 
@@ -167,6 +170,99 @@ namespace RazManager.Silo.Grains.Entities.Race
             _ = RefreshAsync(true);
 
             return Task.CompletedTask;
+        }
+
+
+        public Task RaceLeaderboardEventUserHeatUpdateAsync(RaceLeaderboardEventUserHeatUpdate update)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private RaceLeaderboard RaceLeaderboard()
+        {
+            var raceLeaderboard = new RaceLeaderboard();
+
+            foreach (var raceEventUserKv in _raceEventUsers)
+            {
+                var raceLeaderboardEventUser = new RaceLeaderboardEventUser
+                {
+                    EventUserId = raceEventUserKv.Key.ToString(),
+                    Position = raceEventUserKv.Value.Position,
+                    Laps = raceEventUserKv.Value.Laps,
+                    LapsEstimate = raceEventUserKv.Value.LapsEstimate,
+                    Points = raceEventUserKv.Value.Points,
+                    PointsEstimate = raceEventUserKv.Value.PointsEstimate,
+                    GapIntervalFraction = raceEventUserKv.Value.GapIntervalFraction
+                };
+
+                if (raceEventUserKv.Value.GapLeaderLaps.HasValue)
+                {
+                    raceLeaderboardEventUser.GapLeader = $"{raceEventUserKv.Value.GapLeaderLaps.Value}L";
+                }
+                else if (raceEventUserKv.Value.GapLeaderTime.HasValue)
+                {
+                    raceLeaderboardEventUser.GapLeader = raceEventUserKv.Value.GapLeaderTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
+                }
+
+                if (raceEventUserKv.Value.GapIntervalLaps.HasValue)
+                {
+                    raceLeaderboardEventUser.GapInterval = $"{raceEventUserKv.Value.GapIntervalLaps.Value}L";
+                }
+                else if (raceEventUserKv.Value.GapIntervalTime.HasValue)
+                {
+                    raceLeaderboardEventUser.GapInterval = raceEventUserKv.Value.GapIntervalTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
+                }
+
+                if (raceEventUserKv.Value.Finished)
+                {
+                    raceLeaderboardEventUser.Flags.Add(HeatIndicatorFlag.Finished);
+                }
+                //if (_timeTypeFastestTimes[HeatIndicatorTimeTypeId.Lap].IndicatorId == heatStateInternalIndicatorKv.Key)
+                //{
+                //    raceLeaderboardEventUser.Flags.Add(HeatIndicatorFlag.FastestLap);
+                //}
+                //if (raceEventUserKv.Value.LapWarning)
+                //{
+                //    heatLeaderboardIndicator.Flags.Add(HeatIndicatorFlag.Warning);
+                //}
+                if (raceEventUserKv.Value.Pitlane)
+                {
+                    raceLeaderboardEventUser.Flags.Add(HeatIndicatorFlag.Pitlane);
+                }
+                if (raceEventUserKv.Value.Deslot)
+                {
+                    raceLeaderboardEventUser.Flags.Add(HeatIndicatorFlag.Deslot);
+                }
+
+                raceLeaderboard.EventUsers.Add(raceLeaderboardEventUser);
+            }
+
+            return raceLeaderboard;
+        }
+
+
+        private class RaceEventUser
+        {
+            //public required string EventUserId { get; set; }
+            public uint? Position { get; set; }
+            //public uint PositionEstimate { get; set; }
+            public double? Laps { get; set; }
+            public double? LapsEstimate { get; set; }
+            public ushort? Points { get; set; }
+            public ushort? PointsEstimate { get; set; }
+            public TimeSpan? ClockElapsedNow { get; set; }
+            public double? GapLeaderTime { get; set; }
+            public short? GapLeaderLaps { get; set; }
+            public double? GapIntervalTime { get; set; }
+            public short? GapIntervalLaps { get; set; }
+            public double? GapIntervalFraction { get; set; }
+            public bool Finished { get; set; }
+            //public bool LapWarning { get; set; }
+            public bool Pitlane { get; set; }
+            //public ushort LapPitlanes { get; set; }
+            public bool Deslot { get; set; }
+            //public ushort LapCarOffTracks { get; set; }
         }
     }
 }

@@ -90,9 +90,10 @@ const HeatIndicatorFlag$json = {
     {'1': 'HEAT_INDICATOR_FLAG_FINISHED', '2': 0},
     {'1': 'HEAT_INDICATOR_FLAG_FASTEST_LAP', '2': 1},
     {'1': 'HEAT_INDICATOR_FLAG_PITLANE', '2': 2},
-    {'1': 'HEAT_INDICATOR_FLAG_CAR_OFF_TRACK', '2': 3},
+    {'1': 'HEAT_INDICATOR_FLAG_DESLOT', '2': 3},
     {'1': 'HEAT_INDICATOR_FLAG_CONTROLLER_BATTERY_WARNING', '2': 4},
     {'1': 'HEAT_INDICATOR_FLAG_CHARGING', '2': 5},
+    {'1': 'HEAT_INDICATOR_FLAG_CONFIRMED', '2': 6},
     {'1': 'HEAT_INDICATOR_FLAG_WARNING', '2': 10},
   ],
 };
@@ -101,10 +102,10 @@ const HeatIndicatorFlag$json = {
 final $typed_data.Uint8List heatIndicatorFlagDescriptor = $convert.base64Decode(
     'ChFIZWF0SW5kaWNhdG9yRmxhZxIgChxIRUFUX0lORElDQVRPUl9GTEFHX0ZJTklTSEVEEAASIw'
     'ofSEVBVF9JTkRJQ0FUT1JfRkxBR19GQVNURVNUX0xBUBABEh8KG0hFQVRfSU5ESUNBVE9SX0ZM'
-    'QUdfUElUTEFORRACEiUKIUhFQVRfSU5ESUNBVE9SX0ZMQUdfQ0FSX09GRl9UUkFDSxADEjIKLk'
-    'hFQVRfSU5ESUNBVE9SX0ZMQUdfQ09OVFJPTExFUl9CQVRURVJZX1dBUk5JTkcQBBIgChxIRUFU'
-    'X0lORElDQVRPUl9GTEFHX0NIQVJHSU5HEAUSHwobSEVBVF9JTkRJQ0FUT1JfRkxBR19XQVJOSU'
-    '5HEAo=');
+    'QUdfUElUTEFORRACEh4KGkhFQVRfSU5ESUNBVE9SX0ZMQUdfREVTTE9UEAMSMgouSEVBVF9JTk'
+    'RJQ0FUT1JfRkxBR19DT05UUk9MTEVSX0JBVFRFUllfV0FSTklORxAEEiAKHEhFQVRfSU5ESUNB'
+    'VE9SX0ZMQUdfQ0hBUkdJTkcQBRIhCh1IRUFUX0lORElDQVRPUl9GTEFHX0NPTkZJUk1FRBAGEh'
+    '8KG0hFQVRfSU5ESUNBVE9SX0ZMQUdfV0FSTklORxAK');
 
 @$core.Deprecated('Use heatIndicatorTimeTypeIdDescriptor instead')
 const HeatIndicatorTimeTypeId$json = {
@@ -289,6 +290,14 @@ const HeatIndicator$json = {
       '6': '.razmanager.protobuf.public.v1.HeatIndicatorStint',
       '10': 'heatIndicatorStints'
     },
+    {
+      '1': 'preconfigured_laps',
+      '3': 10,
+      '4': 3,
+      '5': 11,
+      '6': '.razmanager.protobuf.public.v1.HeatStintEventUsersIndicatorLap',
+      '10': 'preconfiguredLaps'
+    },
   ],
 };
 
@@ -300,7 +309,9 @@ final $typed_data.Uint8List heatIndicatorDescriptor = $convert.base64Decode(
     'NfY29sb3IYBSABKAsyHC5nb29nbGUucHJvdG9idWYuVUludDMyVmFsdWVSDWNhckNsYXNzQ29s'
     'b3ISOAoJY2FyX2ltYWdlGAYgASgLMhsuZ29vZ2xlLnByb3RvYnVmLkJ5dGVzVmFsdWVSCGNhck'
     'ltYWdlEmUKFWhlYXRfaW5kaWNhdG9yX3N0aW50cxgHIAMoCzIxLnJhem1hbmFnZXIucHJvdG9i'
-    'dWYucHVibGljLnYxLkhlYXRJbmRpY2F0b3JTdGludFITaGVhdEluZGljYXRvclN0aW50cw==');
+    'dWYucHVibGljLnYxLkhlYXRJbmRpY2F0b3JTdGludFITaGVhdEluZGljYXRvclN0aW50cxJtCh'
+    'JwcmVjb25maWd1cmVkX2xhcHMYCiADKAsyPi5yYXptYW5hZ2VyLnByb3RvYnVmLnB1YmxpYy52'
+    'MS5IZWF0U3RpbnRFdmVudFVzZXJzSW5kaWNhdG9yTGFwUhFwcmVjb25maWd1cmVkTGFwcw==');
 
 @$core.Deprecated('Use heatIndicatorStintDescriptor instead')
 const HeatIndicatorStint$json = {

@@ -124,6 +124,14 @@ namespace RazManager.IO.Services.Device
 
                                 break;
 
+                            case DeviceIntegration.ValueOneofCase.DeviceIntegrationPerformanceTest:
+                                deviceConfiguration.DeviceConfigurationInputs.Add(new DeviceDeviceConfigurationInput { DeviceConfigurationInputTypeId = DeviceConfigurationInputTypeId.StartFinishIndicator, DeviceConfigurationInputId = 1 });
+                                deviceConfiguration.DeviceConfigurationFeatures.AddRange([
+                                    Razmanager.Protobuf.Public.V1.DeviceConfigurationFeatureTypeId.ControllerBasedId,
+                                ]);
+
+                                break;
+
                             default:
                                 break;
                         }

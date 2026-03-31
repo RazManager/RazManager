@@ -1,13 +1,17 @@
-﻿using Grpc.Net.Client;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
+using Grpc.Net.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Razmanager.Protobuf.Public.V1;
 using RazManager.IO.Services.Settings;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +24,7 @@ namespace RazManager.IO.Services.ChronoLog
         private readonly ChronoLogOptions _chronoLogOptions;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<ChronoLogService> _logger;
+        private readonly ConcurrentDictionary<Guid, DateTime> _correlationIdTimestamps = new();
 
 
         public ChronoLogService(Services.Settings.ISettingsService settingsService,
@@ -90,333 +95,360 @@ namespace RazManager.IO.Services.ChronoLog
                 _logger.LogInformation($"Waiting...");
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
-                _logger.LogInformation($"Starting simulation...");
-            }
-
-            var carControllerFirmwareVersions = new Dictionary<byte, List<double>>();
-            var carCarFirmwareVersions = new Dictionary<byte, List<double>>();
-
-            _logger.LogInformation("Channel creating...");
-            using (var deviceChannel = GrpcChannel.ForAddress(_chronoLogOptions.DeviceClientAddress.ToString(), grpcChannelOptions))
-            {
-                _logger.LogInformation("Channel created.");
-
-                _logger.LogInformation("File opening...");
-                _logger.LogInformation("_chronoLogOptions.CronoLogFilename");
-                var lines = await System.IO.File.ReadAllLinesAsync(_chronoLogOptions.CronoLogFilename, stoppingToken);
-                _logger.LogInformation("File opened.");
-                _logger.LogInformation($"Lines={lines.Length}");
-
-                var latestCarLaps = new Dictionary<byte, (short Laps, short? LapsDifference)>();
-
-                var deviceServiceClient = new Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceClient(deviceChannel);
-                var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(deviceChannel);
-
-                var timerStart = DateTime.UtcNow;
-                TimeSpan lastRunningEvent = TimeSpan.Zero;
-
-                foreach (var line in lines)
+                var appTask = Task.Run(async () =>
                 {
-                    if (stoppingToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
+                    var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
 
-                    string carColumn = "";
-                    string lapsColumn = "";
-                    string gapsColumn = "";
-                    string lastLapColumn = "";
-                    string bestLapColumn = "";
-                    string lastEventColumn = "";
-                    string teamColumn = "";
-                    string dongleDataColumn = "";
-
-                    var columns = line.Split("\t");
-                    foreach (var columnKv in columns.Select((column, index) => new { column, index }))
+                    using (var call = heatServiceClient.HeatLeaderboardSubscribe(new StringValue { Value = _chronoLogOptions.HeatId }, null, null, stoppingToken))
                     {
-                        switch (columnKv.index)
+                        await foreach (var heatLeaderboard in call.ResponseStream.ReadAllAsync(stoppingToken))
                         {
-                            case 0:
-                                carColumn = columnKv.column.Trim();
-                                break;
-
-                            case 1:
-                                lapsColumn = columnKv.column.Trim();
-                                break;
-
-                            case 2:
-                                gapsColumn = columnKv.column.Trim();
-                                break;
-
-                            case 3:
-                                lastLapColumn = columnKv.column.Trim().Replace(",", ".");
-                                break;
-
-                            case 4:
-                                bestLapColumn = columnKv.column.Trim();
-                                break;
-
-                            case 5:
-                                lastEventColumn = columnKv.column.Trim().Replace(",", ".");
-                                break;
-
-                            case 6:
-                                teamColumn = columnKv.column.Trim();
-                                break;
-
-                            case 7:
-                                if (_chronoLogOptions.UseDongleData)
+                            if (heatLeaderboard is not null && !string.IsNullOrEmpty(heatLeaderboard.CorrelationId))
+                            {
+                                var correlationId = new Guid(heatLeaderboard.CorrelationId);
+                                if (_correlationIdTimestamps.TryGetValue(correlationId, out var value))
                                 {
-                                    dongleDataColumn = columnKv.column.Trim();
+                                    _logger.LogInformation($"{(DateTime.UtcNow - value).TotalSeconds}");
+                                    _correlationIdTimestamps.Remove(correlationId, out value);
                                 }
-                                break;
-
-                            default:
-                                break;
+                                else
+                                {
+                                    _logger.LogInformation("CorrelationIds don't match.");
+                                }
+                            }
                         }
                     }
 
-                    switch (carColumn)
-                    {
-                        case "START":
-                        case "RESTART":
-                            if (heatStateTypeId != HeatStateTypeId.Running)
-                            {
-                                heatStateTypeId = HeatStateTypeId.Running;
+                }, stoppingToken);
 
-                                using (var appChannel = GrpcChannel.ForAddress(_chronoLogOptions.AppClientAddress.ToString(), grpcChannelOptions))
+
+
+                _logger.LogInformation($"Starting simulation...");
+
+                var carControllerFirmwareVersions = new Dictionary<byte, List<double>>();
+                var carCarFirmwareVersions = new Dictionary<byte, List<double>>();
+
+                _logger.LogInformation("Channel creating...");
+                using (var deviceChannel = GrpcChannel.ForAddress(_chronoLogOptions.DeviceClientAddress.ToString(), grpcChannelOptions))
+                {
+                    _logger.LogInformation("Channel created.");
+
+                    _logger.LogInformation("File opening...");
+                    _logger.LogInformation("_chronoLogOptions.CronoLogFilename");
+                    var lines = await System.IO.File.ReadAllLinesAsync(_chronoLogOptions.CronoLogFilename, stoppingToken);
+                    _logger.LogInformation("File opened.");
+                    _logger.LogInformation($"Lines={lines.Length}");
+
+                    var latestCarLaps = new Dictionary<byte, (short Laps, short? LapsDifference)>();
+
+                    var deviceServiceClient = new Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceClient(deviceChannel);
+                    var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(deviceChannel);
+
+                    var timerStart = DateTime.UtcNow;
+                    TimeSpan lastRunningEvent = TimeSpan.Zero;
+
+                    foreach (var line in lines)
+                    {
+                        if (stoppingToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        string carColumn = "";
+                        string lapsColumn = "";
+                        string gapsColumn = "";
+                        string lastLapColumn = "";
+                        string bestLapColumn = "";
+                        string lastEventColumn = "";
+                        string teamColumn = "";
+                        string dongleDataColumn = "";
+
+                        var columns = line.Split("\t");
+                        foreach (var columnKv in columns.Select((column, index) => new { column, index }))
+                        {
+                            switch (columnKv.index)
+                            {
+                                case 0:
+                                    carColumn = columnKv.column.Trim();
+                                    break;
+
+                                case 1:
+                                    lapsColumn = columnKv.column.Trim();
+                                    break;
+
+                                case 2:
+                                    gapsColumn = columnKv.column.Trim();
+                                    break;
+
+                                case 3:
+                                    lastLapColumn = columnKv.column.Trim().Replace(",", ".");
+                                    break;
+
+                                case 4:
+                                    bestLapColumn = columnKv.column.Trim();
+                                    break;
+
+                                case 5:
+                                    lastEventColumn = columnKv.column.Trim().Replace(",", ".");
+                                    break;
+
+                                case 6:
+                                    teamColumn = columnKv.column.Trim();
+                                    break;
+
+                                case 7:
+                                    if (_chronoLogOptions.UseDongleData)
+                                    {
+                                        dongleDataColumn = columnKv.column.Trim();
+                                    }
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+
+                        switch (carColumn)
+                        {
+                            case "START":
+                            case "RESTART":
+                                if (heatStateTypeId != HeatStateTypeId.Running)
                                 {
+                                    heatStateTypeId = HeatStateTypeId.Running;
+
                                     _logger.LogInformation($"Starting heat {_chronoLogOptions.HeatId}");
-                                    var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
+                                    //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
                                     await heatServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
                                     {
                                         Id = _chronoLogOptions.HeatId,
                                         HeatCommandTypeId = Razmanager.Protobuf.Public.V1.HeatCommandTypeId.Start
                                     });
                                 }
-                            }
 
-                            break;
+                                break;
 
-                        case "PACE":
-                            heatStateTypeId = HeatStateTypeId.Yellow;
+                            case "PACE":
+                                heatStateTypeId = HeatStateTypeId.Yellow;
 
-                            using (var appChannel = GrpcChannel.ForAddress(_chronoLogOptions.AppClientAddress.ToString(), grpcChannelOptions))
-                            {
                                 _logger.LogInformation($"Yellow flag heat {_chronoLogOptions.HeatId}");
-                                var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
+                                //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
                                 await heatServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
                                 {
                                     Id = _chronoLogOptions.HeatId,
                                     HeatCommandTypeId = Razmanager.Protobuf.Public.V1.HeatCommandTypeId.Yellow
                                 });
-                            }
 
-                            break;
+                                break;
 
-                        case "PAUSE":
-                            heatStateTypeId = HeatStateTypeId.Red;
+                            case "PAUSE":
+                                heatStateTypeId = HeatStateTypeId.Red;
 
-                            using (var appChannel = GrpcChannel.ForAddress(_chronoLogOptions.AppClientAddress.ToString(), grpcChannelOptions))
-                            {
                                 _logger.LogInformation($"Red flag heat {_chronoLogOptions.HeatId}");
-                                var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
+                                //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
                                 await heatServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
                                 {
                                     Id = _chronoLogOptions.HeatId,
                                     HeatCommandTypeId = Razmanager.Protobuf.Public.V1.HeatCommandTypeId.Red
                                 });
-                            }
 
-                            break;
+                                break;
 
-                        default:
-                            break;
-                    }
+                            default:
+                                break;
+                        }
 
-                    if (byte.TryParse(carColumn, out byte car) && short.TryParse(lapsColumn, out short laps) && TimeSpan.TryParse(lastLapColumn, CultureInfo.InvariantCulture, out var lapTime) && TimeSpan.TryParse(lastEventColumn, CultureInfo.InvariantCulture, out var lastEvent))
-                    {
-                        if (laps > 0)
+                        if (byte.TryParse(carColumn, out byte car) && short.TryParse(lapsColumn, out short laps) && TimeSpan.TryParse(lastLapColumn, CultureInfo.InvariantCulture, out var lapTime) && TimeSpan.TryParse(lastEventColumn, CultureInfo.InvariantCulture, out var lastEvent))
                         {
-                            //Console.WriteLine($"{car} {laps} {lastEvent}");
-
-                            DateTime timeStamp;
-                            if (heatStateTypeId == HeatStateTypeId.Red)
+                            if (laps > 0)
                             {
-                                timeStamp = timerStart.Add(lastRunningEvent);
-                            }
-                            else
-                            {
-                                timeStamp = timerStart.Add(lastEvent);
-                                lastRunningEvent = lastEvent;
-                            }
+                                //Console.WriteLine($"{car} {laps} {lastEvent}");
 
-                            await Task.Delay(Convert.ToInt32(Math.Max(0, (timeStamp - DateTime.UtcNow).TotalMilliseconds)));
-
-                            if (_chronoLogOptions.UseDongleData)
-                            {
-                                var dongleData = Convert.FromHexString(dongleDataColumn);
-
-                                OxigenRxDeviceSoftwareReleaseOwner deviceSoftwareReleaseOwner;
-                                if ((dongleData[8] & (int)Math.Pow(2, 7)) == 0)
+                                DateTime timeStamp;
+                                if (heatStateTypeId == HeatStateTypeId.Red)
                                 {
-                                    deviceSoftwareReleaseOwner = OxigenRxDeviceSoftwareReleaseOwner.controllerSoftwareRelease;
+                                    timeStamp = timerStart.Add(lastRunningEvent);
                                 }
                                 else
                                 {
-                                    deviceSoftwareReleaseOwner = OxigenRxDeviceSoftwareReleaseOwner.carSoftwareRelease;
+                                    timeStamp = timerStart.Add(lastEvent);
+                                    lastRunningEvent = lastEvent;
                                 }
 
-                                if (dongleData[8] != 0)
-                                {
-                                    var softwareRelease = 4 + (dongleData[8] & 96) / 32.0 + (dongleData[8] & 31) / 100.0;
+                                await Task.Delay(Convert.ToInt32(Math.Max(0, (timeStamp - DateTime.UtcNow).TotalMilliseconds)));
 
-                                    switch (deviceSoftwareReleaseOwner)
+                                if (_chronoLogOptions.UseDongleData)
+                                {
+                                    var dongleData = Convert.FromHexString(dongleDataColumn);
+
+                                    OxigenRxDeviceSoftwareReleaseOwner deviceSoftwareReleaseOwner;
+                                    if ((dongleData[8] & (int)Math.Pow(2, 7)) == 0)
                                     {
-                                        case OxigenRxDeviceSoftwareReleaseOwner.controllerSoftwareRelease:
-                                            if (!carControllerFirmwareVersions.ContainsKey(car))
-                                            {
-                                                carControllerFirmwareVersions.Add(car, [softwareRelease]);
-                                            }
-                                            else
-                                            {
-                                                if (!carControllerFirmwareVersions[car].Contains(softwareRelease))
+                                        deviceSoftwareReleaseOwner = OxigenRxDeviceSoftwareReleaseOwner.controllerSoftwareRelease;
+                                    }
+                                    else
+                                    {
+                                        deviceSoftwareReleaseOwner = OxigenRxDeviceSoftwareReleaseOwner.carSoftwareRelease;
+                                    }
+
+                                    if (dongleData[8] != 0)
+                                    {
+                                        var softwareRelease = 4 + (dongleData[8] & 96) / 32.0 + (dongleData[8] & 31) / 100.0;
+
+                                        switch (deviceSoftwareReleaseOwner)
+                                        {
+                                            case OxigenRxDeviceSoftwareReleaseOwner.controllerSoftwareRelease:
+                                                if (!carControllerFirmwareVersions.ContainsKey(car))
                                                 {
-                                                    carControllerFirmwareVersions[car].Add(softwareRelease);
+                                                    carControllerFirmwareVersions.Add(car, [softwareRelease]);
                                                 }
-                                            }
-                                            break;
-                                        case OxigenRxDeviceSoftwareReleaseOwner.carSoftwareRelease:
-                                            if (!carCarFirmwareVersions.ContainsKey(car))
-                                            {
-                                                carCarFirmwareVersions.Add(car, [softwareRelease]);
-                                            }
-                                            else
-                                            {
-                                                if (!carCarFirmwareVersions[car].Contains(softwareRelease))
+                                                else
                                                 {
-                                                    carCarFirmwareVersions[car].Add(softwareRelease);
+                                                    if (!carControllerFirmwareVersions[car].Contains(softwareRelease))
+                                                    {
+                                                        carControllerFirmwareVersions[car].Add(softwareRelease);
+                                                    }
                                                 }
-                                            }
-                                            break;
+                                                break;
+                                            case OxigenRxDeviceSoftwareReleaseOwner.carSoftwareRelease:
+                                                if (!carCarFirmwareVersions.ContainsKey(car))
+                                                {
+                                                    carCarFirmwareVersions.Add(car, [softwareRelease]);
+                                                }
+                                                else
+                                                {
+                                                    if (!carCarFirmwareVersions[car].Contains(softwareRelease))
+                                                    {
+                                                        carCarFirmwareVersions[car].Add(softwareRelease);
+                                                    }
+                                                }
+                                                break;
+                                        }
                                     }
                                 }
-                            }
 
-                            var deviceConfigurationInputs = new Razmanager.Protobuf.Public.V1.DeviceConfigurationInputs();
+                                var deviceConfigurationInputs = new Razmanager.Protobuf.Public.V1.DeviceConfigurationInputs();
 
-                            var ignoreLapTime = false;
-                            var ignoreLap = false;
+                                var ignoreLapTime = false;
+                                var ignoreLap = false;
 
-                            short? lapDifference = null;
-                            if (latestCarLaps.TryGetValue(car, out var previousLap))
-                            {
-                                lapDifference = Convert.ToInt16(laps - previousLap.Laps);
-
-                                if (laps > 1 && lapDifference != 1)
+                                short? lapDifference = null;
+                                if (latestCarLaps.TryGetValue(car, out var previousLap))
                                 {
-                                    Console.WriteLine($"{car}\t{teamColumn}\t{laps}\t{lapDifference}\t{lastLapColumn}\t{lastEventColumn}");
-                                }
+                                    lapDifference = Convert.ToInt16(laps - previousLap.Laps);
 
-                                if (car != 4 && car != 13 && car != 12)
-                                {
-                                    ignoreLap = laps > 1 && lapDifference <= 0;
-                                    if (!ignoreLap)
+                                    if (laps > 1 && lapDifference != 1)
                                     {
-                                        if (lapDifference != 1 && laps > 0 && previousLap.LapsDifference.HasValue && lapDifference + previousLap.LapsDifference != 0)
-                                        {
-                                            ignoreLapTime = true;
+                                        Console.WriteLine($"{car}\t{teamColumn}\t{laps}\t{lapDifference}\t{lastLapColumn}\t{lastEventColumn}");
+                                    }
 
-                                            for (short i = Convert.ToInt16(previousLap.Laps + 1); i < laps; i++)
+                                    if (car != 4 && car != 13 && car != 12)
+                                    {
+                                        ignoreLap = laps > 1 && lapDifference <= 0;
+                                        if (!ignoreLap)
+                                        {
+                                            if (lapDifference != 1 && laps > 0 && previousLap.LapsDifference.HasValue && lapDifference + previousLap.LapsDifference != 0)
                                             {
-                                                deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                                ignoreLapTime = true;
+
+                                                for (short i = Convert.ToInt16(previousLap.Laps + 1); i < laps; i++)
                                                 {
-                                                    DeviceConfigurationId = deviceConfigurationId,
-                                                    CorrelationId = Guid.NewGuid().ToString(),
-                                                    Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                                    DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
-                                                    DeviceConfigurationInputId = car
-                                                });
+                                                    deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                                    {
+                                                        DeviceConfigurationId = deviceConfigurationId,
+                                                        CorrelationId = Guid.NewGuid().ToString(),
+                                                        Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                                        DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
+                                                        DeviceConfigurationInputId = car
+                                                    });
+                                                }
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            if (!ignoreLap)
-                            {
-                                if (lastEvent > TimeSpan.FromMinutes(1) && laps > 5 && heatStateTypeId == HeatStateTypeId.Running)
+                                if (!ignoreLap)
                                 {
-                                    if (lapTime.TotalSeconds > _chronoLogOptions.PitLaneThreshold)
+                                    if (lastEvent > TimeSpan.FromMinutes(1) && laps > 5 && heatStateTypeId == HeatStateTypeId.Running)
                                     {
-                                        deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                        if (lapTime.TotalSeconds > _chronoLogOptions.PitLaneThreshold)
                                         {
-                                            DeviceConfigurationId = deviceConfigurationId,
-                                            CorrelationId = Guid.NewGuid().ToString(),
-                                            Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                            DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.PitlaneEntry,
-                                            DeviceConfigurationInputId = car
-                                        });
-                                        deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                            deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                            {
+                                                DeviceConfigurationId = deviceConfigurationId,
+                                                CorrelationId = Guid.NewGuid().ToString(),
+                                                Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                                DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.PitlaneEntry,
+                                                DeviceConfigurationInputId = car
+                                            });
+                                            deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                            {
+                                                DeviceConfigurationId = deviceConfigurationId,
+                                                CorrelationId = Guid.NewGuid().ToString(),
+                                                Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                                DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.PitlaneExit,
+                                                DeviceConfigurationInputId = car
+                                            });
+                                        }
+                                        else if (lapTime.TotalSeconds > _chronoLogOptions.DeslotThreshold)
                                         {
-                                            DeviceConfigurationId = deviceConfigurationId,
-                                            CorrelationId = Guid.NewGuid().ToString(),
-                                            Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                            DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.PitlaneExit,
-                                            DeviceConfigurationInputId = car
-                                        });
+                                            deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                            {
+                                                DeviceConfigurationId = deviceConfigurationId,
+                                                CorrelationId = Guid.NewGuid().ToString(),
+                                                Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                                DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.CarOnTrack,
+                                                DeviceConfigurationInputId = car,
+                                                BoolValue = true
+                                            });
+                                            deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                            {
+                                                DeviceConfigurationId = deviceConfigurationId,
+                                                CorrelationId = Guid.NewGuid().ToString(),
+                                                Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                                DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.CarOnTrack,
+                                                DeviceConfigurationInputId = car,
+                                                BoolValue = false
+                                            });
+                                        }
                                     }
-                                    else if (lapTime.TotalSeconds > _chronoLogOptions.DeslotThreshold)
+
+                                    if (lapTime.TotalSeconds == 0)
                                     {
-                                        deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
-                                        {
-                                            DeviceConfigurationId = deviceConfigurationId,
-                                            CorrelationId = Guid.NewGuid().ToString(),
-                                            Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                            DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.CarOnTrack,
-                                            DeviceConfigurationInputId = car,
-                                            BoolValue = true
-                                        });
-                                        deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
-                                        {
-                                            DeviceConfigurationId = deviceConfigurationId,
-                                            CorrelationId = Guid.NewGuid().ToString(),
-                                            Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                            DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.CarOnTrack,
-                                            DeviceConfigurationInputId = car,
-                                            BoolValue = false
-                                        });
+                                        ignoreLapTime = true;
                                     }
+
+
+                                    var correlationId = Guid.NewGuid();
+                                    var now = DateTime.UtcNow;
+                                    _correlationIdTimestamps.AddOrUpdate(correlationId, now, (a, b) => now);
+
+                                    deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
+                                    {
+                                        DeviceConfigurationId = deviceConfigurationId,
+                                        CorrelationId = correlationId.ToString(),
+                                        Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                        DeviceConfigurationInputTypeId = !ignoreLapTime ? Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicator : Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
+                                        DeviceConfigurationInputId = car,
+                                        LapTime = ignoreLapTime ? null : lapTime.TotalSeconds
+                                    });
+
+                                    await deviceConfigurationServiceClient.DeviceConfigurationInputsPublishAsync(deviceConfigurationInputs, null, null, stoppingToken);
+
+                                    foreach (var item in _correlationIdTimestamps.Where(x => x.Value < now.AddMinutes(-1)))
+                                    {
+                                        _correlationIdTimestamps.Remove(item.Key, out var value);
+                                    }
+
+                                    latestCarLaps[car] = (laps, lapDifference);
                                 }
-
-                                if (lapTime.TotalSeconds == 0)
-                                {
-                                    ignoreLapTime = true;
-                                }
-                                deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
-                                {
-                                    DeviceConfigurationId = deviceConfigurationId,
-                                    CorrelationId = Guid.NewGuid().ToString(),
-                                    Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                    DeviceConfigurationInputTypeId = !ignoreLapTime ? Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicator : Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
-                                    DeviceConfigurationInputId = car,
-                                    LapTime = ignoreLapTime ? null : lapTime.TotalSeconds
-                                });
-
-                                await deviceConfigurationServiceClient.DeviceConfigurationInputsPublishAsync(deviceConfigurationInputs, null, null, stoppingToken);
-
-                                latestCarLaps[car] = (laps, lapDifference);
                             }
                         }
                     }
                 }
-            }
 
-            await Task.Delay(TimeSpan.FromMinutes(1));
+                await Task.Delay(TimeSpan.FromMinutes(1));
 
-            using (var channel = GrpcChannel.ForAddress(_chronoLogOptions.AppClientAddress, grpcChannelOptions))
-            {
-                var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(channel);
+                //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
 
                 _logger.LogInformation("Ending race");
                 await heatServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest

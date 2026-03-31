@@ -139,9 +139,9 @@ class HeatIndicatorFlag extends $pb.ProtobufEnum {
   static const HeatIndicatorFlag HEAT_INDICATOR_FLAG_PITLANE =
       HeatIndicatorFlag._(
           2, _omitEnumNames ? '' : 'HEAT_INDICATOR_FLAG_PITLANE');
-  static const HeatIndicatorFlag HEAT_INDICATOR_FLAG_CAR_OFF_TRACK =
+  static const HeatIndicatorFlag HEAT_INDICATOR_FLAG_DESLOT =
       HeatIndicatorFlag._(
-          3, _omitEnumNames ? '' : 'HEAT_INDICATOR_FLAG_CAR_OFF_TRACK');
+          3, _omitEnumNames ? '' : 'HEAT_INDICATOR_FLAG_DESLOT');
   static const HeatIndicatorFlag
       HEAT_INDICATOR_FLAG_CONTROLLER_BATTERY_WARNING = HeatIndicatorFlag._(
           4,
@@ -151,6 +151,9 @@ class HeatIndicatorFlag extends $pb.ProtobufEnum {
   static const HeatIndicatorFlag HEAT_INDICATOR_FLAG_CHARGING =
       HeatIndicatorFlag._(
           5, _omitEnumNames ? '' : 'HEAT_INDICATOR_FLAG_CHARGING');
+  static const HeatIndicatorFlag HEAT_INDICATOR_FLAG_CONFIRMED =
+      HeatIndicatorFlag._(
+          6, _omitEnumNames ? '' : 'HEAT_INDICATOR_FLAG_CONFIRMED');
   static const HeatIndicatorFlag HEAT_INDICATOR_FLAG_WARNING =
       HeatIndicatorFlag._(
           10, _omitEnumNames ? '' : 'HEAT_INDICATOR_FLAG_WARNING');
@@ -159,15 +162,17 @@ class HeatIndicatorFlag extends $pb.ProtobufEnum {
     HEAT_INDICATOR_FLAG_FINISHED,
     HEAT_INDICATOR_FLAG_FASTEST_LAP,
     HEAT_INDICATOR_FLAG_PITLANE,
-    HEAT_INDICATOR_FLAG_CAR_OFF_TRACK,
+    HEAT_INDICATOR_FLAG_DESLOT,
     HEAT_INDICATOR_FLAG_CONTROLLER_BATTERY_WARNING,
     HEAT_INDICATOR_FLAG_CHARGING,
+    HEAT_INDICATOR_FLAG_CONFIRMED,
     HEAT_INDICATOR_FLAG_WARNING,
   ];
 
-  static final $core.Map<$core.int, HeatIndicatorFlag> _byValue =
-      $pb.ProtobufEnum.initByValue(values);
-  static HeatIndicatorFlag? valueOf($core.int value) => _byValue[value];
+  static final $core.List<HeatIndicatorFlag?> _byValue =
+      $pb.ProtobufEnum.$_initByValueList(values, 10);
+  static HeatIndicatorFlag? valueOf($core.int value) =>
+      value < 0 || value >= _byValue.length ? null : _byValue[value];
 
   const HeatIndicatorFlag._(super.value, super.name);
 }
