@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.ConstrainedExecution;
 using System.Threading;
@@ -64,6 +65,11 @@ namespace RazManager.IO.Services.ChronoLog
                 HttpHandler = httpClientHandler,
             };
 
+            var metadata = new Metadata
+            {
+                { "X-Client-Cert", WebUtility.UrlEncode(_settingsService.Settings.CertificatePem) },
+            };
+
             using (var appChannel = GrpcChannel.ForAddress(_chronoLogOptions.AppClientAddress.ToString(), grpcChannelOptions))
             {
                 var raceServiceClient = new Razmanager.Protobuf.Public.V1.RaceService.RaceServiceClient(appChannel);
@@ -95,32 +101,31 @@ namespace RazManager.IO.Services.ChronoLog
                 _logger.LogInformation($"Waiting...");
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
-                var appTask = Task.Run(async () =>
-                {
-                    var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
+                //var appTask = Task.Run(async () =>
+                //{
+                //    var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
 
-                    using (var call = heatServiceClient.HeatLeaderboardSubscribe(new StringValue { Value = _chronoLogOptions.HeatId }, null, null, stoppingToken))
-                    {
-                        await foreach (var heatLeaderboard in call.ResponseStream.ReadAllAsync(stoppingToken))
-                        {
-                            if (heatLeaderboard is not null && !string.IsNullOrEmpty(heatLeaderboard.CorrelationId))
-                            {
-                                var correlationId = new Guid(heatLeaderboard.CorrelationId);
-                                if (_correlationIdTimestamps.TryGetValue(correlationId, out var value))
-                                {
-                                    _logger.LogInformation($"{(DateTime.UtcNow - value).TotalSeconds}");
-                                    _correlationIdTimestamps.Remove(correlationId, out value);
-                                }
-                                else
-                                {
-                                    _logger.LogInformation("CorrelationIds don't match.");
-                                }
-                            }
-                        }
-                    }
+                //    using (var call = heatServiceClient.HeatLeaderboardSubscribe(new StringValue { Value = _chronoLogOptions.HeatId }, null, null, stoppingToken))
+                //    {
+                //        await foreach (var heatLeaderboard in call.ResponseStream.ReadAllAsync(stoppingToken))
+                //        {
+                //            if (heatLeaderboard is not null && !string.IsNullOrEmpty(heatLeaderboard.CorrelationId))
+                //            {
+                //                var correlationId = new Guid(heatLeaderboard.CorrelationId);
+                //                if (_correlationIdTimestamps.TryGetValue(correlationId, out var value))
+                //                {
+                //                    _logger.LogInformation($"{(DateTime.UtcNow - value).TotalSeconds}");
+                //                    _correlationIdTimestamps.Remove(correlationId, out value);
+                //                }
+                //                else
+                //                {
+                //                    _logger.LogInformation("CorrelationIds don't match.");
+                //                }
+                //            }
+                //        }
+                //    }
 
-                }, stoppingToken);
-
+                //}, stoppingToken);
 
 
                 _logger.LogInformation($"Starting simulation...");
@@ -432,7 +437,7 @@ namespace RazManager.IO.Services.ChronoLog
                                         LapTime = ignoreLapTime ? null : lapTime.TotalSeconds
                                     });
 
-                                    await deviceConfigurationServiceClient.DeviceConfigurationInputsPublishAsync(deviceConfigurationInputs, null, null, stoppingToken);
+                                    await deviceConfigurationServiceClient.DeviceConfigurationInputsPublishAsync(deviceConfigurationInputs, metadata, null, stoppingToken);
 
                                     foreach (var item in _correlationIdTimestamps.Where(x => x.Value < now.AddMinutes(-1)))
                                     {

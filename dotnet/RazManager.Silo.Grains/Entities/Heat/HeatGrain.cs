@@ -5,6 +5,7 @@ using Razmanager.Protobuf.Internal.Repository.Silo.SystemServices.TrackConfigura
 using Razmanager.Protobuf.Internal.Silo.UserServices.Event;
 using Razmanager.Protobuf.Public.V1;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Resources;
 using static System.Net.Mime.MediaTypeNames;
@@ -21,6 +22,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
         private Razmanager.Protobuf.Public.V1.Event? _event;
         private Razmanager.Protobuf.Public.V1.Race? _race;
         private Razmanager.Protobuf.Public.V1.Heat? _heat;
+        private bool _singleHeat;
         private byte _trackLaptimeDecimals;
         private string _trackLaptimeDecimalsFormat = "F2";
         private const double _totalEnergyLevel = 10000000;
@@ -72,6 +74,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                 _race = await _raceServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _heat.RaceId });
                 _event = await _eventServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _race.EventId });
 
+                _singleHeat = _race.Heats.Count(x => x.SessionType.Id == _heat.SessionType.Id) == 1;
                 _trackLaptimeDecimals = 2;
                 _trackLaptimeDecimalsFormat = "F" + _trackLaptimeDecimals;
 
@@ -272,6 +275,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                 var heatStateIndicator = new HeatStateIndicator
                 {
                     Id = item.indicator.Id,
+                    EventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == item.indicator.Id)?.EventUserId,
                     Position = Convert.ToUInt32(item.index + 1)
                 };
 
@@ -970,111 +974,125 @@ namespace RazManager.Silo.Grains.Entities.Heat
                             HeatStateIndicator? leaderIndicator = null;
                             HeatStateIndicator? intervalIndicator = null;
 
-                            foreach (var item in _indicators
-                                .OrderByDescending(x => x.Value.Laps)
-                                .ThenByDescending(x => x.Value.LastTimeTypeId)
-                                .ThenBy(x => x.Value.LastTimestamp)
-                                .ThenBy(x => x.Key)
-                                .Select((indicatorKv, index) => new { indicatorKv, index }))
+                            if (_singleHeat)
                             {
-                                var previousPosition = item.indicatorKv.Value.Position;
-                                item.indicatorKv.Value.Position = Convert.ToUInt32(item.index + 1);
-
-                                if (!replay && item.indicatorKv.Value.Position > 0 && item.indicatorKv.Value.Position != previousPosition)
+                                foreach (var item in _indicators
+                                    .OrderByDescending(x => x.Value.Laps)
+                                    .ThenByDescending(x => x.Value.LastTimeTypeId)
+                                    .ThenBy(x => x.Value.LastTimestamp)
+                                    .ThenBy(x => x.Key)
+                                    .Select((indicatorKv, index) => new { indicatorKv, index }))
                                 {
-                                    var eventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == item.indicatorKv.Value.Id)?.EventUserId;
-                                    if (eventUserId is not null)
-                                    {
-                                        if (!eventUsersEventSpeechTexts.TryGetValue(new Guid(eventUserId), out var eventSpeechTexts))
-                                        {
-                                            eventSpeechTexts = new EventSpeechTexts();
-                                            eventUsersEventSpeechTexts.Add(new Guid(eventUserId), eventSpeechTexts);
-                                        }
+                                    var previousPosition = item.indicatorKv.Value.Position;
+                                    item.indicatorKv.Value.Position = Convert.ToUInt32(item.index + 1);
 
-                                        if (item.indicatorKv.Value.Position == 1)
+                                    if (!replay && item.indicatorKv.Value.Position > 0 && item.indicatorKv.Value.Position != previousPosition)
+                                    {
+                                        if (item.indicatorKv.Value.EventUserId is not null)
                                         {
-                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            if (!eventUsersEventSpeechTexts.TryGetValue(new Guid(item.indicatorKv.Value.EventUserId), out var eventSpeechTexts))
                                             {
-                                                EventSpeechTypeId = EventSpeechTypeId.PositionLeader,
-                                                Text = $"You are now in the lead"
-                                            });
-                                        }
-                                        else if (item.indicatorKv.Value.Position < previousPosition)
-                                        {
-                                            var text = $"You have gained {previousPosition - item.indicatorKv.Value.Position} position";
-                                            if (previousPosition - item.indicatorKv.Value.Position >= 2)
-                                            {
-                                                text += "s";
+                                                eventSpeechTexts = new EventSpeechTexts();
+                                                eventUsersEventSpeechTexts.Add(new Guid(item.indicatorKv.Value.EventUserId), eventSpeechTexts);
                                             }
-                                            eventSpeechTexts.Items.Add(new EventSpeechText
+
+                                            if (item.indicatorKv.Value.Position == 1)
                                             {
-                                                EventSpeechTypeId = EventSpeechTypeId.PositionGained,
-                                                Text = text
-                                            });
-                                        }
-                                        else
-                                        {
-                                            var text = $"You have lost {item.indicatorKv.Value.Position - previousPosition} position";
-                                            if (item.indicatorKv.Value.Position - previousPosition >= 2)
-                                            {
-                                                text += "s";
+                                                eventSpeechTexts.Items.Add(new EventSpeechText
+                                                {
+                                                    EventSpeechTypeId = EventSpeechTypeId.PositionLeader,
+                                                    Text = $"You are now in the lead"
+                                                });
                                             }
-                                            eventSpeechTexts.Items.Add(new EventSpeechText
+                                            else if (item.indicatorKv.Value.Position < previousPosition)
                                             {
-                                                EventSpeechTypeId = EventSpeechTypeId.PositionLost,
-                                                Text = text
-                                            });
+                                                var text = $"You have gained {previousPosition - item.indicatorKv.Value.Position} position";
+                                                if (previousPosition - item.indicatorKv.Value.Position >= 2)
+                                                {
+                                                    text += "s";
+                                                }
+                                                eventSpeechTexts.Items.Add(new EventSpeechText
+                                                {
+                                                    EventSpeechTypeId = EventSpeechTypeId.PositionGained,
+                                                    Text = text
+                                                });
+                                            }
+                                            else
+                                            {
+                                                var text = $"You have lost {item.indicatorKv.Value.Position - previousPosition} position";
+                                                if (item.indicatorKv.Value.Position - previousPosition >= 2)
+                                                {
+                                                    text += "s";
+                                                }
+                                                eventSpeechTexts.Items.Add(new EventSpeechText
+                                                {
+                                                    EventSpeechTypeId = EventSpeechTypeId.PositionLost,
+                                                    Text = text
+                                                });
+                                            }
                                         }
                                     }
-                                }
 
-                                item.indicatorKv.Value.GapLeaderTime = null;
-                                item.indicatorKv.Value.GapLeaderLaps = null;
-                                item.indicatorKv.Value.GapIntervalTime = null;
-                                item.indicatorKv.Value.GapIntervalLaps = null;
+                                    item.indicatorKv.Value.GapLeaderTime = null;
+                                    item.indicatorKv.Value.GapLeaderLaps = null;
+                                    item.indicatorKv.Value.GapIntervalTime = null;
+                                    item.indicatorKv.Value.GapIntervalLaps = null;
 
-                                if (item.indicatorKv.Value.Position == 1)
-                                {
-                                    item.indicatorKv.Value.GapIntervalFraction = null;
-                                }
-
-                                var heatStateIndicatorTime = item.indicatorKv.Value.AllTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].LastOrDefault();
-                                if (heatStateIndicatorTime is not null)
-                                {
-                                    if (leaderIndicator is not null)
+                                    if (item.indicatorKv.Value.Position == 1)
                                     {
-                                        (item.indicatorKv.Value.GapLeaderTime, item.indicatorKv.Value.GapLeaderLaps) = CalculateGap(heatStateIndicatorTime, leaderIndicator);
+                                        item.indicatorKv.Value.GapIntervalFraction = null;
                                     }
 
-                                    if (intervalIndicator is not null)
+                                    var heatStateIndicatorTime = item.indicatorKv.Value.AllTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].LastOrDefault();
+                                    if (heatStateIndicatorTime is not null)
                                     {
-                                        (item.indicatorKv.Value.GapIntervalTime, item.indicatorKv.Value.GapIntervalLaps) = CalculateGap(heatStateIndicatorTime, intervalIndicator);
-
-                                        if (item.indicatorKv.Value.GapIntervalTime.HasValue && item.indicatorKv.Value.GapIntervalTime.Value < 0)
+                                        if (leaderIndicator is not null)
                                         {
-                                            item.indicatorKv.Value.GapIntervalTime = null;
+                                            (item.indicatorKv.Value.GapLeaderTime, item.indicatorKv.Value.GapLeaderLaps) = CalculateGap(heatStateIndicatorTime, leaderIndicator);
+                                        }
+
+                                        if (intervalIndicator is not null)
+                                        {
+                                            (item.indicatorKv.Value.GapIntervalTime, item.indicatorKv.Value.GapIntervalLaps) = CalculateGap(heatStateIndicatorTime, intervalIndicator);
+
+                                            if (item.indicatorKv.Value.GapIntervalTime.HasValue && item.indicatorKv.Value.GapIntervalTime.Value < 0)
+                                            {
+                                                item.indicatorKv.Value.GapIntervalTime = null;
+                                            }
                                         }
                                     }
+
+                                    if (item.index == 0)
+                                    {
+                                        leaderIndicator = item.indicatorKv.Value;
+                                    }
+                                    intervalIndicator = item.indicatorKv.Value;
+
+                                    //if (indicator.Position.HasValue && indicator.Laps.HasValue)
+                                    //{
+                                    //    //var _heatStatisticsLap = new HeatStatisticsLapMessage
+                                    //    //{
+                                    //    //    IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId.Value,
+                                    //    //    Position = indicator.Position.Value,
+                                    //    //    Lap = indicator.Laps.Value
+                                    //    //};
+                                    //    //_statisticsLapAll.Add(_heatStatisticsLap);
+                                    //    //_statisticsLapDelta.Add(_heatStatisticsLap);
+                                    //}
+
                                 }
-
-                                if (item.index == 0)
-                                {
-                                    leaderIndicator = item.indicatorKv.Value;
-                                }
-                                intervalIndicator = item.indicatorKv.Value;
-
-                                //if (indicator.Position.HasValue && indicator.Laps.HasValue)
-                                //{
-                                //    //var _heatStatisticsLap = new HeatStatisticsLapMessage
-                                //    //{
-                                //    //    IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId.Value,
-                                //    //    Position = indicator.Position.Value,
-                                //    //    Lap = indicator.Laps.Value
-                                //    //};
-                                //    //_statisticsLapAll.Add(_heatStatisticsLap);
-                                //    //_statisticsLapDelta.Add(_heatStatisticsLap);
-                                //}
-
+                            }
+                            else
+                            {
+                                var timerElapsed = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(_heatJournalState.TimerElapsed.ToTimeSpan().Add((deviceConfigurationInput.Timestamp - _heatJournalState.TimerStartedAt!).ToTimeSpan()));
+                                _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId))
+                                    .RaceLeaderboardEventUserUpdateAsync(new RaceLeaderboardEventUserUpdate
+                                    {
+                                        SessionTypeId = _heat.SessionType.Id,
+                                        EventUserId = heatStateIndicator.EventUserId,
+                                        TimerElapsed = timerElapsed,
+                                        Laps = heatStateIndicator.Laps
+                                    });
                             }
 
                             //Console.WriteLine($"{deviceConfigurationInput.DeviceConfigurationInputId} {indicator.Laps!.Value} {time.Value} {state.TimerElapsed.Seconds}");
@@ -1144,107 +1162,110 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                     _heatStintAnalysisIndicatorStintsDelta[indicatorId].Items.Add(heatStintAnalysisIndicatorStintDelta);
                                 }
 
-                                foreach (var otherItem in _indicators.Where(x => x.Key != deviceConfigurationInput.DeviceConfigurationInputId.Value))
+                                if (_singleHeat)
                                 {
-                                    var gap = CalculateGap2(heatStateIndicator, otherItem.Value);
-                                    if (gap.GapTime.HasValue)
+                                    foreach (var otherItem in _indicators.Where(x => x.Key != deviceConfigurationInput.DeviceConfigurationInputId.Value))
                                     {
-                                        heatAnalysis = new HeatAnalysis
+                                        var gap = CalculateGap2(heatStateIndicator, otherItem.Value);
+                                        if (gap.GapTime.HasValue)
                                         {
-                                            TimerElapsed = timerElapsed,
-                                            IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId,
-                                            Gap = new HeatAnalysisGap
+                                            heatAnalysis = new HeatAnalysis
                                             {
-                                                IndicatorId = otherItem.Key,
-                                                Value = Math.Round(gap.GapTime.Value, _trackLaptimeDecimals),
-                                                DisplayValue = gap.GapLaps.HasValue ? $"{gap.GapLaps.Value}L" : gap.GapTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture)
-                                            }
-                                        };
-
-                                        var heatAnalysesGapsQueue = _heatAnalysesGaps[Convert.ToByte(heatAnalysis.IndicatorId)][Convert.ToByte(heatAnalysis.Gap.IndicatorId)];
-                                        var previousGap = heatAnalysesGapsQueue.LastOrDefault();
-                                        heatAnalysesGapsQueue.Enqueue(heatAnalysis.Gap);
-                                        while (heatAnalysesGapsQueue.Count > 5)
-                                        {
-                                            heatAnalysesGapsQueue.Dequeue();
-                                        }
-
-                                        if (previousGap is not null)
-                                        {
-                                            heatAnalysis.Gap.DeltaValue = heatAnalysis.Gap.Value - previousGap.Value;
-
-                                            var time = heatStateIndicator.LatestTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].Time;
-                                            if (time.HasValue)
-                                            {
-                                                heatAnalysis.Gap.DeltaFraction = heatAnalysis.Gap.DeltaValue / time.Value;
-                                            }
-                                        }
-
-                                        _heatAnalyses.Items.Add(heatAnalysis);
-                                        _heatAnalysesDelta.Items.Add(heatAnalysis);
-
-                                        heatAnalysis = new HeatAnalysis
-                                        {
-                                            TimerElapsed = timerElapsed,
-                                            IndicatorId = otherItem.Key,
-                                            Gap = new HeatAnalysisGap
-                                            {
-                                                IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId.Value,
-                                                Value = Math.Round(-gap.GapTime.Value, _trackLaptimeDecimals),
-                                                DisplayValue = gap.GapLaps.HasValue ? $"-{gap.GapLaps.Value}L" : (-gap.GapTime.Value).ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture)
-                                            }
-                                        };
-
-                                        heatAnalysesGapsQueue = _heatAnalysesGaps[Convert.ToByte(heatAnalysis.IndicatorId)][Convert.ToByte(heatAnalysis.Gap.IndicatorId)];
-                                        previousGap = heatAnalysesGapsQueue.LastOrDefault();
-                                        heatAnalysesGapsQueue.Enqueue(heatAnalysis.Gap);
-                                        while (heatAnalysesGapsQueue.Count > 5)
-                                        {
-                                            heatAnalysesGapsQueue.Dequeue();
-                                        }
-
-                                        if (previousGap is not null)
-                                        {
-                                            heatAnalysis.Gap.DeltaValue = heatAnalysis.Gap.Value - previousGap.Value;
-
-                                            var time = otherItem.Value.LatestTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].Time;
-                                            if (time.HasValue)
-                                            {
-                                                heatAnalysis.Gap.DeltaFraction = heatAnalysis.Gap.DeltaValue / time.Value;
-
-                                                if (otherItem.Value.Position == heatStateIndicator.Position - 1)
+                                                TimerElapsed = timerElapsed,
+                                                IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId,
+                                                Gap = new HeatAnalysisGap
                                                 {
-                                                    heatStateIndicator.GapIntervalFraction = heatAnalysis.Gap.DeltaFraction;
+                                                    IndicatorId = otherItem.Key,
+                                                    Value = Math.Round(gap.GapTime.Value, _trackLaptimeDecimals),
+                                                    DisplayValue = gap.GapLaps.HasValue ? $"{gap.GapLaps.Value}L" : gap.GapTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture)
+                                                }
+                                            };
+
+                                            var heatAnalysesGapsQueue = _heatAnalysesGaps[Convert.ToByte(heatAnalysis.IndicatorId)][Convert.ToByte(heatAnalysis.Gap.IndicatorId)];
+                                            var previousGap = heatAnalysesGapsQueue.LastOrDefault();
+                                            heatAnalysesGapsQueue.Enqueue(heatAnalysis.Gap);
+                                            while (heatAnalysesGapsQueue.Count > 5)
+                                            {
+                                                heatAnalysesGapsQueue.Dequeue();
+                                            }
+
+                                            if (previousGap is not null)
+                                            {
+                                                heatAnalysis.Gap.DeltaValue = heatAnalysis.Gap.Value - previousGap.Value;
+
+                                                var time = heatStateIndicator.LatestTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].Time;
+                                                if (time.HasValue)
+                                                {
+                                                    heatAnalysis.Gap.DeltaFraction = heatAnalysis.Gap.DeltaValue / time.Value;
                                                 }
                                             }
+
+                                            _heatAnalyses.Items.Add(heatAnalysis);
+                                            _heatAnalysesDelta.Items.Add(heatAnalysis);
+
+                                            heatAnalysis = new HeatAnalysis
+                                            {
+                                                TimerElapsed = timerElapsed,
+                                                IndicatorId = otherItem.Key,
+                                                Gap = new HeatAnalysisGap
+                                                {
+                                                    IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId.Value,
+                                                    Value = Math.Round(-gap.GapTime.Value, _trackLaptimeDecimals),
+                                                    DisplayValue = gap.GapLaps.HasValue ? $"-{gap.GapLaps.Value}L" : (-gap.GapTime.Value).ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture)
+                                                }
+                                            };
+
+                                            heatAnalysesGapsQueue = _heatAnalysesGaps[Convert.ToByte(heatAnalysis.IndicatorId)][Convert.ToByte(heatAnalysis.Gap.IndicatorId)];
+                                            previousGap = heatAnalysesGapsQueue.LastOrDefault();
+                                            heatAnalysesGapsQueue.Enqueue(heatAnalysis.Gap);
+                                            while (heatAnalysesGapsQueue.Count > 5)
+                                            {
+                                                heatAnalysesGapsQueue.Dequeue();
+                                            }
+
+                                            if (previousGap is not null)
+                                            {
+                                                heatAnalysis.Gap.DeltaValue = heatAnalysis.Gap.Value - previousGap.Value;
+
+                                                var time = otherItem.Value.LatestTimeTypeTimes[HeatIndicatorTimeTypeId.Lap].Time;
+                                                if (time.HasValue)
+                                                {
+                                                    heatAnalysis.Gap.DeltaFraction = heatAnalysis.Gap.DeltaValue / time.Value;
+
+                                                    if (otherItem.Value.Position == heatStateIndicator.Position - 1)
+                                                    {
+                                                        heatStateIndicator.GapIntervalFraction = heatAnalysis.Gap.DeltaFraction;
+                                                    }
+                                                }
+                                            }
+
+                                            _heatAnalyses.Items.Add(heatAnalysis);
+                                            _heatAnalysesDelta.Items.Add(heatAnalysis);
                                         }
-
-                                        _heatAnalyses.Items.Add(heatAnalysis);
-                                        _heatAnalysesDelta.Items.Add(heatAnalysis);
                                     }
+
+                                    //foreach (var otherItem in _indicators.Where(x => x.Key != deviceConfigurationInput.DeviceConfigurationInputId.Value))
+                                    //{
+                                    //    var gap = CalculateGap2(otherItem.Value, indicator);
+                                    //    if (gap.GapTime.HasValue)
+                                    //    {
+                                    //        heatAnalysis = new HeatAnalysis
+                                    //        {
+                                    //            TimerElapsed = timerElapsed,
+                                    //            IndicatorId = otherItem.Key,                                            
+                                    //            Gap = new HeatAnalysisGap
+                                    //            {
+                                    //                IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId.Value,
+                                    //                GapValue = Math.Round(gap.GapTime.Value, _trackLaptimeDecimals),
+                                    //                GapString = gap.GapLaps.HasValue ? $"{gap.GapLaps.Value}L" : gap.GapTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture)
+                                    //            }
+                                    //        };
+
+                                    //        _heatAnalyses.Items.Add(heatAnalysis);
+                                    //        _heatAnalysesDelta.Items.Add(heatAnalysis);
+                                    //    }
+                                    //}
                                 }
-
-                                //foreach (var otherItem in _indicators.Where(x => x.Key != deviceConfigurationInput.DeviceConfigurationInputId.Value))
-                                //{
-                                //    var gap = CalculateGap2(otherItem.Value, indicator);
-                                //    if (gap.GapTime.HasValue)
-                                //    {
-                                //        heatAnalysis = new HeatAnalysis
-                                //        {
-                                //            TimerElapsed = timerElapsed,
-                                //            IndicatorId = otherItem.Key,                                            
-                                //            Gap = new HeatAnalysisGap
-                                //            {
-                                //                IndicatorId = deviceConfigurationInput.DeviceConfigurationInputId.Value,
-                                //                GapValue = Math.Round(gap.GapTime.Value, _trackLaptimeDecimals),
-                                //                GapString = gap.GapLaps.HasValue ? $"{gap.GapLaps.Value}L" : gap.GapTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture)
-                                //            }
-                                //        };
-
-                                //        _heatAnalyses.Items.Add(heatAnalysis);
-                                //        _heatAnalysesDelta.Items.Add(heatAnalysis);
-                                //    }
-                                //}
 
                                 if (heatStateIndicator.LastEnergyTimestamp is not null)
                                 {
@@ -1265,7 +1286,10 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                 heatStateIndicator.LastEnergyTimestamp = deviceConfigurationInput.Timestamp;
 
 
-                                if (!replay)
+
+
+
+                                if (!replay && _singleHeat)
                                 {
                                     var eventUserId = _heat!.HeatIndicators.SingleOrDefault(x => x.Id == heatStateIndicator.Id)?.EventUserId;
                                     if (eventUserId is not null)
@@ -1436,6 +1460,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                             });
                                         }
                                     }
+
                                 }
                             }
 
@@ -1448,6 +1473,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                             {
                                 _ = RaiseHeatStateTypeAsync(HeatStateTypeId.Ended);
                             }
+
 
                             if (!replay)
                             {
@@ -1996,7 +2022,8 @@ namespace RazManager.Silo.Grains.Entities.Heat
         private class HeatStateIndicator
         {
             public required string Id { get; set; }
-            public uint Position { get; set; }
+            public required string? EventUserId { get; set; }
+            public required uint Position { get; set; }
             public ushort? Laps { get; set; }
             public HeatIndicatorTimeTypeId? LastTimeTypeId { get; set; }
             public DateTime? LastTimestamp { get; set; }

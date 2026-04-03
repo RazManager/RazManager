@@ -1,4 +1,5 @@
-﻿using Grpc.Net.Client;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Razmanager.Protobuf.Public.V1;
@@ -6,8 +7,10 @@ using RazManager.IO.Services.CpuInfo;
 using RazManager.IO.Services.OsRelease;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -27,6 +30,7 @@ namespace RazManager.IO.Services.LapMaster
         private GrpcChannel? _grpcChannel;
         private int? lapMasterTimerOffset = null;
         private DateTime? lapMasterDateTimeOffset = null;
+        private Metadata _metadata;
 
 
         public LapMasterService(Settings.ISettingsService settingsService,
@@ -38,6 +42,10 @@ namespace RazManager.IO.Services.LapMaster
             _settingsService = settingsService;
             _connectionOptions = connectionOptions;
             _logger = logger;
+            _metadata = new Metadata
+            {
+                { "X-Client-Cert", WebUtility.UrlEncode(_settingsService.Settings.CertificatePem) },
+            };
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -220,7 +228,7 @@ namespace RazManager.IO.Services.LapMaster
                                             DeviceConfigurationInputId = Convert.ToByte(response.ToString())
                                         });
                                         var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(_grpcChannel);
-                                        deviceConfigurationServiceClient.DeviceConfigurationInputsPublish(deviceConfigurationInputs);
+                                        deviceConfigurationServiceClient.DeviceConfigurationInputsPublish(deviceConfigurationInputs, _metadata, null);
                                     }
                                 }
 

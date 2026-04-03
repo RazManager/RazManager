@@ -4,6 +4,7 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
 import "razmanager/protobuf/public/track_configuration.v1.proto";
 import "razmanager/protobuf/public/race_feature_type_id.v1.proto";
+import "razmanager/protobuf/public/session_type_id.v1.proto";
 import "razmanager/protobuf/public/heat.v1.proto";
 
 package razmanager.protobuf.public.v1;
@@ -77,20 +78,26 @@ message RaceLeaderboardEventUser {
   //uint32 car_off_tracks = 11;
 }
 
-message RaceLeaderboardEventUserHeatUpdate {
-  string event_user_id = 1;
-  //google.protobuf.UInt32Value position = 2;
-  //uint32 position_estimate = 3;
-  google.protobuf.DoubleValue laps = 4;
-  //google.protobuf.DoubleValue laps_estimate = 5;
-  //google.protobuf.UInt32Value points = 6;
-  //google.protobuf.UInt32Value points_estimate = 7;
-  //google.protobuf.StringValue gap_leader = 8;
-  //google.protobuf.StringValue gap_interval = 9;
-  //google.protobuf.DoubleValue gap_interval_fraction = 10;
 
-  repeated HeatIndicatorFlag flags = 11;
+message RaceLeaderboardEventUserUpdate {
+  SessionTypeId session_type_id = 1;
+  string event_user_id = 2;
+  google.protobuf.Duration timer_elapsed = 3;
+  oneof value {
+    //google.protobuf.UInt32Value position = 2;
+	//uint32 position_estimate = 3;
+	google.protobuf.DoubleValue laps = 4;
+	//google.protobuf.DoubleValue laps_estimate = 5;
+	//google.protobuf.UInt32Value points = 6;
+	//google.protobuf.UInt32Value points_estimate = 7;
+	//google.protobuf.StringValue gap_leader = 8;
+	//google.protobuf.StringValue gap_interval = 9;
+	//google.protobuf.DoubleValue gap_interval_fraction = 10;
 
-  //uint32 pit_lanes = 10;
-  //uint32 car_off_tracks = 11;
+	//repeated HeatIndicatorFlag flags = 11;
+	HeatIndicatorFlag flags = 11;
+
+	//uint32 pit_lanes = 10;
+	//uint32 car_off_tracks = 11;
+  }
 }

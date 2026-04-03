@@ -47,7 +47,6 @@ namespace RazManager.IO
             }
 
             filename += "settings.json";
-            Console.WriteLine($"filename={filename}");
 
             var allowCommissioning = true;
             try
@@ -103,7 +102,6 @@ namespace RazManager.IO
                 builder.Services.AddSingleton<Services.Settings.ISettingsService>(serviceProvider =>
                     new Services.Settings.SettingsService
                     (
-                        serviceProvider.GetRequiredService<Channel<bool>>(),
                         serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>(),
                         serviceProvider.GetRequiredService<ILogger<Services.Settings.SettingsService>>()
                     )
@@ -154,7 +152,6 @@ namespace RazManager.IO
                     services.AddSingleton<Services.Settings.ISettingsService>(serviceProvider =>
                         new Services.Settings.SettingsService
                         (
-                            serviceProvider.GetRequiredService<Channel<bool>>(),
                             serviceProvider.GetRequiredService<Microsoft.Extensions.Hosting.IHostApplicationLifetime>(),
                             serviceProvider.GetRequiredService<ILogger<Services.Settings.SettingsService>>()
                         )

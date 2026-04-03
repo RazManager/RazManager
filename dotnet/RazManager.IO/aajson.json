@@ -7,23 +7,23 @@
         "teamEventUserShortName": "KRI"
       },
       {
-        "lap": 26,
+        "lap": 192,
         "teamEventUserShortName": "PHI"
       },
       {
-        "lap": 36,
+        "lap": 325,
         "teamEventUserShortName": "TMA"
       },
       {
-        "lap": 46,
+        "lap": 729,
         "teamEventUserShortName": "PHI"
       },
       {
-        "lap": 56,
+        "lap": 883,
         "teamEventUserShortName": "TMA"
       },
       {
-        "lap": 66,
+        "lap": 1020,
         "teamEventUserShortName": "KRI"
       }
     ]
@@ -36,23 +36,23 @@
         "teamEventUserShortName": "TIM"
       },
       {
-        "lap": 27,
+        "lap": 162,
         "teamEventUserShortName": "MIC"
       },
       {
-        "lap": 37,
+        "lap": 316,
         "teamEventUserShortName": "TAM"
       },
       {
-        "lap": 47,
+        "lap": 532,
         "teamEventUserShortName": "TIM"
       },
       {
-        "lap": 57,
+        "lap": 693,
         "teamEventUserShortName": "MIC"
       },
       {
-        "lap": 67,
+        "lap": 863,
         "teamEventUserShortName": "TAM"
       }
     ]
@@ -65,23 +65,23 @@
         "teamEventUserShortName": "WIT"
       },
       {
-        "lap": 28,
+        "lap": 181,
         "teamEventUserShortName": "RAN"
       },
       {
-        "lap": 38,
+        "lap": 323,
         "teamEventUserShortName": "WIT"
       },
       {
-        "lap": 48,
+        "lap": 527,
         "teamEventUserShortName": "RAN"
       },
       {
-        "lap": 58,
+        "lap": 690,
         "teamEventUserShortName": "WIT"
       },
       {
-        "lap": 68,
+        "lap": 868,
         "teamEventUserShortName": "RAN"
       }
     ]
@@ -94,23 +94,23 @@
         "teamEventUserShortName": "GUN"
       },
       {
-        "lap": 23,
+        "lap": 181,
         "teamEventUserShortName": "GRE"
       },
       {
-        "lap": 33,
+        "lap": 339,
         "teamEventUserShortName": "GUN"
       },
       {
-        "lap": 43,
+        "lap": 571,
         "teamEventUserShortName": "GRE"
       },
       {
-        "lap": 53,
+        "lap": 612,
         "teamEventUserShortName": "GUN"
       },
       {
-        "lap": 63,
+        "lap": 667,
         "teamEventUserShortName": "GRE"
       }
     ]
@@ -123,23 +123,23 @@
         "teamEventUserShortName": "DIR"
       },
       {
-        "lap": 28,
+        "lap": 184,
         "teamEventUserShortName": "NIK"
       },
       {
-        "lap": 38,
+        "lap": 361,
         "teamEventUserShortName": "BER"
       },
       {
-        "lap": 48,
+        "lap": 493,
         "teamEventUserShortName": "DIR"
       },
       {
-        "lap": 58,
+        "lap": 696,
         "teamEventUserShortName": "NIK"
       },
       {
-        "lap": 68,
+        "lap": 837,
         "teamEventUserShortName": "BER"
       }
     ]
@@ -152,52 +152,52 @@
         "teamEventUserShortName": "YVE"
       },
       {
-        "lap": 24,
-        "teamEventUserShortName": "TIB"
+        "lap": 173,
+        "teamEventUserShortName": "VRI"
       },
       {
-        "lap": 34,
+        "lap": 302,
         "teamEventUserShortName": "YVE"
       },
       {
-        "lap": 44,
-        "teamEventUserShortName": "TIB"
+        "lap": 506,
+        "teamEventUserShortName": "VRI"
       },
       {
-        "lap": 54,
+        "lap": 646,
         "teamEventUserShortName": "YVE"
       },
       {
-        "lap": 64,
-        "teamEventUserShortName": "TIB"
+        "lap": 828,
+        "teamEventUserShortName": "VRI"
       }
     ]
   },
   {
-    "indicatorId": 5,
+    "indicatorId": 2,
     "preconfiguredLapTeamEventUsers": [
       {
         "lap": 1,
         "teamEventUserShortName": "CYN"
       },
       {
-        "lap": 26,
+        "lap": 156,
         "teamEventUserShortName": "STE"
       },
       {
-        "lap": 36,
+        "lap": 285,
         "teamEventUserShortName": "CYN"
       },
       {
-        "lap": 46,
+        "lap": 459,
         "teamEventUserShortName": "STE"
       },
       {
-        "lap": 56,
+        "lap": 641,
         "teamEventUserShortName": "CYN"
       },
       {
-        "lap": 66,
+        "lap": 786,
         "teamEventUserShortName": "STE"
       }
     ]
@@ -210,23 +210,23 @@
         "teamEventUserShortName": "MAR"
       },
       {
-        "lap": 21,
+        "lap": 152,
         "teamEventUserShortName": "TPE"
       },
       {
-        "lap": 31,
+        "lap": 273,
         "teamEventUserShortName": "MAR"
       },
       {
-        "lap": 41,
+        "lap": 460,
         "teamEventUserShortName": "TPE"
       },
       {
-        "lap": 51,
+        "lap": 603,
         "teamEventUserShortName": "MAR"
       },
       {
-        "lap": 61,
+        "lap": 776,
         "teamEventUserShortName": "TPE"
       }
     ]
@@ -239,23 +239,23 @@
         "teamEventUserShortName": "MAU"
       },
       {
-        "lap": 24,
+        "lap": 151,
         "teamEventUserShortName": "GLE"
       },
       {
-        "lap": 34,
+        "lap": 259,
         "teamEventUserShortName": "MAU"
       },
       {
-        "lap": 44,
+        "lap": 440,
         "teamEventUserShortName": "GLE"
       },
       {
-        "lap": 54,
+        "lap": 607,
         "teamEventUserShortName": "MAU"
       },
       {
-        "lap": 64,
+        "lap": 733,
         "teamEventUserShortName": "GLE"
       }
     ]
@@ -268,24 +268,24 @@
         "teamEventUserShortName": "DID"
       },
       {
-        "lap": 21,
-        "teamEventUserShortName": "TIB"
+        "lap": 166,
+        "teamEventUserShortName": "LEU"
       },
       {
-        "lap": 31,
+        "lap": 309,
         "teamEventUserShortName": "DID"
       },
       {
-        "lap": 41,
+        "lap": 471,
         "teamEventUserShortName": "TIB"
       },
       {
-        "lap": 51,
+        "lap": 482,
         "teamEventUserShortName": "DID"
       },
       {
-        "lap": 61,
-        "teamEventUserShortName": "TIB"
+        "lap": 614,
+        "teamEventUserShortName": "LEU"
       }
     ]
   }

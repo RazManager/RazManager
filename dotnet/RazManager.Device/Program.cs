@@ -17,6 +17,7 @@ using RazManager.Utilities.Host;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -98,7 +99,8 @@ namespace RazManager.Device
                 options.CertificateHeader = "X-Client-Cert";
                 options.HeaderConverter = value =>
                 {
-                    var certificate = X509CertificateLoader.LoadCertificate(Convert.FromBase64String(value));
+                    var certificate = X509Certificate2.CreateFromPem(WebUtility.UrlDecode(value));
+                    //var certificate = X509CertificateLoader.LoadCertificate(Convert.FromBase64String(value));
                     return certificate;
                 };
             });
@@ -165,8 +167,19 @@ namespace RazManager.Device
                     npqsqlOptions => {
                         npqsqlOptions.EnableRetryOnFailure();
                     }));
-
+           
             var app = builder.Build();
+
+            app.Use(async (context, next) =>
+            {
+                Console.WriteLine();
+                foreach (var header in context.Request.Headers)
+                {
+                    Console.WriteLine($"{header.Key} {header.Value}");
+                }
+                Console.WriteLine();
+                await next.Invoke(context);
+            });
 
             app.UseForwardedHeaders();
             app.UseCertificateForwarding();

@@ -8,7 +8,11 @@ using RazManager.IO.Services.OsRelease;
 using System;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,6 +53,11 @@ namespace RazManager.IO.Services.Device
             var grpcChannelOptions = new GrpcChannelOptions
             {
                 HttpHandler = httpClientHandler,
+            };
+
+            var metadata = new Metadata
+            {
+                { "X-Client-Cert", WebUtility.UrlEncode(_settingsService.Settings.CertificatePem) },
             };
 
             _logger.LogInformation("Channel creating...");
@@ -142,12 +151,11 @@ namespace RazManager.IO.Services.Device
 
                 var deviceServiceClient = new Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceClient(deviceChannel);
                 _logger.LogInformation("DeviceInformationAsync...");
-                await deviceServiceClient.DeviceInformationAsync(deviceInformation, null, null, stoppingToken);
-
+                await deviceServiceClient.DeviceInformationAsync(deviceInformation, metadata, null, stoppingToken);
 
                 // Polly...
 
-                using (var call = deviceServiceClient.DeviceResponseRequest(null, null, stoppingToken))
+                using (var call = deviceServiceClient.DeviceResponseRequest(metadata, null, stoppingToken))
                 {
                     await foreach (var deviceRequest in call.ResponseStream.ReadAllAsync(stoppingToken))
                     {

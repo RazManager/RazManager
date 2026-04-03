@@ -97,8 +97,8 @@ class AppModel extends ChangeNotifier with GrpcClient, ExceptionMessage {
 
   Future<void> _token(Map<String, String> body) async {
     try {
-      final response = await http.post(Uri.parse("https://identity.razmanager.localhost/connect/token"), body: body);
-      //final response = await http.post(Uri.parse("https://identity.razmanager.com/connect/token"), body: body);
+      //final response = await http.post(Uri.parse("https://identity.razmanager.localhost/connect/token"), body: body);
+      final response = await http.post(Uri.parse("https://identity.razmanager.com/connect/token"), body: body);
       if (response.statusCode == 200) {
         final responseMap = json.decode(response.body) as Map<String, dynamic>;
         accessToken = responseMap['access_token'];

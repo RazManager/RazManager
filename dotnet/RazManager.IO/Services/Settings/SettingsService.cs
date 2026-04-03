@@ -14,7 +14,6 @@ namespace RazManager.IO.Services.Settings
 {
     public class SettingsService : ISettingsService
     {
-        private readonly Channel<bool> _resetChannel;
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
         private readonly ILogger<SettingsService> _logger;
         private string _filename = "";
@@ -25,11 +24,9 @@ namespace RazManager.IO.Services.Settings
         };
 
 
-        public SettingsService(Channel<bool> resetChannel,
-                               IHostApplicationLifetime hostApplicationLifetime,
+        public SettingsService(IHostApplicationLifetime hostApplicationLifetime,
                                ILogger<SettingsService> logger)
         {
-            _resetChannel = resetChannel;
             _hostApplicationLifetime = hostApplicationLifetime;
             _logger = logger;
 

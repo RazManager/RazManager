@@ -12,7 +12,7 @@ namespace RazManager.Silo.Grains.Entities.Race
         private Razmanager.Protobuf.Public.V1.Race? _race;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.Race>? _raceStream;
         private Guid? _heatId = null;
-        private Dictionary<Guid, RaceEventUser> _raceEventUsers = [];
+        private Dictionary<SessionTypeId, Dictionary<Guid, RaceEventUser>> _raceEventUsers = [];
         private string _trackLaptimeDecimalsFormat = "F2";
 
 
@@ -72,9 +72,9 @@ namespace RazManager.Silo.Grains.Entities.Race
         }
 
 
-        public Task<RaceLeaderboard> ReadRaceLeaderboardAsync()
+        public Task<RaceLeaderboard> ReadRaceLeaderboardAsync(SessionTypeId sessionTypeId)
         {
-            return Task.FromResult(RaceLeaderboard());
+            return Task.FromResult(RaceLeaderboard(sessionTypeId));
         }
 
 
@@ -173,17 +173,42 @@ namespace RazManager.Silo.Grains.Entities.Race
         }
 
 
-        public Task RaceLeaderboardEventUserHeatUpdateAsync(RaceLeaderboardEventUserHeatUpdate update)
+        public Task RaceLeaderboardEventUserUpdateAsync(RaceLeaderboardEventUserUpdate update)
         {
+            var raceEventUsers = _raceEventUsers[update.SessionTypeId];
+            if (!raceEventUsers.TryGetValue(new Guid(update.EventUserId), out var raceEventUser))
+            {
+                raceEventUser = new RaceEventUser();
+                raceEventUsers.Add(new Guid(update.EventUserId), raceEventUser);
+
+            }
+
+            switch (update.ValueCase)
+            {
+                case RaceLeaderboardEventUserUpdate.ValueOneofCase.Laps:
+                    raceEventUser.TimerElapsed = update.TimerElapsed.ToTimeSpan();
+                    raceEventUser.Laps = update.Laps;
+                    break;
+
+                case RaceLeaderboardEventUserUpdate.ValueOneofCase.Flags:
+                    break;
+
+                default:
+                    break;
+            }
+
+
+
+
             throw new NotImplementedException();
         }
 
 
-        private RaceLeaderboard RaceLeaderboard()
+        private RaceLeaderboard RaceLeaderboard(SessionTypeId sessionTypeId)
         {
             var raceLeaderboard = new RaceLeaderboard();
 
-            foreach (var raceEventUserKv in _raceEventUsers)
+            foreach (var raceEventUserKv in _raceEventUsers[sessionTypeId])
             {
                 var raceLeaderboardEventUser = new RaceLeaderboardEventUser
                 {
@@ -245,13 +270,13 @@ namespace RazManager.Silo.Grains.Entities.Race
         private class RaceEventUser
         {
             //public required string EventUserId { get; set; }
+            public TimeSpan TimerElapsed { get; set; }
             public uint? Position { get; set; }
             //public uint PositionEstimate { get; set; }
             public double? Laps { get; set; }
             public double? LapsEstimate { get; set; }
             public ushort? Points { get; set; }
             public ushort? PointsEstimate { get; set; }
-            public TimeSpan? ClockElapsedNow { get; set; }
             public double? GapLeaderTime { get; set; }
             public short? GapLeaderLaps { get; set; }
             public double? GapIntervalTime { get; set; }

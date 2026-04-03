@@ -107,7 +107,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
-		<PackageReference Include="System.Device.Gpio" Version="4.1.0" />
+		<PackageReference Include="System.Device.Gpio" Version="4.2.0" />
 		<PackageReference Include="System.IO.Ports" Version="10.0.5" />
 	</ItemGroup>
 
@@ -145,6 +145,9 @@
 	  <Content Update="settings - Prod.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	  <Content Update="settings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 
@@ -165,7 +168,13 @@
 
 
 	<ItemGroup>
+	  <None Update="GT31.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="GT32.txt">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="RevoSlot260315.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Update="suzuka_1.txt">

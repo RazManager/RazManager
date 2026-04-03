@@ -1,4 +1,5 @@
 ﻿using Orleans;
+using Razmanager.Protobuf.Public.V1;
 using System;
 using System.Threading.Tasks;
 
@@ -10,9 +11,9 @@ namespace RazManager.Silo.Grains.Entities.Race
         Task RefreshAsync(bool publish);
         Task<Razmanager.Protobuf.Public.V1.Race> ReadAsync();
         Task<Guid?> ReadRaceStateAsync();
-        Task<Razmanager.Protobuf.Public.V1.RaceLeaderboard> ReadRaceLeaderboardAsync();
+        Task<Razmanager.Protobuf.Public.V1.RaceLeaderboard> ReadRaceLeaderboardAsync(SessionTypeId sessionTypeId);
         Task CommandAsync(Razmanager.Protobuf.Public.V1.RaceCommandTypeId raceCommandTypeId);
         Task HeatClosedAsync();
-        Task RaceLeaderboardEventUserHeatUpdateAsync(Razmanager.Protobuf.Public.V1.RaceLeaderboardEventUserHeatUpdate update);
+        Task RaceLeaderboardEventUserUpdateAsync(Razmanager.Protobuf.Public.V1.RaceLeaderboardEventUserUpdate update);
     }
 }
