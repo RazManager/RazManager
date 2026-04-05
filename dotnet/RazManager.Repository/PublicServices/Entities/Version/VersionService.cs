@@ -44,8 +44,10 @@ namespace RazManager.Repository.PublicServices.Entities.Version
             var response = await _repositoryDbContext.Versions
                 .Include(x => x.VersionNotes.OrderBy(x => x.Position))
                 .Include(x => x.VersionPlatforms)
-                .Where(x => (x.Major > request.ConfirmedVersionMajor || (x.Major == request.ConfirmedVersionMajor && x.Minor >= request.ConfirmedVersionMinor)) &&
-                            (x.Major != request.ConfirmedVersionMajor || x.Minor != request.ConfirmedVersionMinor || x.Patch != request.ConfirmedVersionPatch) &&
+                .Where(x => x.Valid &&
+                            (x.Major > request.ConfirmedVersionMajor ||
+                            (x.Major == request.ConfirmedVersionMajor && x.Minor > request.ConfirmedVersionMinor) ||
+                            (x.Major == request.ConfirmedVersionMajor && x.Minor == request.ConfirmedVersionMinor && x.Patch > request.ConfirmedVersionPatch)) &&
                             x.VersionPlatforms.Any(x => x.VersionPlatformId == request.VersionPlatformId || x.VersionPlatformId == VersionPlatformId.Server))
                 .OrderByDescending(x => x.Major)
                 .ThenByDescending(x => x.Minor)

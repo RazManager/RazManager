@@ -1825,8 +1825,16 @@ namespace RazManager.Silo.Grains.Entities.Heat
                     var heatIndicatorStintLapSecondLast = heatStintAnalysisIndicatorStint.Laps.Reverse().Skip(1).FirstOrDefault(x => x.Time.HasValue);
                     if (heatIndicatorStintLapSecondFirst is not null && heatIndicatorStintLapSecondLast is not null)
                     {
-                        var duration = heatIndicatorStintLapSecondLast.TimerElapsed + Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(TimeSpan.FromSeconds(heatIndicatorStintLapSecondLast.Time!.Value)) - heatIndicatorStintLapSecondFirst.TimerElapsed;
-                        heatStintAnalysisIndicatorStint.AverageTime = Math.Round(duration.ToTimeSpan().TotalSeconds / (heatStintAnalysisIndicatorStint.Laps.Count - 2), _trackLaptimeDecimals);
+                        var pitlanes = heatStintAnalysisIndicatorStint.Laps
+                            .Where(x => x.Lap > heatIndicatorStintLapSecondFirst.Lap &&
+                                        x.Lap < heatIndicatorStintLapSecondLast.Lap &&
+                                        x.Pitlanes > 0 &&
+                                        x.Time.HasValue);
+                        var duration = heatIndicatorStintLapSecondLast.TimerElapsed +
+                                       Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(TimeSpan.FromSeconds(heatIndicatorStintLapSecondLast.Time!.Value)) -
+                                       heatIndicatorStintLapSecondFirst.TimerElapsed -
+                                       Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(TimeSpan.FromSeconds(pitlanes.Sum(x => x.Time.Value)));
+                        heatStintAnalysisIndicatorStint.AverageTime = Math.Round(duration.ToTimeSpan().TotalSeconds / (heatStintAnalysisIndicatorStint.Laps.Count - 2 - pitlanes.Count()), _trackLaptimeDecimals);
                     }
                 }
             }

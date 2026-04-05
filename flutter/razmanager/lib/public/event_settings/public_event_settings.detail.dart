@@ -325,7 +325,7 @@ class _PublicEventSettingsDetailSoundSessionLapRelated extends StatelessWidget {
         Text('Lap related sound options', style: TextStyle(fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize!)),
         SizedBox(height: 8),
         DropdownMenuLap(
-          labelText: "Gap after",
+          labelText: "Gap behind",
           getSelection: model.sessionTypeEventSpeechTypeSettings
               .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_AFTER)
               .singleOrNull!
@@ -338,7 +338,7 @@ class _PublicEventSettingsDetailSoundSessionLapRelated extends StatelessWidget {
         ),
         SizedBox(height: 8),
         DropdownMenuLap(
-          labelText: "Gap before (not yet functional)",
+          labelText: "Gap ahead",
           getSelection: model.sessionTypeEventSpeechTypeSettings
               .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_BEFORE)
               .singleOrNull!
@@ -351,7 +351,7 @@ class _PublicEventSettingsDetailSoundSessionLapRelated extends StatelessWidget {
         ),
         SizedBox(height: 8),
         DropdownMenuLap(
-          labelText: "Gap to nearest (not yet functional)",
+          labelText: "Gap both to nearest behind and ahead",
           getSelection: model.sessionTypeEventSpeechTypeSettings
               .where((x) => x.sessionTypeId == sessionTypeId && x.eventSpeechTypeId == EventSpeechTypeId.EVENT_SPEECH_TYPE_ID_GAP_NEAREST)
               .singleOrNull!

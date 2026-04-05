@@ -702,7 +702,7 @@ class _PublicHeatStintLapsChartState extends State<_PublicHeatStintLapsChart> wi
                   xValueMapper: (data, _) => dateTimeFromProtobufDuration(data.timerElapsed),
                   yValueMapper: (data, _) => data.time.hasValue() ? data.time.value : null,
                   dataLabelSettings: DataLabelSettings(
-                    isVisible: isDataLabelVisible,
+                    isVisible: true,
                     builder: (data, point, series, pointIndex, seriesIndex) {
                       final d = data as HeatStintAnalysisIndicatorStintLap;
                       if (d.pitlanes > 0) {
