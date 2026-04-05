@@ -348,294 +348,296 @@ class _PublicHeatLeaderboardForegroundState extends State<_PublicHeatLeaderboard
                   positions.addEntries({MapEntry(i, (x, y))});
                 }
 
-                return SizedBox(
-                  width: leaderboardColumnsWidth * indicatorColumns + ((indicatorColumns - 1) * 16),
-                  child: Column(
-                    children: [
-                      Consumer<HeatStateHeaderModel>(
-                        builder: (_, model, __) {
-                          return Container(
-                            color: Theme.of(context).colorScheme.primaryContainer,
-                            child: Column(
+                return Center(
+                  child: SizedBox(
+                    width: leaderboardColumnsWidth * indicatorColumns + ((indicatorColumns - 1) * 16),
+                    child: Column(
+                      children: [
+                        Consumer<HeatStateHeaderModel>(
+                          builder: (_, model, __) {
+                            return Container(
+                              color: Theme.of(context).colorScheme.primaryContainer,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      model.heatStateSymbol(fontSize * 2),
+                                      if (constraints.maxWidth > 2 * model.timerTextWidth(fontSize * 2, "BungeeInline"))
+                                        Text(
+                                          model.laps.toString(),
+                                          style: TextStyle(fontSize: fontSize * 2, fontFamily: 'BungeeInline'),
+                                        ),
+                                      SizedBox(
+                                        width: model.timerTextWidth(fontSize * 2, "BungeeInline"),
+                                        child: Text(
+                                          model.timer,
+                                          style: TextStyle(fontSize: fontSize * 2, fontFamily: 'BungeeInline'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      ...leaderboardColumnWidgets,
+                                      if (indicatorColumns == 2) ...[SizedBox(width: 16), ...leaderboardColumnWidgets],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(height: fontSize / 2),
+                        Expanded(
+                          child: Consumer<HeatLeaderboardModel>(
+                            builder: (context, model, _) => Stack(
+                              fit: StackFit.expand,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    model.heatStateSymbol(fontSize * 2),
-                                    if (constraints.maxWidth > 2 * model.timerTextWidth(fontSize * 2, "BungeeInline"))
-                                      Text(
-                                        model.laps.toString(),
-                                        style: TextStyle(fontSize: fontSize * 2, fontFamily: 'BungeeInline'),
-                                      ),
-                                    SizedBox(
-                                      width: model.timerTextWidth(fontSize * 2, "BungeeInline"),
-                                      child: Text(
-                                        model.timer,
-                                        style: TextStyle(fontSize: fontSize * 2, fontFamily: 'BungeeInline'),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    ...leaderboardColumnWidgets,
-                                    if (indicatorColumns == 2) ...[SizedBox(width: 16), ...leaderboardColumnWidgets],
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(height: fontSize / 2),
-                      Expanded(
-                        child: Consumer<HeatLeaderboardModel>(
-                          builder: (context, model, _) => Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              if (model.heatLeaderboard != null)
-                                ...model.heatLeaderboard!.indicators.map((heatLeaderboardIndicator) {
-                                  final heatIndicator = publicHeatChildState.heatModel.heatProto!.heatIndicators
-                                      .where((x) => x.indicatorId == heatLeaderboardIndicator.indicatorId)
-                                      .singleOrNull;
-                                  final heatUser = publicHeatChildState.heatModel.heatUsers[heatLeaderboardIndicator.indicatorId];
-                                  final teamUsers = publicHeatChildState.heatModel.heatUsers[heatLeaderboardIndicator.indicatorId]?.teamUsers;
-                                  TeamUser? teamDriver;
-                                  if (publicHeatChildState.heatModel.teamHeat && heatLeaderboardIndicator.teamEventUserId.hasValue()) {
-                                    teamDriver = teamUsers!.where((teamUser) => teamUser.id == heatLeaderboardIndicator.teamEventUserId.value).singleOrNull;
-                                  }
-                                  final timeTypeTimeLap = heatLeaderboardIndicator.timeTypeTimes
-                                      .where((x) => x.timeTypeId == HeatIndicatorTimeTypeId.HEAT_INDICATOR_TIME_TYPE_ID_LAP)
-                                      .singleOrNull;
-                                  final lapsHasValue = heatLeaderboardIndicator.getFieldOrNull(heatLeaderboardIndicator.getTagNumber("laps") ?? -1) != null;
-                                  final energyLapsLeftHasValue =
-                                      heatLeaderboardIndicator.getFieldOrNull(heatLeaderboardIndicator.getTagNumber("energyLapsLeft") ?? -1) != null;
-                                  return AnimatedPositioned(
-                                    duration: const Duration(seconds: 1),
-                                    curve: Curves.easeInOut,
-                                    // top: (heatLeaderboardIndicator.position - 1) * fontSize * 2,
-                                    // left: leftMargin,
-                                    top: positions[heatLeaderboardIndicator.position]?.$2,
-                                    left: positions[heatLeaderboardIndicator.position]?.$1,
-                                    child: Container(
-                                      // decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.redAccent,Theme.of(context)
-                                      //      .colorScheme
-                                      //      .secondaryContainer], stops: [0.0, 0.2]),),
-                                      color: Theme.of(context).colorScheme.secondaryContainer,
-                                      child: Row(
-                                        children: leaderboardColumns.entries.map((x) {
-                                          switch (x.key) {
-                                            case _PublicHeatLeaderboardColumnKey.position:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Center(
+                                if (model.heatLeaderboard != null)
+                                  ...model.heatLeaderboard!.indicators.map((heatLeaderboardIndicator) {
+                                    final heatIndicator = publicHeatChildState.heatModel.heatProto!.heatIndicators
+                                        .where((x) => x.indicatorId == heatLeaderboardIndicator.indicatorId)
+                                        .singleOrNull;
+                                    final heatUser = publicHeatChildState.heatModel.heatUsers[heatLeaderboardIndicator.indicatorId];
+                                    final teamUsers = publicHeatChildState.heatModel.heatUsers[heatLeaderboardIndicator.indicatorId]?.teamUsers;
+                                    TeamUser? teamDriver;
+                                    if (publicHeatChildState.heatModel.teamHeat && heatLeaderboardIndicator.teamEventUserId.hasValue()) {
+                                      teamDriver = teamUsers!.where((teamUser) => teamUser.id == heatLeaderboardIndicator.teamEventUserId.value).singleOrNull;
+                                    }
+                                    final timeTypeTimeLap = heatLeaderboardIndicator.timeTypeTimes
+                                        .where((x) => x.timeTypeId == HeatIndicatorTimeTypeId.HEAT_INDICATOR_TIME_TYPE_ID_LAP)
+                                        .singleOrNull;
+                                    final lapsHasValue = heatLeaderboardIndicator.getFieldOrNull(heatLeaderboardIndicator.getTagNumber("laps") ?? -1) != null;
+                                    final energyLapsLeftHasValue =
+                                        heatLeaderboardIndicator.getFieldOrNull(heatLeaderboardIndicator.getTagNumber("energyLapsLeft") ?? -1) != null;
+                                    return AnimatedPositioned(
+                                      duration: const Duration(seconds: 1),
+                                      curve: Curves.easeInOut,
+                                      // top: (heatLeaderboardIndicator.position - 1) * fontSize * 2,
+                                      // left: leftMargin,
+                                      top: positions[heatLeaderboardIndicator.position]?.$2,
+                                      left: positions[heatLeaderboardIndicator.position]?.$1,
+                                      child: Container(
+                                        // decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.redAccent,Theme.of(context)
+                                        //      .colorScheme
+                                        //      .secondaryContainer], stops: [0.0, 0.2]),),
+                                        color: Theme.of(context).colorScheme.secondaryContainer,
+                                        child: Row(
+                                          children: leaderboardColumns.entries.map((x) {
+                                            switch (x.key) {
+                                              case _PublicHeatLeaderboardColumnKey.position:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Center(
+                                                    child: Text(
+                                                      lapsHasValue ? heatLeaderboardIndicator.position.toString() : '',
+                                                      style: TextStyle(fontSize: fontSize),
+                                                    ),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.indicator:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Center(
+                                                    child: heatIndicator != null && heatIndicator.hasColor()
+                                                        ? CircleAvatar(backgroundColor: Color(heatIndicator.color.value), radius: fontSize / 2)
+                                                        : Text(heatLeaderboardIndicator.indicatorId.toString(), style: TextStyle(fontSize: fontSize)),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.indicatorClass:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: heatIndicator != null && heatIndicator.carClassColor.hasValue()
+                                                      ? Center(
+                                                          child: CircleAvatar(backgroundColor: Color(heatIndicator.carClassColor.value), radius: fontSize / 2),
+                                                        )
+                                                      : null,
+                                                );
+                  
+                                              case _PublicHeatLeaderboardColumnKey.teamOrDriver:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Row(
+                                                    children: [
+                                                      if (heatIndicator != null && heatIndicator.hasCarImage() && heatIndicator.carImage.value.isNotEmpty) ...[
+                                                        CircleAvatar(
+                                                          foregroundImage: MemoryImage(Uint8List.fromList(heatIndicator.carImage.value)),
+                                                          radius: fontSize / 2,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                      ],
+                                                      if (heatUser != null && heatUser.hasImage() && heatUser.image.value.isNotEmpty) ...[
+                                                        CircleAvatar(
+                                                          foregroundImage: MemoryImage(Uint8List.fromList(heatUser.image.value)),
+                                                          radius: fontSize / 2,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                      ] else
+                                                        SizedBox(width: hasUserImage ? fontSize + 8.0 : 0.0),
+                                                      Expanded(
+                                                        child: Text(
+                                                          (useShortName ? heatUser?.shortName.value : heatUser?.name.value) ?? '?',
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(fontSize: fontSize),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.teamDriver:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Row(
+                                                    children: [
+                                                      if (teamDriver != null && teamDriver.hasImage() && teamDriver.image.value.isNotEmpty) ...[
+                                                        CircleAvatar(
+                                                          foregroundImage: MemoryImage(Uint8List.fromList(teamDriver.image.value)),
+                                                          radius: fontSize / 2,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                      ],
+                                                      Expanded(
+                                                        child: Text(
+                                                          (useShortName ? teamDriver?.shortName.value : teamDriver?.name.value) ?? '',
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(fontSize: fontSize),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.laps:
+                                                return SizedBox(
+                                                  width: x.value.width,
                                                   child: Text(
-                                                    lapsHasValue ? heatLeaderboardIndicator.position.toString() : '',
+                                                    lapsHasValue ? heatLeaderboardIndicator.laps.value.toString() : '',
+                                                    textAlign: TextAlign.end,
                                                     style: TextStyle(fontSize: fontSize),
                                                   ),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.indicator:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Center(
-                                                  child: heatIndicator != null && heatIndicator.hasColor()
-                                                      ? CircleAvatar(backgroundColor: Color(heatIndicator.color.value), radius: fontSize / 2)
-                                                      : Text(heatLeaderboardIndicator.indicatorId.toString(), style: TextStyle(fontSize: fontSize)),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.indicatorClass:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: heatIndicator != null && heatIndicator.carClassColor.hasValue()
-                                                    ? Center(
-                                                        child: CircleAvatar(backgroundColor: Color(heatIndicator.carClassColor.value), radius: fontSize / 2),
-                                                      )
-                                                    : null,
-                                              );
-
-                                            case _PublicHeatLeaderboardColumnKey.teamOrDriver:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Row(
-                                                  children: [
-                                                    if (heatIndicator != null && heatIndicator.hasCarImage() && heatIndicator.carImage.value.isNotEmpty) ...[
-                                                      CircleAvatar(
-                                                        foregroundImage: MemoryImage(Uint8List.fromList(heatIndicator.carImage.value)),
-                                                        radius: fontSize / 2,
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.lapTime:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Text(
+                                                    timeTypeTimeLap != null && timeTypeTimeLap.time.hasValue()
+                                                        ? timeTypeTimeLap.time.value.toStringAsFixed(2)
+                                                        : '',
+                                                    textAlign: TextAlign.end,
+                                                    style: TextStyle(fontSize: fontSize, color: fastestTimeTypeColor(timeTypeTimeLap)),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.lapFastestTime:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Text(
+                                                    timeTypeTimeLap != null && timeTypeTimeLap.fastestTime.hasValue()
+                                                        ? timeTypeTimeLap.fastestTime.value.toStringAsFixed(2)
+                                                        : '',
+                                                    textAlign: TextAlign.end,
+                                                    style: TextStyle(fontSize: fontSize),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.gapLeader:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Text(
+                                                    heatLeaderboardIndicator.gapLeader.value,
+                                                    textAlign: TextAlign.end,
+                                                    style: TextStyle(fontSize: fontSize),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.gapInterval:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          heatLeaderboardIndicator.gapInterval.value,
+                                                          textAlign: TextAlign.end,
+                                                          style: TextStyle(fontSize: fontSize),
+                                                        ),
                                                       ),
                                                       SizedBox(width: 8),
+                                                      if (heatLeaderboardIndicator.gapIntervalFraction.hasValue())
+                                                        AnimatedRotation(
+                                                          turns: -heatLeaderboardIndicator.gapIntervalFraction.value / 2,
+                                                          duration: const Duration(seconds: 1),
+                                                          child: Icon(Icons.arrow_forward, size: fontSize),
+                                                        )
+                                                      else
+                                                        SizedBox(width: fontSize),
                                                     ],
-                                                    if (heatUser != null && heatUser.hasImage() && heatUser.image.value.isNotEmpty) ...[
-                                                      CircleAvatar(
-                                                        foregroundImage: MemoryImage(Uint8List.fromList(heatUser.image.value)),
-                                                        radius: fontSize / 2,
-                                                      ),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.energyPercentage:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Text(
+                                                    "${heatLeaderboardIndicator.energyPercent}%",
+                                                    textAlign: TextAlign.end,
+                                                    style: TextStyle(fontSize: fontSize),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.energyIcon:
+                                                if (heatLeaderboardIndicator.energyPercent == 0) {
+                                                  return Icon(Icons.battery_0_bar, size: fontSize, color: Colors.redAccent);
+                                                } else if (heatLeaderboardIndicator.energyPercent < 100 / 7) {
+                                                  return Icon(Icons.battery_1_bar, size: fontSize, color: Colors.redAccent);
+                                                } else if (heatLeaderboardIndicator.energyPercent < 200 / 7) {
+                                                  return Icon(Icons.battery_2_bar, size: fontSize);
+                                                } else if (heatLeaderboardIndicator.energyPercent < 300 / 7) {
+                                                  return Icon(Icons.battery_3_bar, size: fontSize);
+                                                } else if (heatLeaderboardIndicator.energyPercent < 400 / 7) {
+                                                  return Icon(Icons.battery_4_bar, size: fontSize);
+                                                } else if (heatLeaderboardIndicator.energyPercent < 500 / 7) {
+                                                  return Icon(Icons.battery_5_bar, size: fontSize);
+                                                } else if (heatLeaderboardIndicator.energyPercent < 600 / 7) {
+                                                  return Icon(Icons.battery_6_bar, size: fontSize);
+                                                } else {
+                                                  return Icon(Icons.battery_full, size: fontSize);
+                                                }
+                                              case _PublicHeatLeaderboardColumnKey.energyLapsLeft:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Text(
+                                                    energyLapsLeftHasValue ? "${heatLeaderboardIndicator.energyLapsLeft.value}L" : '',
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(fontSize: fontSize),
+                                                  ),
+                                                );
+                                              case _PublicHeatLeaderboardColumnKey.flags:
+                                                return SizedBox(
+                                                  width: x.value.width,
+                                                  child: Row(
+                                                    children: [
                                                       SizedBox(width: 8),
-                                                    ] else
-                                                      SizedBox(width: hasUserImage ? fontSize + 8.0 : 0.0),
-                                                    Expanded(
-                                                      child: Text(
-                                                        (useShortName ? heatUser?.shortName.value : heatUser?.name.value) ?? '?',
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(fontSize: fontSize),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.teamDriver:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Row(
-                                                  children: [
-                                                    if (teamDriver != null && teamDriver.hasImage() && teamDriver.image.value.isNotEmpty) ...[
-                                                      CircleAvatar(
-                                                        foregroundImage: MemoryImage(Uint8List.fromList(teamDriver.image.value)),
-                                                        radius: fontSize / 2,
-                                                      ),
-                                                      SizedBox(width: 8),
+                                                      ...heatLeaderboardIndicator.flags.map((x) {
+                                                        switch (x) {
+                                                          case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED:
+                                                            return Icon(Icons.sports_score, size: fontSize);
+                                                          case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FASTEST_LAP:
+                                                            return Icon(Icons.timer, color: Colors.purpleAccent, size: fontSize);
+                                                          default:
+                                                            return Icon(Icons.question_mark, size: fontSize);
+                                                        }
+                                                      }),
                                                     ],
-                                                    Expanded(
-                                                      child: Text(
-                                                        (useShortName ? teamDriver?.shortName.value : teamDriver?.name.value) ?? '',
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(fontSize: fontSize),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.laps:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Text(
-                                                  lapsHasValue ? heatLeaderboardIndicator.laps.value.toString() : '',
-                                                  textAlign: TextAlign.end,
-                                                  style: TextStyle(fontSize: fontSize),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.lapTime:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Text(
-                                                  timeTypeTimeLap != null && timeTypeTimeLap.time.hasValue()
-                                                      ? timeTypeTimeLap.time.value.toStringAsFixed(2)
-                                                      : '',
-                                                  textAlign: TextAlign.end,
-                                                  style: TextStyle(fontSize: fontSize, color: fastestTimeTypeColor(timeTypeTimeLap)),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.lapFastestTime:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Text(
-                                                  timeTypeTimeLap != null && timeTypeTimeLap.fastestTime.hasValue()
-                                                      ? timeTypeTimeLap.fastestTime.value.toStringAsFixed(2)
-                                                      : '',
-                                                  textAlign: TextAlign.end,
-                                                  style: TextStyle(fontSize: fontSize),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.gapLeader:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Text(
-                                                  heatLeaderboardIndicator.gapLeader.value,
-                                                  textAlign: TextAlign.end,
-                                                  style: TextStyle(fontSize: fontSize),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.gapInterval:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        heatLeaderboardIndicator.gapInterval.value,
-                                                        textAlign: TextAlign.end,
-                                                        style: TextStyle(fontSize: fontSize),
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 8),
-                                                    if (heatLeaderboardIndicator.gapIntervalFraction.hasValue())
-                                                      AnimatedRotation(
-                                                        turns: -heatLeaderboardIndicator.gapIntervalFraction.value / 2,
-                                                        duration: const Duration(seconds: 1),
-                                                        child: Icon(Icons.arrow_forward, size: fontSize),
-                                                      )
-                                                    else
-                                                      SizedBox(width: fontSize),
-                                                  ],
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.energyPercentage:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Text(
-                                                  "${heatLeaderboardIndicator.energyPercent}%",
-                                                  textAlign: TextAlign.end,
-                                                  style: TextStyle(fontSize: fontSize),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.energyIcon:
-                                              if (heatLeaderboardIndicator.energyPercent == 0) {
-                                                return Icon(Icons.battery_0_bar, size: fontSize, color: Colors.redAccent);
-                                              } else if (heatLeaderboardIndicator.energyPercent < 100 / 7) {
-                                                return Icon(Icons.battery_1_bar, size: fontSize, color: Colors.redAccent);
-                                              } else if (heatLeaderboardIndicator.energyPercent < 200 / 7) {
-                                                return Icon(Icons.battery_2_bar, size: fontSize);
-                                              } else if (heatLeaderboardIndicator.energyPercent < 300 / 7) {
-                                                return Icon(Icons.battery_3_bar, size: fontSize);
-                                              } else if (heatLeaderboardIndicator.energyPercent < 400 / 7) {
-                                                return Icon(Icons.battery_4_bar, size: fontSize);
-                                              } else if (heatLeaderboardIndicator.energyPercent < 500 / 7) {
-                                                return Icon(Icons.battery_5_bar, size: fontSize);
-                                              } else if (heatLeaderboardIndicator.energyPercent < 600 / 7) {
-                                                return Icon(Icons.battery_6_bar, size: fontSize);
-                                              } else {
-                                                return Icon(Icons.battery_full, size: fontSize);
-                                              }
-                                            case _PublicHeatLeaderboardColumnKey.energyLapsLeft:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Text(
-                                                  energyLapsLeftHasValue ? "${heatLeaderboardIndicator.energyLapsLeft.value}L" : '',
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(fontSize: fontSize),
-                                                ),
-                                              );
-                                            case _PublicHeatLeaderboardColumnKey.flags:
-                                              return SizedBox(
-                                                width: x.value.width,
-                                                child: Row(
-                                                  children: [
-                                                    SizedBox(width: 8),
-                                                    ...heatLeaderboardIndicator.flags.map((x) {
-                                                      switch (x) {
-                                                        case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED:
-                                                          return Icon(Icons.sports_score, size: fontSize);
-                                                        case HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FASTEST_LAP:
-                                                          return Icon(Icons.timer, color: Colors.purpleAccent, size: fontSize);
-                                                        default:
-                                                          return Icon(Icons.question_mark, size: fontSize);
-                                                      }
-                                                    }),
-                                                  ],
-                                                ),
-                                              );
-                                          }
-                                        }).toList(),
+                                                  ),
+                                                );
+                                            }
+                                          }).toList(),
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }),
-                            ],
+                                    );
+                                  }),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },
