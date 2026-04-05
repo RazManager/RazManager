@@ -1,6 +1,6 @@
 name: razmanager
 base: core24
-version: '0.3.0'
+version: '0.4.0'
 summary: Race Management System (RMS) for slot cars
 description: |
   RazManager lets you manage, take part in or simply view slot car events.
