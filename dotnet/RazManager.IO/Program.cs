@@ -133,13 +133,13 @@ namespace RazManager.IO
                     Validator.ValidateObject(chronoLogOptions!, new ValidationContext(chronoLogOptions!), true);
                     services.AddSingleton<Services.ChronoLog.ChronoLogOptions>(chronoLogOptions!);
 
-                    services.AddSingleton(serviceProvider =>
-                        Channel.CreateUnbounded<bool>(new UnboundedChannelOptions
-                        {
-                            SingleWriter = false,
-                            SingleReader = true
-                        })
-                    );
+                    //services.AddSingleton(serviceProvider =>
+                    //    Channel.CreateUnbounded<bool>(new UnboundedChannelOptions
+                    //    {
+                    //        SingleWriter = false,
+                    //        SingleReader = true
+                    //    })
+                    //);
 
                     services.AddSingleton<Services.CpuInfo.ICpuInfoService>(serviceProvider =>
                         new Services.CpuInfo.CpuInfoService(serviceProvider.GetRequiredService<ILogger<Services.CpuInfo.CpuInfoService>>())

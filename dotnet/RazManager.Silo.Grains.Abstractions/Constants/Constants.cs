@@ -22,6 +22,8 @@ namespace RazManager.Silo.Grains
             EventState,
             EventSpeechTexts,
             Race,
+            RaceState,
+            RaceLeaderboard,
             Heat,
             HeatState,
             HeatLeaderboard,

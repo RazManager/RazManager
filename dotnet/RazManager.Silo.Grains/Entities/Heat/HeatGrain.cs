@@ -1,14 +1,11 @@
-﻿using Google.Protobuf;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orleans.Streams;
 using Razmanager.Protobuf.Internal.Repository.Silo.SystemServices.TrackConfiguration;
 using Razmanager.Protobuf.Internal.Silo.UserServices.Event;
 using Razmanager.Protobuf.Public.V1;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Resources;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace RazManager.Silo.Grains.Entities.Heat
@@ -496,28 +493,25 @@ namespace RazManager.Silo.Grains.Entities.Heat
                 _offDisposable = this.RegisterGrainTimer(() => RaiseHeatStateTypeAsync(HeatStateTypeId.Off), TimeSpan.FromSeconds(30), TimeSpan.FromDays(1));
             }
 
-            switch (_heatJournalState.HeatStateTypeId)
+            _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId)).HeatStateTypeUpdatedAsync(this.GetPrimaryKey(), _heat!.HeatStateType);
+
+            if (!_singleHeat)
             {
-                case HeatStateTypeId.Pending:
-                case HeatStateTypeId.Opened:
-                case HeatStateTypeId.Countdown:
-                case HeatStateTypeId.Running:
-                case HeatStateTypeId.Yellow:
-                case HeatStateTypeId.CountdownYellow:
-                case HeatStateTypeId.Red:
-                case HeatStateTypeId.CountdownRed:
-                case HeatStateTypeId.Ended:
-                case HeatStateTypeId.Off:
-                    _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat.RaceId)).RefreshAsync(true);
-
-                    break;
-
-                case HeatStateTypeId.Closed:
-                    _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId)).HeatClosedAsync();
-                    break;
-
-                default:
-                    throw new ArgumentException($"Unhandled HeatStateTypeId: {_heatJournalState.HeatStateTypeId}", nameof(_heatJournalState.HeatStateTypeId));
+                if (_heatJournalState.HeatStateTypeId == HeatStateTypeId.Pending ||
+                    _heatJournalState.HeatStateTypeId == HeatStateTypeId.Opened)
+                {
+                    foreach (var heatIndicator in _heat!.HeatIndicators)
+                    {
+                        _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId))
+                            .RaceLeaderboardHeatEventUserUpdateAsync(new RaceLeaderboardHeatEventUserUpdate
+                            {
+                                HeatId = this.GetPrimaryKey().ToString(),
+                                EventUserId = heatIndicator.EventUserId,
+                                TimerElapsed = new Google.Protobuf.WellKnownTypes.Duration(),
+                                Laps = 0
+                            });
+                    }
+                }
             }
 
             var deviceConfigurationOutputs = new DeviceConfigurationOutputs();
@@ -855,6 +849,14 @@ namespace RazManager.Silo.Grains.Entities.Heat
                     foreach (var item in _indicators)
                     {
                         item.Value.Finished = true;
+                        _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId))
+                            .RaceLeaderboardHeatEventUserUpdateAsync(new RaceLeaderboardHeatEventUserUpdate
+                            {
+                                HeatId = this.GetPrimaryKey().ToString(),
+                                EventUserId = item.Value.EventUserId,
+                                TimerElapsed = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(ClockElapsedNow),
+                                Finished = true
+                            });
                     }
 
                     break;
@@ -971,11 +973,11 @@ namespace RazManager.Silo.Grains.Entities.Heat
 
                             var eventUsersEventSpeechTexts = new Dictionary<Guid, EventSpeechTexts>();
 
-                            HeatStateIndicator? leaderIndicator = null;
-                            HeatStateIndicator? intervalIndicator = null;
-
                             if (_singleHeat)
                             {
+                                HeatStateIndicator? leaderIndicator = null;
+                                HeatStateIndicator? intervalIndicator = null;
+
                                 foreach (var item in _indicators
                                     .OrderByDescending(x => x.Value.Laps)
                                     .ThenByDescending(x => x.Value.LastTimeTypeId)
@@ -1086,9 +1088,9 @@ namespace RazManager.Silo.Grains.Entities.Heat
                             {
                                 var timerElapsed = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(_heatJournalState.TimerElapsed.ToTimeSpan().Add((deviceConfigurationInput.Timestamp - _heatJournalState.TimerStartedAt!).ToTimeSpan()));
                                 _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId))
-                                    .RaceLeaderboardEventUserUpdateAsync(new RaceLeaderboardEventUserUpdate
+                                    .RaceLeaderboardHeatEventUserUpdateAsync(new RaceLeaderboardHeatEventUserUpdate
                                     {
-                                        SessionTypeId = _heat.SessionType.Id,
+                                        HeatId = this.GetPrimaryKey().ToString(),
                                         EventUserId = heatStateIndicator.EventUserId,
                                         TimerElapsed = timerElapsed,
                                         Laps = heatStateIndicator.Laps
@@ -1140,7 +1142,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                     Time = heatAnalysis.Lap.Time,
                                     Pitlanes = heatAnalysis.Lap.Pitlanes,
                                     Deslots = heatAnalysis.Lap.Deslots,
-
                                 };
                                 _allHeatStintAnalysisIndicatorStintLaps[indicatorId].Add(heatStintAnalysisIndicatorStintLap);
 
@@ -1284,10 +1285,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                     //Console.WriteLine($"deltaEnergyMilliseconds={deltaEnergyMilliseconds} TotalEnergyMilliseconds={heatStateIndicator.TotalEnergyMilliseconds}");
                                 }
                                 heatStateIndicator.LastEnergyTimestamp = deviceConfigurationInput.Timestamp;
-
-
-
-
 
                                 if (!replay && _singleHeat)
                                 {
@@ -1460,7 +1457,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                             });
                                         }
                                     }
-
                                 }
                             }
 
@@ -1473,7 +1469,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
                             {
                                 _ = RaiseHeatStateTypeAsync(HeatStateTypeId.Ended);
                             }
-
 
                             if (!replay)
                             {
@@ -1843,7 +1838,9 @@ namespace RazManager.Silo.Grains.Entities.Heat
 
         private async Task PublishStateAsync()
         {
-            _ = _heatStateStream!.OnNextAsync(HeatState());
+            var heatState = HeatState();
+            _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId)).HeatStateUpdatedAsync(this.GetPrimaryKey(), heatState);
+            _ = _heatStateStream!.OnNextAsync(heatState);
             _ = _heatLeaderboardStream!.OnNextAsync(HeatLeaderboard());
 
             await _heatAnalysesStream!.OnNextAsync(_heatAnalysesDelta);

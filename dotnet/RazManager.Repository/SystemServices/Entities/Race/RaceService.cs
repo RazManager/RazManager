@@ -27,6 +27,9 @@ namespace RazManager.Repository.SystemServices.Entities.Race
         public override async Task<Razmanager.Protobuf.Public.V1.Race> Read(StringValue request, ServerCallContext context)
         {
             var entity = await _repositoryDbContext.Races
+                .Include(x => x.RaceIndicators.OrderBy(x => x.IndicatorId))
+                .Include(x => x.RaceEventUsers)
+                .Include(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationIndicators)
                 .Include(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationDeviceConfigurations).ThenInclude(x => x.DeviceConfiguration).ThenInclude(x => x.DeviceConfigurationFeatures)
                 .Include(x => x.Heats.OrderBy(x => x.Number)).ThenInclude(x => x.HeatIndicators.OrderBy(x => x.IndicatorId))
                 .AsSplitQuery()

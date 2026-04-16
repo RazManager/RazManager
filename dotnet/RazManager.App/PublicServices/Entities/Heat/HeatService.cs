@@ -49,7 +49,7 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -63,7 +63,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 
@@ -93,7 +92,7 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -107,7 +106,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 
@@ -137,7 +135,7 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -151,7 +149,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 
@@ -170,7 +167,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
             try
             {
                 await HeatAnalysesSubscribeExisting(new Guid(request.Value), responseStream);
-                System.GC.Collect();
 
                 var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
                 var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.HeatAnalyses>(RazManager.Silo.Grains.Constants.StreamName.HeatAnalyses.ToString(), new Guid(request.Value));
@@ -182,7 +178,7 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -197,7 +193,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     await subscriptionHandle.UnsubscribeAsync();
                 }
             }
-            System.GC.Collect();
         }
 
         private async Task HeatAnalysesSubscribeExisting(Guid id, IServerStreamWriter<HeatAnalyses> responseStream)
@@ -276,7 +271,7 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -291,7 +286,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     await subscriptionHandle.UnsubscribeAsync();
                 }
             }
-            System.GC.Collect();
         }
 
         private async Task HeatStintAnalysesSubscribeExisting(Guid id, byte indicatorId, IServerStreamWriter<HeatStintAnalysis> responseStream)
@@ -324,7 +318,7 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -339,7 +333,6 @@ namespace RazManager.App.PublicServices.Entities.Heat
                     await subscriptionHandle.UnsubscribeAsync();
                 }
             }
-            System.GC.Collect();
         }
 
 

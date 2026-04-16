@@ -10,7 +10,6 @@ import '../../utilities/intent.dart';
 import '../../utilities/loading.dart';
 import '../event/public_event.model.dart';
 import '../public_mixin.dart';
-import '../race/public_race.model.dart';
 import 'public_heat.model.dart';
 import 'public_heat_child_base.dart';
 import 'public_heat_analysis.dart';
@@ -75,15 +74,6 @@ class PublicHeatChild extends PublicHeatChildBase {
 }
 
 class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessage, PublicFormatter {
-  late PublicHeatState publicHeatState;
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-
-    publicHeatState = context.findAncestorStateOfType<PublicHeatState>()!;
-  }
-
   @override
   void heatRefreshed({required HeatModel heatModel}) {
     super.heatRefreshed(heatModel: heatModel);
@@ -138,7 +128,7 @@ class PublicHeatChildState extends PublicHeatChildStateBase with ExceptionMessag
                       IconButton(
                         icon: const Icon(Icons.settings),
                         tooltip: 'Settings',
-                        onPressed: () => context.push('/public/heats/${publicHeatState.id}/event-settings'),
+                        onPressed: () => context.push('/public/events/event-settings'),
                       ),
                       Consumer<EventModel>(
                         builder: (context, model, _) {

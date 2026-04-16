@@ -49,7 +49,7 @@ namespace RazManager.App.PublicServices.Entities.Device
                                     }
                                 });
 
-                                await Task.Delay(Timeout.Infinite, responseTaskCts.Token);
+                                await Task.Delay(Timeout.InfiniteTimeSpan, responseTaskCts.Token);
                             }
                             catch (System.Threading.Tasks.TaskCanceledException)
                             {

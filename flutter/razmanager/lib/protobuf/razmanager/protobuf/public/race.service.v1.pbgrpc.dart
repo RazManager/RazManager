@@ -45,8 +45,17 @@ class RaceServiceClient extends $grpc.Client {
         options: options);
   }
 
+  $grpc.ResponseStream<$1.RaceState> raceStateSubscribe(
+    $2.RaceSessionRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createStreamingCall(
+        _$raceStateSubscribe, $async.Stream.fromIterable([request]),
+        options: options);
+  }
+
   $grpc.ResponseStream<$1.RaceLeaderboard> raceLeaderboardSubscribe(
-    $0.StringValue request, {
+    $2.RaceSessionRequest request, {
     $grpc.CallOptions? options,
   }) {
     return $createStreamingCall(
@@ -74,10 +83,15 @@ class RaceServiceClient extends $grpc.Client {
       '/razmanager.protobuf.public.v1.RaceService/Subscribe',
       ($0.StringValue value) => value.writeToBuffer(),
       $1.Race.fromBuffer);
+  static final _$raceStateSubscribe =
+      $grpc.ClientMethod<$2.RaceSessionRequest, $1.RaceState>(
+          '/razmanager.protobuf.public.v1.RaceService/RaceStateSubscribe',
+          ($2.RaceSessionRequest value) => value.writeToBuffer(),
+          $1.RaceState.fromBuffer);
   static final _$raceLeaderboardSubscribe =
-      $grpc.ClientMethod<$0.StringValue, $1.RaceLeaderboard>(
+      $grpc.ClientMethod<$2.RaceSessionRequest, $1.RaceLeaderboard>(
           '/razmanager.protobuf.public.v1.RaceService/RaceLeaderboardSubscribe',
-          ($0.StringValue value) => value.writeToBuffer(),
+          ($2.RaceSessionRequest value) => value.writeToBuffer(),
           $1.RaceLeaderboard.fromBuffer);
   static final _$command = $grpc.ClientMethod<$2.RaceCommandRequest, $3.Empty>(
       '/razmanager.protobuf.public.v1.RaceService/Command',
@@ -102,12 +116,21 @@ abstract class RaceServiceBase extends $grpc.Service {
         true,
         ($core.List<$core.int> value) => $0.StringValue.fromBuffer(value),
         ($1.Race value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.StringValue, $1.RaceLeaderboard>(
+    $addMethod($grpc.ServiceMethod<$2.RaceSessionRequest, $1.RaceState>(
+        'RaceStateSubscribe',
+        raceStateSubscribe_Pre,
+        false,
+        true,
+        ($core.List<$core.int> value) =>
+            $2.RaceSessionRequest.fromBuffer(value),
+        ($1.RaceState value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$2.RaceSessionRequest, $1.RaceLeaderboard>(
         'RaceLeaderboardSubscribe',
         raceLeaderboardSubscribe_Pre,
         false,
         true,
-        ($core.List<$core.int> value) => $0.StringValue.fromBuffer(value),
+        ($core.List<$core.int> value) =>
+            $2.RaceSessionRequest.fromBuffer(value),
         ($1.RaceLeaderboard value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$2.RaceCommandRequest, $3.Empty>(
         'Command',
@@ -134,13 +157,22 @@ abstract class RaceServiceBase extends $grpc.Service {
   $async.Stream<$1.Race> subscribe(
       $grpc.ServiceCall call, $0.StringValue request);
 
+  $async.Stream<$1.RaceState> raceStateSubscribe_Pre($grpc.ServiceCall $call,
+      $async.Future<$2.RaceSessionRequest> $request) async* {
+    yield* raceStateSubscribe($call, await $request);
+  }
+
+  $async.Stream<$1.RaceState> raceStateSubscribe(
+      $grpc.ServiceCall call, $2.RaceSessionRequest request);
+
   $async.Stream<$1.RaceLeaderboard> raceLeaderboardSubscribe_Pre(
-      $grpc.ServiceCall $call, $async.Future<$0.StringValue> $request) async* {
+      $grpc.ServiceCall $call,
+      $async.Future<$2.RaceSessionRequest> $request) async* {
     yield* raceLeaderboardSubscribe($call, await $request);
   }
 
   $async.Stream<$1.RaceLeaderboard> raceLeaderboardSubscribe(
-      $grpc.ServiceCall call, $0.StringValue request);
+      $grpc.ServiceCall call, $2.RaceSessionRequest request);
 
   $async.Future<$3.Empty> command_Pre($grpc.ServiceCall $call,
       $async.Future<$2.RaceCommandRequest> $request) async {

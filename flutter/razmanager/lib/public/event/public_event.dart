@@ -60,7 +60,7 @@ class _PublicEventState extends State<PublicEvent> with ExceptionMessage {
                 title: Text(eventModel.eventProto!.name),
                 flexibleSpace: const AppProgressIndicator(),
                 actions: [
-                  IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/events/${widget.id}/event-settings')),
+                  IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/events/event-settings')),
                   Consumer<EventModel>(
                     builder: (context, model, _) {
                       if (!model.soundEnabled) {

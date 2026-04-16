@@ -21,6 +21,7 @@ import 'package:protobuf/well_known_types/google/protobuf/wrappers.pb.dart'
 import 'heat.v1.pb.dart' as $3;
 import 'race.v1.pbenum.dart';
 import 'race_feature_type_id.v1.pbenum.dart' as $4;
+import 'session_type_id.v1.pbenum.dart' as $5;
 import 'track_configuration.v1.pb.dart' as $1;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
@@ -157,12 +158,11 @@ class Race extends $pb.GeneratedMessage {
     $core.String? eventId,
     $1.TrackConfiguration? trackConfiguration,
     $0.StringValue? pointsSchemeId,
-    $core.bool? practiceSession,
-    $core.bool? qualifyingSession,
-    $core.bool? raceSession,
     $3.HeatEndTypeId? raceHeatEndTypeId,
     $0.UInt32Value? raceHeatEndLapLaps,
     $2.Duration? raceHeatEndDurationDuration,
+    $core.Iterable<RaceIndicator>? raceIndicators,
+    $core.Iterable<$core.String>? raceEventUsers,
     RaceStateType? raceStateType,
     $core.Iterable<$4.RaceFeatureTypeId>? raceFeatures,
     $core.Iterable<$3.Heat>? heats,
@@ -175,14 +175,13 @@ class Race extends $pb.GeneratedMessage {
     if (trackConfiguration != null)
       result.trackConfiguration = trackConfiguration;
     if (pointsSchemeId != null) result.pointsSchemeId = pointsSchemeId;
-    if (practiceSession != null) result.practiceSession = practiceSession;
-    if (qualifyingSession != null) result.qualifyingSession = qualifyingSession;
-    if (raceSession != null) result.raceSession = raceSession;
     if (raceHeatEndTypeId != null) result.raceHeatEndTypeId = raceHeatEndTypeId;
     if (raceHeatEndLapLaps != null)
       result.raceHeatEndLapLaps = raceHeatEndLapLaps;
     if (raceHeatEndDurationDuration != null)
       result.raceHeatEndDurationDuration = raceHeatEndDurationDuration;
+    if (raceIndicators != null) result.raceIndicators.addAll(raceIndicators);
+    if (raceEventUsers != null) result.raceEventUsers.addAll(raceEventUsers);
     if (raceStateType != null) result.raceStateType = raceStateType;
     if (raceFeatures != null) result.raceFeatures.addAll(raceFeatures);
     if (heats != null) result.heats.addAll(heats);
@@ -208,27 +207,27 @@ class Race extends $pb.GeneratedMessage {
     ..aOM<$0.StringValue>(3, _omitFieldNames ? '' : 'name',
         subBuilder: $0.StringValue.create)
     ..aOS(4, _omitFieldNames ? '' : 'eventId')
-    ..aOM<$1.TrackConfiguration>(5, _omitFieldNames ? '' : 'trackConfiguration',
+    ..aOM<$1.TrackConfiguration>(7, _omitFieldNames ? '' : 'trackConfiguration',
         subBuilder: $1.TrackConfiguration.create)
-    ..aOM<$0.StringValue>(6, _omitFieldNames ? '' : 'pointsSchemeId',
+    ..aOM<$0.StringValue>(8, _omitFieldNames ? '' : 'pointsSchemeId',
         subBuilder: $0.StringValue.create)
-    ..aOB(7, _omitFieldNames ? '' : 'practiceSession')
-    ..aOB(8, _omitFieldNames ? '' : 'qualifyingSession')
-    ..aOB(9, _omitFieldNames ? '' : 'raceSession')
-    ..aE<$3.HeatEndTypeId>(10, _omitFieldNames ? '' : 'raceHeatEndTypeId',
+    ..aE<$3.HeatEndTypeId>(14, _omitFieldNames ? '' : 'raceHeatEndTypeId',
         enumValues: $3.HeatEndTypeId.values)
-    ..aOM<$0.UInt32Value>(11, _omitFieldNames ? '' : 'raceHeatEndLapLaps',
+    ..aOM<$0.UInt32Value>(15, _omitFieldNames ? '' : 'raceHeatEndLapLaps',
         subBuilder: $0.UInt32Value.create)
-    ..aOM<$2.Duration>(12, _omitFieldNames ? '' : 'raceHeatEndDurationDuration',
+    ..aOM<$2.Duration>(16, _omitFieldNames ? '' : 'raceHeatEndDurationDuration',
         subBuilder: $2.Duration.create)
-    ..aOM<RaceStateType>(13, _omitFieldNames ? '' : 'raceStateType',
+    ..pPM<RaceIndicator>(19, _omitFieldNames ? '' : 'raceIndicators',
+        subBuilder: RaceIndicator.create)
+    ..pPS(20, _omitFieldNames ? '' : 'raceEventUsers')
+    ..aOM<RaceStateType>(21, _omitFieldNames ? '' : 'raceStateType',
         subBuilder: RaceStateType.create)
     ..pc<$4.RaceFeatureTypeId>(
-        14, _omitFieldNames ? '' : 'raceFeatures', $pb.PbFieldType.KE,
+        22, _omitFieldNames ? '' : 'raceFeatures', $pb.PbFieldType.KE,
         valueOf: $4.RaceFeatureTypeId.valueOf,
         enumValues: $4.RaceFeatureTypeId.values,
         defaultEnumValue: $4.RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_UNDEFINED)
-    ..pPM<$3.Heat>(15, _omitFieldNames ? '' : 'heats',
+    ..pPM<$3.Heat>(23, _omitFieldNames ? '' : 'heats',
         subBuilder: $3.Heat.create)
     ..hasRequiredFields = false;
 
@@ -288,109 +287,367 @@ class Race extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   void clearEventId() => $_clearField(4);
 
-  @$pb.TagNumber(5)
+  @$pb.TagNumber(7)
   $1.TrackConfiguration get trackConfiguration => $_getN(4);
-  @$pb.TagNumber(5)
-  set trackConfiguration($1.TrackConfiguration value) => $_setField(5, value);
-  @$pb.TagNumber(5)
+  @$pb.TagNumber(7)
+  set trackConfiguration($1.TrackConfiguration value) => $_setField(7, value);
+  @$pb.TagNumber(7)
   $core.bool hasTrackConfiguration() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearTrackConfiguration() => $_clearField(5);
-  @$pb.TagNumber(5)
+  @$pb.TagNumber(7)
+  void clearTrackConfiguration() => $_clearField(7);
+  @$pb.TagNumber(7)
   $1.TrackConfiguration ensureTrackConfiguration() => $_ensure(4);
 
-  @$pb.TagNumber(6)
+  @$pb.TagNumber(8)
   $0.StringValue get pointsSchemeId => $_getN(5);
-  @$pb.TagNumber(6)
-  set pointsSchemeId($0.StringValue value) => $_setField(6, value);
-  @$pb.TagNumber(6)
+  @$pb.TagNumber(8)
+  set pointsSchemeId($0.StringValue value) => $_setField(8, value);
+  @$pb.TagNumber(8)
   $core.bool hasPointsSchemeId() => $_has(5);
-  @$pb.TagNumber(6)
-  void clearPointsSchemeId() => $_clearField(6);
-  @$pb.TagNumber(6)
+  @$pb.TagNumber(8)
+  void clearPointsSchemeId() => $_clearField(8);
+  @$pb.TagNumber(8)
   $0.StringValue ensurePointsSchemeId() => $_ensure(5);
 
-  @$pb.TagNumber(7)
-  $core.bool get practiceSession => $_getBF(6);
-  @$pb.TagNumber(7)
-  set practiceSession($core.bool value) => $_setBool(6, value);
-  @$pb.TagNumber(7)
-  $core.bool hasPracticeSession() => $_has(6);
-  @$pb.TagNumber(7)
-  void clearPracticeSession() => $_clearField(7);
-
-  @$pb.TagNumber(8)
-  $core.bool get qualifyingSession => $_getBF(7);
-  @$pb.TagNumber(8)
-  set qualifyingSession($core.bool value) => $_setBool(7, value);
-  @$pb.TagNumber(8)
-  $core.bool hasQualifyingSession() => $_has(7);
-  @$pb.TagNumber(8)
-  void clearQualifyingSession() => $_clearField(8);
-
-  @$pb.TagNumber(9)
-  $core.bool get raceSession => $_getBF(8);
-  @$pb.TagNumber(9)
-  set raceSession($core.bool value) => $_setBool(8, value);
-  @$pb.TagNumber(9)
-  $core.bool hasRaceSession() => $_has(8);
-  @$pb.TagNumber(9)
-  void clearRaceSession() => $_clearField(9);
-
-  @$pb.TagNumber(10)
-  $3.HeatEndTypeId get raceHeatEndTypeId => $_getN(9);
-  @$pb.TagNumber(10)
-  set raceHeatEndTypeId($3.HeatEndTypeId value) => $_setField(10, value);
-  @$pb.TagNumber(10)
-  $core.bool hasRaceHeatEndTypeId() => $_has(9);
-  @$pb.TagNumber(10)
-  void clearRaceHeatEndTypeId() => $_clearField(10);
-
-  @$pb.TagNumber(11)
-  $0.UInt32Value get raceHeatEndLapLaps => $_getN(10);
-  @$pb.TagNumber(11)
-  set raceHeatEndLapLaps($0.UInt32Value value) => $_setField(11, value);
-  @$pb.TagNumber(11)
-  $core.bool hasRaceHeatEndLapLaps() => $_has(10);
-  @$pb.TagNumber(11)
-  void clearRaceHeatEndLapLaps() => $_clearField(11);
-  @$pb.TagNumber(11)
-  $0.UInt32Value ensureRaceHeatEndLapLaps() => $_ensure(10);
-
-  @$pb.TagNumber(12)
-  $2.Duration get raceHeatEndDurationDuration => $_getN(11);
-  @$pb.TagNumber(12)
-  set raceHeatEndDurationDuration($2.Duration value) => $_setField(12, value);
-  @$pb.TagNumber(12)
-  $core.bool hasRaceHeatEndDurationDuration() => $_has(11);
-  @$pb.TagNumber(12)
-  void clearRaceHeatEndDurationDuration() => $_clearField(12);
-  @$pb.TagNumber(12)
-  $2.Duration ensureRaceHeatEndDurationDuration() => $_ensure(11);
-
-  @$pb.TagNumber(13)
-  RaceStateType get raceStateType => $_getN(12);
-  @$pb.TagNumber(13)
-  set raceStateType(RaceStateType value) => $_setField(13, value);
-  @$pb.TagNumber(13)
-  $core.bool hasRaceStateType() => $_has(12);
-  @$pb.TagNumber(13)
-  void clearRaceStateType() => $_clearField(13);
-  @$pb.TagNumber(13)
-  RaceStateType ensureRaceStateType() => $_ensure(12);
-
+  /// bool practice_session = 7;
+  /// bool qualifying_session = 8;
+  /// bool race_session = 9;
+  /// race_format_type.RaceFormatTypeId race_format_type_id = 13;
   @$pb.TagNumber(14)
-  $pb.PbList<$4.RaceFeatureTypeId> get raceFeatures => $_getList(13);
+  $3.HeatEndTypeId get raceHeatEndTypeId => $_getN(6);
+  @$pb.TagNumber(14)
+  set raceHeatEndTypeId($3.HeatEndTypeId value) => $_setField(14, value);
+  @$pb.TagNumber(14)
+  $core.bool hasRaceHeatEndTypeId() => $_has(6);
+  @$pb.TagNumber(14)
+  void clearRaceHeatEndTypeId() => $_clearField(14);
 
   @$pb.TagNumber(15)
-  $pb.PbList<$3.Heat> get heats => $_getList(14);
+  $0.UInt32Value get raceHeatEndLapLaps => $_getN(7);
+  @$pb.TagNumber(15)
+  set raceHeatEndLapLaps($0.UInt32Value value) => $_setField(15, value);
+  @$pb.TagNumber(15)
+  $core.bool hasRaceHeatEndLapLaps() => $_has(7);
+  @$pb.TagNumber(15)
+  void clearRaceHeatEndLapLaps() => $_clearField(15);
+  @$pb.TagNumber(15)
+  $0.UInt32Value ensureRaceHeatEndLapLaps() => $_ensure(7);
+
+  @$pb.TagNumber(16)
+  $2.Duration get raceHeatEndDurationDuration => $_getN(8);
+  @$pb.TagNumber(16)
+  set raceHeatEndDurationDuration($2.Duration value) => $_setField(16, value);
+  @$pb.TagNumber(16)
+  $core.bool hasRaceHeatEndDurationDuration() => $_has(8);
+  @$pb.TagNumber(16)
+  void clearRaceHeatEndDurationDuration() => $_clearField(16);
+  @$pb.TagNumber(16)
+  $2.Duration ensureRaceHeatEndDurationDuration() => $_ensure(8);
+
+  @$pb.TagNumber(19)
+  $pb.PbList<RaceIndicator> get raceIndicators => $_getList(9);
+
+  @$pb.TagNumber(20)
+  $pb.PbList<$core.String> get raceEventUsers => $_getList(10);
+
+  @$pb.TagNumber(21)
+  RaceStateType get raceStateType => $_getN(11);
+  @$pb.TagNumber(21)
+  set raceStateType(RaceStateType value) => $_setField(21, value);
+  @$pb.TagNumber(21)
+  $core.bool hasRaceStateType() => $_has(11);
+  @$pb.TagNumber(21)
+  void clearRaceStateType() => $_clearField(21);
+  @$pb.TagNumber(21)
+  RaceStateType ensureRaceStateType() => $_ensure(11);
+
+  @$pb.TagNumber(22)
+  $pb.PbList<$4.RaceFeatureTypeId> get raceFeatures => $_getList(12);
+
+  @$pb.TagNumber(23)
+  $pb.PbList<$3.Heat> get heats => $_getList(13);
+}
+
+class RaceIndicator extends $pb.GeneratedMessage {
+  factory RaceIndicator({
+    $core.int? indicatorId,
+    $0.UInt32Value? color,
+  }) {
+    final result = create();
+    if (indicatorId != null) result.indicatorId = indicatorId;
+    if (color != null) result.color = color;
+    return result;
+  }
+
+  RaceIndicator._();
+
+  factory RaceIndicator.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RaceIndicator.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'RaceIndicator',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'indicatorId',
+        fieldType: $pb.PbFieldType.OU3)
+    ..aOM<$0.UInt32Value>(2, _omitFieldNames ? '' : 'color',
+        subBuilder: $0.UInt32Value.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceIndicator clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceIndicator copyWith(void Function(RaceIndicator) updates) =>
+      super.copyWith((message) => updates(message as RaceIndicator))
+          as RaceIndicator;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static RaceIndicator create() => RaceIndicator._();
+  @$core.override
+  RaceIndicator createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static RaceIndicator getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RaceIndicator>(create);
+  static RaceIndicator? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get indicatorId => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set indicatorId($core.int value) => $_setUnsignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasIndicatorId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearIndicatorId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $0.UInt32Value get color => $_getN(1);
+  @$pb.TagNumber(2)
+  set color($0.UInt32Value value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasColor() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearColor() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $0.UInt32Value ensureColor() => $_ensure(1);
+}
+
+class RaceState extends $pb.GeneratedMessage {
+  factory RaceState({
+    $5.SessionTypeId? sessionTypeId,
+    RaceStateType? raceStateType,
+    $core.Iterable<RaceEventUserState>? raceEventUserStates,
+    $0.StringValue? heatId,
+    $0.UInt32Value? heatNumber,
+    $3.HeatState? heatState,
+  }) {
+    final result = create();
+    if (sessionTypeId != null) result.sessionTypeId = sessionTypeId;
+    if (raceStateType != null) result.raceStateType = raceStateType;
+    if (raceEventUserStates != null)
+      result.raceEventUserStates.addAll(raceEventUserStates);
+    if (heatId != null) result.heatId = heatId;
+    if (heatNumber != null) result.heatNumber = heatNumber;
+    if (heatState != null) result.heatState = heatState;
+    return result;
+  }
+
+  RaceState._();
+
+  factory RaceState.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RaceState.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'RaceState',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aE<$5.SessionTypeId>(1, _omitFieldNames ? '' : 'sessionTypeId',
+        enumValues: $5.SessionTypeId.values)
+    ..aOM<RaceStateType>(2, _omitFieldNames ? '' : 'raceStateType',
+        subBuilder: RaceStateType.create)
+    ..pPM<RaceEventUserState>(3, _omitFieldNames ? '' : 'raceEventUserStates',
+        subBuilder: RaceEventUserState.create)
+    ..aOM<$0.StringValue>(4, _omitFieldNames ? '' : 'heatId',
+        subBuilder: $0.StringValue.create)
+    ..aOM<$0.UInt32Value>(5, _omitFieldNames ? '' : 'heatNumber',
+        subBuilder: $0.UInt32Value.create)
+    ..aOM<$3.HeatState>(6, _omitFieldNames ? '' : 'heatState',
+        subBuilder: $3.HeatState.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceState clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceState copyWith(void Function(RaceState) updates) =>
+      super.copyWith((message) => updates(message as RaceState)) as RaceState;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static RaceState create() => RaceState._();
+  @$core.override
+  RaceState createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static RaceState getDefault() =>
+      _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RaceState>(create);
+  static RaceState? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $5.SessionTypeId get sessionTypeId => $_getN(0);
+  @$pb.TagNumber(1)
+  set sessionTypeId($5.SessionTypeId value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasSessionTypeId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSessionTypeId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  RaceStateType get raceStateType => $_getN(1);
+  @$pb.TagNumber(2)
+  set raceStateType(RaceStateType value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasRaceStateType() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearRaceStateType() => $_clearField(2);
+  @$pb.TagNumber(2)
+  RaceStateType ensureRaceStateType() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  $pb.PbList<RaceEventUserState> get raceEventUserStates => $_getList(2);
+
+  @$pb.TagNumber(4)
+  $0.StringValue get heatId => $_getN(3);
+  @$pb.TagNumber(4)
+  set heatId($0.StringValue value) => $_setField(4, value);
+  @$pb.TagNumber(4)
+  $core.bool hasHeatId() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearHeatId() => $_clearField(4);
+  @$pb.TagNumber(4)
+  $0.StringValue ensureHeatId() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $0.UInt32Value get heatNumber => $_getN(4);
+  @$pb.TagNumber(5)
+  set heatNumber($0.UInt32Value value) => $_setField(5, value);
+  @$pb.TagNumber(5)
+  $core.bool hasHeatNumber() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearHeatNumber() => $_clearField(5);
+  @$pb.TagNumber(5)
+  $0.UInt32Value ensureHeatNumber() => $_ensure(4);
+
+  @$pb.TagNumber(6)
+  $3.HeatState get heatState => $_getN(5);
+  @$pb.TagNumber(6)
+  set heatState($3.HeatState value) => $_setField(6, value);
+  @$pb.TagNumber(6)
+  $core.bool hasHeatState() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearHeatState() => $_clearField(6);
+  @$pb.TagNumber(6)
+  $3.HeatState ensureHeatState() => $_ensure(5);
+}
+
+class RaceEventUserState extends $pb.GeneratedMessage {
+  factory RaceEventUserState({
+    $core.String? eventUserId,
+    $0.UInt32Value? indicatorIdCurrent,
+    $core.Iterable<$core.int>? indicatorIdsFinished,
+  }) {
+    final result = create();
+    if (eventUserId != null) result.eventUserId = eventUserId;
+    if (indicatorIdCurrent != null)
+      result.indicatorIdCurrent = indicatorIdCurrent;
+    if (indicatorIdsFinished != null)
+      result.indicatorIdsFinished.addAll(indicatorIdsFinished);
+    return result;
+  }
+
+  RaceEventUserState._();
+
+  factory RaceEventUserState.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RaceEventUserState.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'RaceEventUserState',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'eventUserId')
+    ..aOM<$0.UInt32Value>(2, _omitFieldNames ? '' : 'indicatorIdCurrent',
+        subBuilder: $0.UInt32Value.create)
+    ..p<$core.int>(
+        3, _omitFieldNames ? '' : 'indicatorIdsFinished', $pb.PbFieldType.KU3)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceEventUserState clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceEventUserState copyWith(void Function(RaceEventUserState) updates) =>
+      super.copyWith((message) => updates(message as RaceEventUserState))
+          as RaceEventUserState;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static RaceEventUserState create() => RaceEventUserState._();
+  @$core.override
+  RaceEventUserState createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static RaceEventUserState getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RaceEventUserState>(create);
+  static RaceEventUserState? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get eventUserId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set eventUserId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasEventUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearEventUserId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $0.UInt32Value get indicatorIdCurrent => $_getN(1);
+  @$pb.TagNumber(2)
+  set indicatorIdCurrent($0.UInt32Value value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasIndicatorIdCurrent() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearIndicatorIdCurrent() => $_clearField(2);
+  @$pb.TagNumber(2)
+  $0.UInt32Value ensureIndicatorIdCurrent() => $_ensure(1);
+
+  @$pb.TagNumber(3)
+  $pb.PbList<$core.int> get indicatorIdsFinished => $_getList(2);
 }
 
 class RaceLeaderboard extends $pb.GeneratedMessage {
   factory RaceLeaderboard({
+    $5.SessionTypeId? sessionTypeId,
     $core.Iterable<RaceLeaderboardEventUser>? eventUsers,
   }) {
     final result = create();
+    if (sessionTypeId != null) result.sessionTypeId = sessionTypeId;
     if (eventUsers != null) result.eventUsers.addAll(eventUsers);
     return result;
   }
@@ -409,7 +666,9 @@ class RaceLeaderboard extends $pb.GeneratedMessage {
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
-    ..pPM<RaceLeaderboardEventUser>(1, _omitFieldNames ? '' : 'eventUsers',
+    ..aE<$5.SessionTypeId>(1, _omitFieldNames ? '' : 'sessionTypeId',
+        enumValues: $5.SessionTypeId.values)
+    ..pPM<RaceLeaderboardEventUser>(2, _omitFieldNames ? '' : 'eventUsers',
         subBuilder: RaceLeaderboardEventUser.create)
     ..hasRequiredFields = false;
 
@@ -433,34 +692,44 @@ class RaceLeaderboard extends $pb.GeneratedMessage {
   static RaceLeaderboard? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $pb.PbList<RaceLeaderboardEventUser> get eventUsers => $_getList(0);
+  $5.SessionTypeId get sessionTypeId => $_getN(0);
+  @$pb.TagNumber(1)
+  set sessionTypeId($5.SessionTypeId value) => $_setField(1, value);
+  @$pb.TagNumber(1)
+  $core.bool hasSessionTypeId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSessionTypeId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $pb.PbList<RaceLeaderboardEventUser> get eventUsers => $_getList(1);
 }
 
 class RaceLeaderboardEventUser extends $pb.GeneratedMessage {
   factory RaceLeaderboardEventUser({
     $core.String? eventUserId,
-    $0.UInt32Value? position,
-    $0.DoubleValue? laps,
-    $0.DoubleValue? lapsEstimate,
-    $0.UInt32Value? points,
-    $0.UInt32Value? pointsEstimate,
-    $0.StringValue? gapLeader,
-    $0.StringValue? gapInterval,
-    $0.DoubleValue? gapIntervalFraction,
+    $core.int? position,
+    $0.StringValue? lapsCompleted,
+    $0.StringValue? lapsPredicted,
+    $0.StringValue? gapLapsPredictedLeader,
+    $0.StringValue? gapLapsPredictedInterval,
+    $0.DoubleValue? gapLapsPredictedIntervalFraction,
     $core.Iterable<$3.HeatIndicatorFlag>? flags,
+    $0.StringValue? teamEventUserId,
   }) {
     final result = create();
     if (eventUserId != null) result.eventUserId = eventUserId;
     if (position != null) result.position = position;
-    if (laps != null) result.laps = laps;
-    if (lapsEstimate != null) result.lapsEstimate = lapsEstimate;
-    if (points != null) result.points = points;
-    if (pointsEstimate != null) result.pointsEstimate = pointsEstimate;
-    if (gapLeader != null) result.gapLeader = gapLeader;
-    if (gapInterval != null) result.gapInterval = gapInterval;
-    if (gapIntervalFraction != null)
-      result.gapIntervalFraction = gapIntervalFraction;
+    if (lapsCompleted != null) result.lapsCompleted = lapsCompleted;
+    if (lapsPredicted != null) result.lapsPredicted = lapsPredicted;
+    if (gapLapsPredictedLeader != null)
+      result.gapLapsPredictedLeader = gapLapsPredictedLeader;
+    if (gapLapsPredictedInterval != null)
+      result.gapLapsPredictedInterval = gapLapsPredictedInterval;
+    if (gapLapsPredictedIntervalFraction != null)
+      result.gapLapsPredictedIntervalFraction =
+          gapLapsPredictedIntervalFraction;
     if (flags != null) result.flags.addAll(flags);
+    if (teamEventUserId != null) result.teamEventUserId = teamEventUserId;
     return result;
   }
 
@@ -479,27 +748,25 @@ class RaceLeaderboardEventUser extends $pb.GeneratedMessage {
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'eventUserId')
-    ..aOM<$0.UInt32Value>(2, _omitFieldNames ? '' : 'position',
-        subBuilder: $0.UInt32Value.create)
-    ..aOM<$0.DoubleValue>(4, _omitFieldNames ? '' : 'laps',
-        subBuilder: $0.DoubleValue.create)
-    ..aOM<$0.DoubleValue>(5, _omitFieldNames ? '' : 'lapsEstimate',
-        subBuilder: $0.DoubleValue.create)
-    ..aOM<$0.UInt32Value>(6, _omitFieldNames ? '' : 'points',
-        subBuilder: $0.UInt32Value.create)
-    ..aOM<$0.UInt32Value>(7, _omitFieldNames ? '' : 'pointsEstimate',
-        subBuilder: $0.UInt32Value.create)
-    ..aOM<$0.StringValue>(8, _omitFieldNames ? '' : 'gapLeader',
+    ..aI(2, _omitFieldNames ? '' : 'position', fieldType: $pb.PbFieldType.OU3)
+    ..aOM<$0.StringValue>(4, _omitFieldNames ? '' : 'lapsCompleted',
         subBuilder: $0.StringValue.create)
-    ..aOM<$0.StringValue>(9, _omitFieldNames ? '' : 'gapInterval',
+    ..aOM<$0.StringValue>(5, _omitFieldNames ? '' : 'lapsPredicted',
         subBuilder: $0.StringValue.create)
-    ..aOM<$0.DoubleValue>(10, _omitFieldNames ? '' : 'gapIntervalFraction',
+    ..aOM<$0.StringValue>(8, _omitFieldNames ? '' : 'gapLapsPredictedLeader',
+        subBuilder: $0.StringValue.create)
+    ..aOM<$0.StringValue>(9, _omitFieldNames ? '' : 'gapLapsPredictedInterval',
+        subBuilder: $0.StringValue.create)
+    ..aOM<$0.DoubleValue>(
+        10, _omitFieldNames ? '' : 'gapLapsPredictedIntervalFraction',
         subBuilder: $0.DoubleValue.create)
     ..pc<$3.HeatIndicatorFlag>(
         11, _omitFieldNames ? '' : 'flags', $pb.PbFieldType.KE,
         valueOf: $3.HeatIndicatorFlag.valueOf,
         enumValues: $3.HeatIndicatorFlag.values,
         defaultEnumValue: $3.HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED)
+    ..aOM<$0.StringValue>(12, _omitFieldNames ? '' : 'teamEventUserId',
+        subBuilder: $0.StringValue.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -532,183 +799,235 @@ class RaceLeaderboardEventUser extends $pb.GeneratedMessage {
   void clearEventUserId() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $0.UInt32Value get position => $_getN(1);
+  $core.int get position => $_getIZ(1);
   @$pb.TagNumber(2)
-  set position($0.UInt32Value value) => $_setField(2, value);
+  set position($core.int value) => $_setUnsignedInt32(1, value);
   @$pb.TagNumber(2)
   $core.bool hasPosition() => $_has(1);
   @$pb.TagNumber(2)
   void clearPosition() => $_clearField(2);
-  @$pb.TagNumber(2)
-  $0.UInt32Value ensurePosition() => $_ensure(1);
 
   /// uint32 position_estimate = 3;
   @$pb.TagNumber(4)
-  $0.DoubleValue get laps => $_getN(2);
+  $0.StringValue get lapsCompleted => $_getN(2);
   @$pb.TagNumber(4)
-  set laps($0.DoubleValue value) => $_setField(4, value);
+  set lapsCompleted($0.StringValue value) => $_setField(4, value);
   @$pb.TagNumber(4)
-  $core.bool hasLaps() => $_has(2);
+  $core.bool hasLapsCompleted() => $_has(2);
   @$pb.TagNumber(4)
-  void clearLaps() => $_clearField(4);
+  void clearLapsCompleted() => $_clearField(4);
   @$pb.TagNumber(4)
-  $0.DoubleValue ensureLaps() => $_ensure(2);
+  $0.StringValue ensureLapsCompleted() => $_ensure(2);
 
   @$pb.TagNumber(5)
-  $0.DoubleValue get lapsEstimate => $_getN(3);
+  $0.StringValue get lapsPredicted => $_getN(3);
   @$pb.TagNumber(5)
-  set lapsEstimate($0.DoubleValue value) => $_setField(5, value);
+  set lapsPredicted($0.StringValue value) => $_setField(5, value);
   @$pb.TagNumber(5)
-  $core.bool hasLapsEstimate() => $_has(3);
+  $core.bool hasLapsPredicted() => $_has(3);
   @$pb.TagNumber(5)
-  void clearLapsEstimate() => $_clearField(5);
+  void clearLapsPredicted() => $_clearField(5);
   @$pb.TagNumber(5)
-  $0.DoubleValue ensureLapsEstimate() => $_ensure(3);
+  $0.StringValue ensureLapsPredicted() => $_ensure(3);
 
-  @$pb.TagNumber(6)
-  $0.UInt32Value get points => $_getN(4);
-  @$pb.TagNumber(6)
-  set points($0.UInt32Value value) => $_setField(6, value);
-  @$pb.TagNumber(6)
-  $core.bool hasPoints() => $_has(4);
-  @$pb.TagNumber(6)
-  void clearPoints() => $_clearField(6);
-  @$pb.TagNumber(6)
-  $0.UInt32Value ensurePoints() => $_ensure(4);
-
-  @$pb.TagNumber(7)
-  $0.UInt32Value get pointsEstimate => $_getN(5);
-  @$pb.TagNumber(7)
-  set pointsEstimate($0.UInt32Value value) => $_setField(7, value);
-  @$pb.TagNumber(7)
-  $core.bool hasPointsEstimate() => $_has(5);
-  @$pb.TagNumber(7)
-  void clearPointsEstimate() => $_clearField(7);
-  @$pb.TagNumber(7)
-  $0.UInt32Value ensurePointsEstimate() => $_ensure(5);
-
+  /// google.protobuf.UInt32Value points = 6;
+  /// google.protobuf.UInt32Value points_predicted = 7;
   @$pb.TagNumber(8)
-  $0.StringValue get gapLeader => $_getN(6);
+  $0.StringValue get gapLapsPredictedLeader => $_getN(4);
   @$pb.TagNumber(8)
-  set gapLeader($0.StringValue value) => $_setField(8, value);
+  set gapLapsPredictedLeader($0.StringValue value) => $_setField(8, value);
   @$pb.TagNumber(8)
-  $core.bool hasGapLeader() => $_has(6);
+  $core.bool hasGapLapsPredictedLeader() => $_has(4);
   @$pb.TagNumber(8)
-  void clearGapLeader() => $_clearField(8);
+  void clearGapLapsPredictedLeader() => $_clearField(8);
   @$pb.TagNumber(8)
-  $0.StringValue ensureGapLeader() => $_ensure(6);
+  $0.StringValue ensureGapLapsPredictedLeader() => $_ensure(4);
 
   @$pb.TagNumber(9)
-  $0.StringValue get gapInterval => $_getN(7);
+  $0.StringValue get gapLapsPredictedInterval => $_getN(5);
   @$pb.TagNumber(9)
-  set gapInterval($0.StringValue value) => $_setField(9, value);
+  set gapLapsPredictedInterval($0.StringValue value) => $_setField(9, value);
   @$pb.TagNumber(9)
-  $core.bool hasGapInterval() => $_has(7);
+  $core.bool hasGapLapsPredictedInterval() => $_has(5);
   @$pb.TagNumber(9)
-  void clearGapInterval() => $_clearField(9);
+  void clearGapLapsPredictedInterval() => $_clearField(9);
   @$pb.TagNumber(9)
-  $0.StringValue ensureGapInterval() => $_ensure(7);
+  $0.StringValue ensureGapLapsPredictedInterval() => $_ensure(5);
 
   @$pb.TagNumber(10)
-  $0.DoubleValue get gapIntervalFraction => $_getN(8);
+  $0.DoubleValue get gapLapsPredictedIntervalFraction => $_getN(6);
   @$pb.TagNumber(10)
-  set gapIntervalFraction($0.DoubleValue value) => $_setField(10, value);
+  set gapLapsPredictedIntervalFraction($0.DoubleValue value) =>
+      $_setField(10, value);
   @$pb.TagNumber(10)
-  $core.bool hasGapIntervalFraction() => $_has(8);
+  $core.bool hasGapLapsPredictedIntervalFraction() => $_has(6);
   @$pb.TagNumber(10)
-  void clearGapIntervalFraction() => $_clearField(10);
+  void clearGapLapsPredictedIntervalFraction() => $_clearField(10);
   @$pb.TagNumber(10)
-  $0.DoubleValue ensureGapIntervalFraction() => $_ensure(8);
+  $0.DoubleValue ensureGapLapsPredictedIntervalFraction() => $_ensure(6);
 
   @$pb.TagNumber(11)
-  $pb.PbList<$3.HeatIndicatorFlag> get flags => $_getList(9);
+  $pb.PbList<$3.HeatIndicatorFlag> get flags => $_getList(7);
+
+  /// uint32 pit_lanes = 10;
+  /// uint32 car_off_tracks = 11;
+  @$pb.TagNumber(12)
+  $0.StringValue get teamEventUserId => $_getN(8);
+  @$pb.TagNumber(12)
+  set teamEventUserId($0.StringValue value) => $_setField(12, value);
+  @$pb.TagNumber(12)
+  $core.bool hasTeamEventUserId() => $_has(8);
+  @$pb.TagNumber(12)
+  void clearTeamEventUserId() => $_clearField(12);
+  @$pb.TagNumber(12)
+  $0.StringValue ensureTeamEventUserId() => $_ensure(8);
 }
 
-class RaceLeaderboardEventUserHeatUpdate extends $pb.GeneratedMessage {
-  factory RaceLeaderboardEventUserHeatUpdate({
+enum RaceLeaderboardHeatEventUserUpdate_Value { laps, finished, flags, notSet }
+
+class RaceLeaderboardHeatEventUserUpdate extends $pb.GeneratedMessage {
+  factory RaceLeaderboardHeatEventUserUpdate({
+    $core.String? heatId,
     $core.String? eventUserId,
+    $2.Duration? timerElapsed,
     $0.DoubleValue? laps,
-    $core.Iterable<$3.HeatIndicatorFlag>? flags,
+    $core.bool? finished,
+    $3.HeatIndicatorFlag? flags,
   }) {
     final result = create();
+    if (heatId != null) result.heatId = heatId;
     if (eventUserId != null) result.eventUserId = eventUserId;
+    if (timerElapsed != null) result.timerElapsed = timerElapsed;
     if (laps != null) result.laps = laps;
-    if (flags != null) result.flags.addAll(flags);
+    if (finished != null) result.finished = finished;
+    if (flags != null) result.flags = flags;
     return result;
   }
 
-  RaceLeaderboardEventUserHeatUpdate._();
+  RaceLeaderboardHeatEventUserUpdate._();
 
-  factory RaceLeaderboardEventUserHeatUpdate.fromBuffer(
+  factory RaceLeaderboardHeatEventUserUpdate.fromBuffer(
           $core.List<$core.int> data,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(data, registry);
-  factory RaceLeaderboardEventUserHeatUpdate.fromJson($core.String json,
+  factory RaceLeaderboardHeatEventUserUpdate.fromJson($core.String json,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(json, registry);
 
+  static const $core.Map<$core.int, RaceLeaderboardHeatEventUserUpdate_Value>
+      _RaceLeaderboardHeatEventUserUpdate_ValueByTag = {
+    4: RaceLeaderboardHeatEventUserUpdate_Value.laps,
+    9: RaceLeaderboardHeatEventUserUpdate_Value.finished,
+    10: RaceLeaderboardHeatEventUserUpdate_Value.flags,
+    0: RaceLeaderboardHeatEventUserUpdate_Value.notSet
+  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'RaceLeaderboardEventUserHeatUpdate',
+      _omitMessageNames ? '' : 'RaceLeaderboardHeatEventUserUpdate',
       package: const $pb.PackageName(
           _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'eventUserId')
+    ..oo(0, [4, 9, 10])
+    ..aOS(1, _omitFieldNames ? '' : 'heatId')
+    ..aOS(2, _omitFieldNames ? '' : 'eventUserId')
+    ..aOM<$2.Duration>(3, _omitFieldNames ? '' : 'timerElapsed',
+        subBuilder: $2.Duration.create)
     ..aOM<$0.DoubleValue>(4, _omitFieldNames ? '' : 'laps',
         subBuilder: $0.DoubleValue.create)
-    ..pc<$3.HeatIndicatorFlag>(
-        11, _omitFieldNames ? '' : 'flags', $pb.PbFieldType.KE,
-        valueOf: $3.HeatIndicatorFlag.valueOf,
-        enumValues: $3.HeatIndicatorFlag.values,
-        defaultEnumValue: $3.HeatIndicatorFlag.HEAT_INDICATOR_FLAG_FINISHED)
+    ..aOB(9, _omitFieldNames ? '' : 'finished')
+    ..aE<$3.HeatIndicatorFlag>(10, _omitFieldNames ? '' : 'flags',
+        enumValues: $3.HeatIndicatorFlag.values)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  RaceLeaderboardEventUserHeatUpdate clone() => deepCopy();
+  RaceLeaderboardHeatEventUserUpdate clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  RaceLeaderboardEventUserHeatUpdate copyWith(
-          void Function(RaceLeaderboardEventUserHeatUpdate) updates) =>
+  RaceLeaderboardHeatEventUserUpdate copyWith(
+          void Function(RaceLeaderboardHeatEventUserUpdate) updates) =>
       super.copyWith((message) =>
-              updates(message as RaceLeaderboardEventUserHeatUpdate))
-          as RaceLeaderboardEventUserHeatUpdate;
+              updates(message as RaceLeaderboardHeatEventUserUpdate))
+          as RaceLeaderboardHeatEventUserUpdate;
 
   @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static RaceLeaderboardEventUserHeatUpdate create() =>
-      RaceLeaderboardEventUserHeatUpdate._();
+  static RaceLeaderboardHeatEventUserUpdate create() =>
+      RaceLeaderboardHeatEventUserUpdate._();
   @$core.override
-  RaceLeaderboardEventUserHeatUpdate createEmptyInstance() => create();
+  RaceLeaderboardHeatEventUserUpdate createEmptyInstance() => create();
   @$core.pragma('dart2js:noInline')
-  static RaceLeaderboardEventUserHeatUpdate getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<RaceLeaderboardEventUserHeatUpdate>(
+  static RaceLeaderboardHeatEventUserUpdate getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RaceLeaderboardHeatEventUserUpdate>(
           create);
-  static RaceLeaderboardEventUserHeatUpdate? _defaultInstance;
+  static RaceLeaderboardHeatEventUserUpdate? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get eventUserId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set eventUserId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasEventUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearEventUserId() => $_clearField(1);
-
-  /// google.protobuf.UInt32Value position = 2;
-  /// uint32 position_estimate = 3;
   @$pb.TagNumber(4)
-  $0.DoubleValue get laps => $_getN(1);
+  @$pb.TagNumber(9)
+  @$pb.TagNumber(10)
+  RaceLeaderboardHeatEventUserUpdate_Value whichValue() =>
+      _RaceLeaderboardHeatEventUserUpdate_ValueByTag[$_whichOneof(0)]!;
+  @$pb.TagNumber(4)
+  @$pb.TagNumber(9)
+  @$pb.TagNumber(10)
+  void clearValue() => $_clearField($_whichOneof(0));
+
+  @$pb.TagNumber(1)
+  $core.String get heatId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set heatId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasHeatId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearHeatId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get eventUserId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set eventUserId($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasEventUserId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearEventUserId() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $2.Duration get timerElapsed => $_getN(2);
+  @$pb.TagNumber(3)
+  set timerElapsed($2.Duration value) => $_setField(3, value);
+  @$pb.TagNumber(3)
+  $core.bool hasTimerElapsed() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTimerElapsed() => $_clearField(3);
+  @$pb.TagNumber(3)
+  $2.Duration ensureTimerElapsed() => $_ensure(2);
+
+  @$pb.TagNumber(4)
+  $0.DoubleValue get laps => $_getN(3);
   @$pb.TagNumber(4)
   set laps($0.DoubleValue value) => $_setField(4, value);
   @$pb.TagNumber(4)
-  $core.bool hasLaps() => $_has(1);
+  $core.bool hasLaps() => $_has(3);
   @$pb.TagNumber(4)
   void clearLaps() => $_clearField(4);
   @$pb.TagNumber(4)
-  $0.DoubleValue ensureLaps() => $_ensure(1);
+  $0.DoubleValue ensureLaps() => $_ensure(3);
 
-  @$pb.TagNumber(11)
-  $pb.PbList<$3.HeatIndicatorFlag> get flags => $_getList(2);
+  @$pb.TagNumber(9)
+  $core.bool get finished => $_getBF(4);
+  @$pb.TagNumber(9)
+  set finished($core.bool value) => $_setBool(4, value);
+  @$pb.TagNumber(9)
+  $core.bool hasFinished() => $_has(4);
+  @$pb.TagNumber(9)
+  void clearFinished() => $_clearField(9);
+
+  @$pb.TagNumber(10)
+  $3.HeatIndicatorFlag get flags => $_getN(5);
+  @$pb.TagNumber(10)
+  set flags($3.HeatIndicatorFlag value) => $_setField(10, value);
+  @$pb.TagNumber(10)
+  $core.bool hasFlags() => $_has(5);
+  @$pb.TagNumber(10)
+  void clearFlags() => $_clearField(10);
 }
 
 const $core.bool _omitFieldNames =

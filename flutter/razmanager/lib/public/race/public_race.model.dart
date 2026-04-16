@@ -5,6 +5,7 @@ import 'package:protobuf/well_known_types/google/protobuf/wrappers.pb.dart';
 import 'package:provider/provider.dart';
 
 import '../../app_model.dart';
+import '../../protobuf/razmanager/protobuf/public/event.v1.pb.dart';
 import '../../protobuf/razmanager/protobuf/public/heat.v1.pb.dart';
 import '../../protobuf/razmanager/protobuf/public/race_feature_type_id.v1.pb.dart';
 import '../../utilities/grpc_client.dart';
@@ -20,6 +21,9 @@ class RaceModel extends ChangeNotifier with GrpcClient {
   late Iterable<RaceCommandTypeId> raceCommandPermissions;
   Race? raceProto;
   StreamSubscription<Race>? _raceStreamSubscription;
+  late Iterable<EventUser> raceUsers;
+  late Iterable<TeamUser> teamUsers;
+  late bool teamRace;
   late bool isInversed;
   late bool showIndicators;
   late bool motorSimulation;
@@ -64,6 +68,9 @@ class RaceModel extends ChangeNotifier with GrpcClient {
     _raceStreamSubscription = raceServiceClient().subscribe(StringValue(value: raceId)).listen(
         (data) {
           raceProto = data;
+          raceUsers = _eventModel.eventProto!.eventUsers.where((eventUser) => data.raceEventUsers.contains(eventUser.id));
+          teamUsers = raceUsers.expand((x) => x.teamUsers);
+          teamRace = teamUsers.isNotEmpty;
           isInversed = raceProto!.raceHeatEndTypeId == HeatEndTypeId.HEAT_END_TYPE_ID_DURATION;
           //showIndicators = raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_LANE_BASED_ID).isNotEmpty;
           showIndicators = raceProto!.raceFeatures.where((x) => x == RaceFeatureTypeId.RACE_FEATURE_TYPE_ID_CONTROLLER_BASED_ID).isEmpty;

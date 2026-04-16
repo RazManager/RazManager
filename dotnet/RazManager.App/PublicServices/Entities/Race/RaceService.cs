@@ -32,7 +32,8 @@ namespace RazManager.App.PublicServices.Entities.Race
             StreamSubscriptionHandle<Razmanager.Protobuf.Public.V1.Race>? subscriptionHandle = null;
             try
             {
-                await SubscribeExisting(new Guid(request.Value), responseStream);
+                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Race.IRaceGrain>(new Guid(request.Value)).ReadAsync();
+                await responseStream.WriteAsync(proto);
 
                 var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
                 var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.Race>(RazManager.Silo.Grains.Constants.StreamName.Race.ToString(), new Guid(request.Value));
@@ -44,7 +45,7 @@ namespace RazManager.App.PublicServices.Entities.Race
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -58,14 +59,89 @@ namespace RazManager.App.PublicServices.Entities.Race
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 
-        private async Task SubscribeExisting(Guid id, IServerStreamWriter<Razmanager.Protobuf.Public.V1.Race> responseStream)
+
+        public override async Task RaceStateSubscribe(RaceSessionRequest request, IServerStreamWriter<RaceState> responseStream, ServerCallContext context)
         {
-            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Race.IRaceGrain>(id).ReadAsync();
-            await responseStream.WriteAsync(proto);
+            // TODO: Validate permissions
+
+            StreamSubscriptionHandle<Razmanager.Protobuf.Public.V1.RaceState>? subscriptionHandle = null;
+            try
+            {
+                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Race.IRaceGrain>(new Guid(request.Id)).ReadRaceStateAsync(request.SessionTypeId);
+                await responseStream.WriteAsync(proto);
+
+                var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
+                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceState>(RazManager.Silo.Grains.Constants.StreamName.RaceState.ToString(), new Guid(request.Id));
+                subscriptionHandle = await stream.SubscribeAsync(async sequentialItemList =>
+                {
+                    await foreach (var sequentialItem in sequentialItemList.ToAsyncEnumerable().WithCancellation(context.CancellationToken))
+                    {
+                        if (sequentialItem.Item.SessionTypeId == request.SessionTypeId)
+                        {
+                            await responseStream.WriteAsync(sequentialItem.Item);
+                        }
+                    }
+                });
+
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+            }
+            catch (System.OperationCanceledException)
+            {
+            }
+            finally
+            {
+                if (subscriptionHandle is not null)
+                {
+                    await subscriptionHandle.UnsubscribeAsync();
+                }
+            }
+        }
+
+
+        public override async Task RaceLeaderboardSubscribe(RaceSessionRequest request, IServerStreamWriter<RaceLeaderboard> responseStream, ServerCallContext context)
+        {
+            // TODO: Validate permissions
+
+            StreamSubscriptionHandle<Razmanager.Protobuf.Public.V1.RaceLeaderboard>? subscriptionHandle = null;
+            try
+            {
+                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Race.IRaceGrain>(new Guid(request.Id)).ReadRaceLeaderboardAsync(request.SessionTypeId);
+                await responseStream.WriteAsync(proto);
+
+                var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
+                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceLeaderboard>(RazManager.Silo.Grains.Constants.StreamName.RaceLeaderboard.ToString(), new Guid(request.Id));
+                subscriptionHandle = await stream.SubscribeAsync(async sequentialItemList =>
+                {
+                    await foreach (var sequentialItem in sequentialItemList.ToAsyncEnumerable().WithCancellation(context.CancellationToken))
+                    {
+                        if (sequentialItem.Item.SessionTypeId == request.SessionTypeId)
+                        {
+                            await responseStream.WriteAsync(sequentialItem.Item);
+                        }
+                    }
+                });
+
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+            }
+            catch (System.OperationCanceledException)
+            {
+            }
+            finally
+            {
+                if (subscriptionHandle is not null)
+                {
+                    await subscriptionHandle.UnsubscribeAsync();
+                }
+            }
         }
 
 

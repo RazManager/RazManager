@@ -170,16 +170,16 @@ namespace RazManager.Device
            
             var app = builder.Build();
 
-            app.Use(async (context, next) =>
-            {
-                Console.WriteLine();
-                foreach (var header in context.Request.Headers)
-                {
-                    Console.WriteLine($"{header.Key} {header.Value}");
-                }
-                Console.WriteLine();
-                await next.Invoke(context);
-            });
+            //app.Use(async (context, next) =>
+            //{
+            //    Console.WriteLine();
+            //    foreach (var header in context.Request.Headers)
+            //    {
+            //        Console.WriteLine($"{header.Key} {header.Value}");
+            //    }
+            //    Console.WriteLine();
+            //    await next.Invoke(context);
+            //});
 
             app.UseForwardedHeaders();
             app.UseCertificateForwarding();

@@ -46,7 +46,7 @@ namespace RazManager.App.PublicServices.Entities.Event
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -60,7 +60,6 @@ namespace RazManager.App.PublicServices.Entities.Event
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 
@@ -90,7 +89,7 @@ namespace RazManager.App.PublicServices.Entities.Event
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -104,7 +103,6 @@ namespace RazManager.App.PublicServices.Entities.Event
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 
@@ -224,7 +222,7 @@ namespace RazManager.App.PublicServices.Entities.Event
                     }
                 });
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -238,7 +236,6 @@ namespace RazManager.App.PublicServices.Entities.Event
                 {
                     await subscriptionHandle.UnsubscribeAsync();
                 }
-                System.GC.Collect();
             }
         }
 

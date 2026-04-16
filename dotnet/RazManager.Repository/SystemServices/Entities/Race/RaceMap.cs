@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using Razmanager.Protobuf.Public.V1;
+using RazManager.Repository.Stores.Entities.HeatIndicator;
 using RazManager.Repository.Stores.Entities.Race;
+using RazManager.Repository.Stores.Entities.RaceIndicator;
 using RazManager.Utilities.Protobuf;
 using System;
+using System.Linq;
 using System.Resources;
 
 
@@ -18,7 +21,16 @@ namespace RazManager.Repository.SystemServices.Entities.Race
                     Id = src.RaceStateTypeId,
                     Name = new ResourceManager(typeof(RazManager.Resources.RaceStateType)).GetString(src.RaceStateTypeId.ToString())
                 }))
-                .ForMember(dest => dest.RaceHeatEndDurationDuration, opt => opt.MapFrom<NullableTimeSpanToProtoResolver, TimeSpan?>(src => src.RaceHeatEndDurationDuration));
+                .ForMember(dest => dest.RaceHeatEndDurationDuration, opt => opt.MapFrom<NullableTimeSpanToProtoResolver, TimeSpan?>(src => src.RaceHeatEndDurationDuration))
+                .ForMember(dest => dest.RaceEventUsers, opt => opt.MapFrom(src => src.RaceEventUsers.Select(x => x.EventUserId.ToString())));
+            CreateMap<RaceIndicatorEntity, Razmanager.Protobuf.Public.V1.RaceIndicator>()
+                .ForMember(dest => dest.Color, opt => opt.MapFrom(src => IndicatorColor(src)));
+        }
+
+
+        private uint? IndicatorColor(RaceIndicatorEntity raceIndicator)
+        {
+            return raceIndicator.Race.TrackConfiguration.TrackConfigurationIndicators.SingleOrDefault(x => x.IndicatorId == raceIndicator.IndicatorId)?.Color;
         }
     }
 }

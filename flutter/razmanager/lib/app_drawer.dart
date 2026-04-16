@@ -54,17 +54,15 @@ final router = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/public/events/event-settings',
+          pageBuilder: (context, state) => NoTransitionPage<void>(key: state.pageKey, child: const PublicEventSettingsDetail()),
+      ),
+    GoRoute(
       path: '/public/events/:id',
       pageBuilder: (context, state) => NoTransitionPage<void>(
         key: state.pageKey,
         child: PublicEvent(id: state.pathParameters['id']!),
       ),
-      routes: [
-        GoRoute(
-          path: 'event-settings',
-          pageBuilder: (context, state) => NoTransitionPage<void>(key: state.pageKey, child: const PublicEventSettingsDetail()),
-        ),
-      ],
     ),
     GoRoute(
       path: '/public/races/:id',
@@ -72,12 +70,6 @@ final router = GoRouter(
         key: state.pageKey,
         child: PublicRace(id: state.pathParameters['id']!),
       ),
-      routes: [
-        GoRoute(
-          path: 'event-settings',
-          pageBuilder: (context, state) => NoTransitionPage<void>(key: state.pageKey, child: const PublicEventSettingsDetail()),
-        ),
-      ],
     ),
     GoRoute(
       path: '/public/heats/:id',
@@ -85,12 +77,6 @@ final router = GoRouter(
         key: state.pageKey,
         child: PublicHeat(id: state.pathParameters['id']!),
       ),
-      routes: [
-        GoRoute(
-          path: 'event-settings',
-          pageBuilder: (context, state) => NoTransitionPage<void>(key: state.pageKey, child: const PublicEventSettingsDetail()),
-        ),
-      ],
     ),
     GoRoute(
       path: '/public/heats-greenscreen/:id',

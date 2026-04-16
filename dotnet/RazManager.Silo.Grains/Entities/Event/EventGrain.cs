@@ -49,7 +49,7 @@ namespace RazManager.Silo.Grains.Entities.Event
                 if (race.RaceStateType.Id != RaceStateTypeId.Pending && race.RaceStateType.Id != RaceStateTypeId.Ended)
                 {
                     _eventState!.RaceId = race.Id;
-                    var heatId = await GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(race.Id)).ReadRaceStateAsync();
+                    var heatId = await GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(race.Id)).CurrentHeatAsync();
                     if (heatId.HasValue)
                     {
                         _eventState!.HeatId = heatId.Value.ToString();

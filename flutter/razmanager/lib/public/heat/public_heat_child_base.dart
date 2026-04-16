@@ -247,23 +247,21 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
               }
               if (item.indicatorId.hasValue()) {
                 if (item.hasLap()) {
-                  final newHeatAnalysisPositionData = HeatAnalysisPositionData(lap: item.lap.lap, position: item.lap.position);
-
                   bool updateLast = false;
                   final heatAnalysisPositionSerie = heatAnalysisPositionSeries[item.indicatorId.value];
                   if (heatAnalysisPositionSerie!.data.length >= 2) {
                     final lastHeatAnalysisPositionData = heatAnalysisPositionSerie.data[heatAnalysisPositionSerie.data.length - 1];
                     final secondLastHeatAnalysisPositionData = heatAnalysisPositionSerie.data[heatAnalysisPositionSerie.data.length - 2];
                     updateLast =
-                        lastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position &&
-                        secondLastHeatAnalysisPositionData.position == newHeatAnalysisPositionData.position;
+                        lastHeatAnalysisPositionData.position == item.lap.position &&
+                        secondLastHeatAnalysisPositionData.position == item.lap.position;
                   }
 
                   if (updateLast) {
-                    heatAnalysisPositionSerie.data[heatAnalysisPositionSerie.data.length - 1] = newHeatAnalysisPositionData;
+                    heatAnalysisPositionSerie.data[heatAnalysisPositionSerie.data.length - 1] = item.lap;
                     heatAnalysisPositionSerie.updatedDataIndexes.add(heatAnalysisPositionSerie.data.length - 1);
                   } else {
-                    heatAnalysisPositionSerie.data.add(newHeatAnalysisPositionData);
+                    heatAnalysisPositionSerie.data.add(item.lap);
                     heatAnalysisPositionSerie.addedDataIndexes.add(heatAnalysisPositionSerie.data.length - 1);
                   }
 
@@ -272,24 +270,14 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
                     heatAnalysisLapSerie!.data.add(
                       HeatAnalysisLapData(
                         timerElapsed: timerElapsed,
-                        lap: item.lap.lap,
-                        lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
-                        pitlanes: item.lap.pitlanes,
-                        deslots: item.lap.deslots,
-                        teamEventUserId: item.lap.teamEventUserId.hasValue() ? item.lap.teamEventUserId.value : null
+                        heatAnalysisLap: item.lap,
                       ),
                     );
                     heatAnalysisLapSerie.addedDataIndexes.add(heatAnalysisLapSerie.data.length - 1);
 
                     final heatAnalysisLapTimeLapSerie = heatAnalysisLapTimeLapSeries[item.indicatorId.value];
-                    final heatAnalysisLapTimeLapData = HeatAnalysisLapTimeLapData(
-                      lap: item.lap.lap,
-                      lapTime: item.lap.time.hasValue() ? item.lap.time.value : null,
-                      pitlanes: item.lap.pitlanes,
-                      deslots: item.lap.deslots,
-                    );
-                    heatAnalysisLapTimeLapSerie!.data.add(heatAnalysisLapTimeLapData);
-                    final index = heatAnalysisLapTimeLapSerie!.data.indexOf(heatAnalysisLapTimeLapData);
+                    heatAnalysisLapTimeLapSerie!.data.add(item.lap);
+                    final index = heatAnalysisLapTimeLapSerie!.data.indexOf(item.lap);
                     heatAnalysisLapTimeLapSerie.addedDataIndexes.add(index);
 
                     while (heatAnalysisLapTimeLapSerie.data.length > 50) {
@@ -608,16 +596,10 @@ abstract class PublicHeatChildStateBase extends State<PublicHeatChildBase> with 
 }
 
 class HeatAnalysisPositionSerie {
-  ChartSeriesController<HeatAnalysisPositionData, int>? chartSeriesController;
-  final List<HeatAnalysisPositionData> data = [];
+  ChartSeriesController<HeatAnalysisLap, int>? chartSeriesController;
+  final List<HeatAnalysisLap> data = [];
   List<int> addedDataIndexes = [];
   List<int> updatedDataIndexes = [];
-}
-
-class HeatAnalysisPositionData {
-  const HeatAnalysisPositionData({required this.lap, required this.position});
-  final int lap;
-  final int position;
 }
 
 class HeatAnalysisGapSerie {
@@ -639,29 +621,18 @@ class HeatAnalysisLapSerie {
 }
 
 class HeatAnalysisLapData {
-  const HeatAnalysisLapData({required this.timerElapsed, required this.lap, required this.lapTime, required this.pitlanes, required this.deslots, required this.teamEventUserId});
+  const HeatAnalysisLapData({required this.timerElapsed, required this.heatAnalysisLap});
   final DateTime timerElapsed;
-  final int lap;
-  final double? lapTime;
-  final int pitlanes;
-  final int deslots;
-  final String? teamEventUserId;
+  final HeatAnalysisLap heatAnalysisLap;
 }
 
 class HeatAnalysisLapTimeLapSerie {
-  ChartSeriesController<HeatAnalysisLapTimeLapData, int>? chartSeriesController;
-  final List<HeatAnalysisLapTimeLapData> data = [];
+  ChartSeriesController<HeatAnalysisLap, int>? chartSeriesController;
+  final List<HeatAnalysisLap> data = [];
   List<int> addedDataIndexes = [];
   List<int> deletedDataIndexes = [];
 }
 
-class HeatAnalysisLapTimeLapData {
-  const HeatAnalysisLapTimeLapData({required this.lap, required this.lapTime, required this.pitlanes, required this.deslots});
-  final int lap;
-  final double? lapTime;
-  final int pitlanes;
-  final int deslots;
-}
 
 class HeatStintAnalysisLapSerie {
   ChartSeriesController<HeatStintAnalysisIndicatorStintLap, DateTime>? chartSeriesController;

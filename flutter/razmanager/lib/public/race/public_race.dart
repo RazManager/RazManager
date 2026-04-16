@@ -14,6 +14,8 @@ import '../../utilities/loading.dart';
 import '../event/public_event.model.dart';
 import '../public_mixin.dart';
 import 'public_race.model.dart';
+import 'public_race_child_base.dart';
+import 'public_race_leaderboard.dart';
 
 class PublicRace extends StatefulWidget {
   const PublicRace({super.key, required this.id});
@@ -21,35 +23,62 @@ class PublicRace extends StatefulWidget {
   final String id;
 
   @override
-  State<PublicRace> createState() => _PublicRaceState();
+  State<PublicRace> createState() => PublicRaceState();
 }
 
-class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFormatter {
-  late final EventModel _eventModel;
-  late final RaceModel _raceModel;
+class PublicRaceState extends State<PublicRace> {
+  late String id;
 
   @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    _eventModel = context.read<EventModel>();
-    _raceModel = context.read<RaceModel>();
-    _raceModel.refreshRace(context: context, id: widget.id);
+    id = widget.id;
   }
 
   @override
-  void dispose() {
-    //debugPrint("scheduling releaseRace");
-    Future.microtask(_raceModel.releaseRace);
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => RaceStateModel(),
+      child: ChangeNotifierProvider(
+        create: (context) => RaceStateHeaderModel(),
+        child: ChangeNotifierProvider(
+          create: (context) => RaceLeaderboardModel(),
+            child: SafeArea(child: PublicRaceChild(id: id)),
+          ),
+        )
+      );
+  }
+}
 
-    super.dispose();
+
+
+class PublicRaceChild extends PublicRaceChildBase {
+  const PublicRaceChild({super.key, required super.id});
+
+  @override
+  State createState() => PublicRaceChildState();
+}
+
+class PublicRaceChildState extends PublicRaceChildStateBase with ExceptionMessage, PublicFormatter {
+  @override
+  void raceRefreshed({required RaceModel raceModel}) {
+    super.raceRefreshed(raceModel: raceModel);
+
+    if (raceLeaderboardStreamSubscription != null) {
+      Future.microtask(() async {
+        await raceLeaderboardStreamSubscription!.cancel();
+        raceLeaderboardStreamSubscription = null;
+        await raceLeaderboardSubscribe();
+      });
+    }
   }
 
   Future<void> raceCommand(RaceCommandTypeId raceCommandTypeId) async {
     final appModel = context.read<AppModel>();
     appModel.setBusy(value: true, notify: true);
     try {
-      await _raceModel.raceServiceClient().command(RaceCommandRequest(id: widget.id, raceCommandTypeId: raceCommandTypeId));
+      await raceModel.raceServiceClient().command(RaceCommandRequest(id: widget.id, raceCommandTypeId: raceCommandTypeId));
     } on Exception catch (exception) {
       if (!context.mounted) {
         return;
@@ -61,23 +90,23 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
   }
 
   bool raceCommandStartEnabled() {
-    return _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PENDING ||
-        _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PAUSED;
+    return raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PENDING ||
+        raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PAUSED;
   }
 
   bool raceCommandPauseEnabled() {
-    return _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_STARTED;
+    return raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_STARTED;
   }
 
   bool raceCommandEndEnabled() {
-    return _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_STARTED ||
-        _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PAUSED;
+    return raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_STARTED ||
+        raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PAUSED;
   }
 
   bool raceCommandResetEnabled() {
-    return _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_STARTED ||
-        _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PAUSED ||
-        _raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_ENDED;
+    return raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_STARTED ||
+        raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_PAUSED ||
+        raceModel.raceProto!.raceStateType.id == RaceStateTypeId.RACE_STATE_TYPE_ID_ENDED;
   }
 
   @override
@@ -85,6 +114,10 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
     return Consumer<RaceModel>(
       builder: (context, raceModel, __) {
         if (raceModel.raceProto != null) {
+          if (!initiated) {
+            //debugPrint("Calling heatRefreshed ${heatModel.heatId} ${publicHeatState.id} $initiated");
+            raceRefreshed(raceModel: raceModel);
+          }
           return Actions(
             actions: {
               CloseIntent: CallbackAction<CloseIntent>(
@@ -98,10 +131,10 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
               length: 3,
               child: Scaffold(
                 appBar: AppBar(
-                  title: Text(raceDisplayName(event: _eventModel.eventProto, race: raceModel.raceProto!)),
+                  title: Text(raceDisplayName(event: eventModel.eventProto, race: raceModel.raceProto!)),
                   flexibleSpace: const AppProgressIndicator(),
                   actions: [
-                    IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/races/${widget.id}/event-settings')),
+                    IconButton(icon: const Icon(Icons.settings), tooltip: 'Settings', onPressed: () => context.push('/public/events/event-settings')),
                     Consumer<EventModel>(
                       builder: (context, model, _) {
                         if (!model.soundEnabled) {
@@ -139,17 +172,7 @@ class _PublicRaceState extends State<PublicRace> with ExceptionMessage, PublicFo
                   child: TabBarView(
                     children: [
                       _PublicRaceHeats(),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text("This space will be used by the race leaderboard, i.e. a live leaderbaord summary of all heats/segments for a race."),
-                            const SizedBox(height: 16),
-                            Expanded(child: const Placeholder()),
-                          ],
-                        ),
-                      ),
+                      PublicRaceLeaderboard(),
                       Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -187,13 +210,13 @@ class _PublicRaceHeats extends StatefulWidget {
 class _PublicRaceHeatsState extends State<_PublicRaceHeats> with ExceptionMessage, PublicFormatter {
   @override
   Widget build(BuildContext context) {
-    final publicRaceState = context.findAncestorStateOfType<_PublicRaceState>()!;
+    final publicRaceChildState = context.findAncestorStateOfType<PublicRaceChildState>()!;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: ListView.separated(
-        itemCount: publicRaceState._raceModel.raceProto!.heats.length,
+        itemCount: publicRaceChildState.raceModel.raceProto!.heats.length,
         itemBuilder: (context, index) {
-          final item = publicRaceState._raceModel.raceProto!.heats.elementAt(index);
+          final item = publicRaceChildState.raceModel.raceProto!.heats.elementAt(index);
           return ListTile(
             title: Text(heatDisplayName(heat: item)),
             subtitle: Column(
@@ -202,12 +225,12 @@ class _PublicRaceHeatsState extends State<_PublicRaceHeats> with ExceptionMessag
                 Text(item.heatStateType.name),
                 SizedBox(height: 8),
                 ...item.heatIndicators.map((x) {
-                  final eventUser = publicRaceState._eventModel.eventProto!.eventUsers.where((eventUser) => eventUser.id == x.eventUserId).singleOrNull;
+                  final eventUser = publicRaceChildState.eventModel.eventProto!.eventUsers.where((eventUser) => eventUser.id == x.eventUserId).singleOrNull;
                   return Row(children: [Text(x.indicatorId.toString()), const SizedBox(width: 16), Text(eventUser?.name.value ?? '?')]);
                 }),
               ],
             ),
-            trailing: publicRaceState._raceModel.raceCommandPermissions.isEmpty ? null : TextButton(
+            trailing: publicRaceChildState.raceModel.raceCommandPermissions.isEmpty ? null : TextButton(
               child: const Text('Leaderboard green screen'),
               onPressed: () => context.push('/public/heats-greenscreen/${item.id}'),
             ),
@@ -225,7 +248,7 @@ class _PublicRaceHeatsState extends State<_PublicRaceHeats> with ExceptionMessag
 class _RaceBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final publicRaceState = context.findAncestorStateOfType<_PublicRaceState>()!;
+    final publicRaceChildState = context.findAncestorStateOfType<PublicRaceChildState>()!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -233,22 +256,22 @@ class _RaceBottomNavigationBar extends StatelessWidget {
         children: [
           IconButton.filledTonal(
             icon: const Icon(Icons.play_arrow),
-            onPressed: publicRaceState.raceCommandStartEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_START) : null,
+            onPressed: publicRaceChildState.raceCommandStartEnabled() ? () => publicRaceChildState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_START) : null,
           ),
           const SizedBox(width: 16),
           IconButton.filledTonal(
             icon: const Icon(Icons.pause),
-            onPressed: publicRaceState.raceCommandPauseEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_PAUSE) : null,
+            onPressed: publicRaceChildState.raceCommandPauseEnabled() ? () => publicRaceChildState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_PAUSE) : null,
           ),
           const SizedBox(width: 16),
           IconButton.filledTonal(
             icon: const Icon(Icons.done),
-            onPressed: publicRaceState.raceCommandEndEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_END) : null,
+            onPressed: publicRaceChildState.raceCommandEndEnabled() ? () => publicRaceChildState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_END) : null,
           ),
           const SizedBox(width: 16),
           IconButton.filledTonal(
             icon: const Icon(Icons.replay),
-            onPressed: publicRaceState.raceCommandResetEnabled() ? () => publicRaceState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_RESET) : null,
+            onPressed: publicRaceChildState.raceCommandResetEnabled() ? () => publicRaceChildState.raceCommand(RaceCommandTypeId.RACE_COMMAND_TYPE_ID_RESET) : null,
           ),
         ],
       ),

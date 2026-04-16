@@ -70,7 +70,7 @@ namespace RazManager.App.Silo.UserServices.Entities.DeviceConfiguration
                         });
                     }, context.CancellationToken);
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {
@@ -120,7 +120,7 @@ namespace RazManager.App.Silo.UserServices.Entities.DeviceConfiguration
                         });
                     }, context.CancellationToken);
 
-                await Task.Delay(Timeout.Infinite, context.CancellationToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, context.CancellationToken);
             }
             catch (System.Threading.Tasks.TaskCanceledException)
             {

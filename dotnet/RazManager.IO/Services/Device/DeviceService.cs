@@ -10,6 +10,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
 using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -44,15 +45,26 @@ namespace RazManager.IO.Services.Device
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var httpClientHandler = new HttpClientHandler
+            var socketsHttpHandler = new SocketsHttpHandler
             {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
+                KeepAlivePingDelay = TimeSpan.FromSeconds(50),
+                KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+                //EnableMultipleHttp2Connections = true,
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    ClientCertificates = [_settingsService.Certificate],
+                    RemoteCertificateValidationCallback =  (sender, cert, chain, errors) =>
+                    {
+                        // Optional: validate server certificate
+                        return errors == SslPolicyErrors.None;
+                    }
+                }
             };
-            httpClientHandler.ClientCertificates.Add(_settingsService.Certificate);
 
             var grpcChannelOptions = new GrpcChannelOptions
             {
-                HttpHandler = httpClientHandler,
+                HttpHandler = socketsHttpHandler
             };
 
             var metadata = new Metadata
@@ -215,7 +227,7 @@ namespace RazManager.IO.Services.Device
                     await call.RequestStream.CompleteAsync();
                 }
 
-                await Task.Delay(Timeout.Infinite, stoppingToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
             }
         }
     }

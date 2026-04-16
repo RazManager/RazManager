@@ -107,7 +107,7 @@ namespace RazManager.IO.Services.LapMaster
                 _grpcChannel = GrpcChannel.ForAddress(_connectionOptions.DeviceClientAddress.ToString(), grpcChannelOptions);
                 _logger.LogInformation("Channel created.");
 
-                await Task.Delay(Timeout.Infinite, stoppingToken);
+                await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
             }
             catch (Exception exception)
             {

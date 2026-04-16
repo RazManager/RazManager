@@ -15,6 +15,28 @@ import 'dart:convert' as $convert;
 import 'dart:core' as $core;
 import 'dart:typed_data' as $typed_data;
 
+@$core.Deprecated('Use raceSessionRequestDescriptor instead')
+const RaceSessionRequest$json = {
+  '1': 'RaceSessionRequest',
+  '2': [
+    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {
+      '1': 'session_type_id',
+      '3': 2,
+      '4': 1,
+      '5': 14,
+      '6': '.razmanager.protobuf.public.v1.SessionTypeId',
+      '10': 'sessionTypeId'
+    },
+  ],
+};
+
+/// Descriptor for `RaceSessionRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List raceSessionRequestDescriptor = $convert.base64Decode(
+    'ChJSYWNlU2Vzc2lvblJlcXVlc3QSDgoCaWQYASABKAlSAmlkElQKD3Nlc3Npb25fdHlwZV9pZB'
+    'gCIAEoDjIsLnJhem1hbmFnZXIucHJvdG9idWYucHVibGljLnYxLlNlc3Npb25UeXBlSWRSDXNl'
+    'c3Npb25UeXBlSWQ=');
+
 @$core.Deprecated('Use raceCommandRequestDescriptor instead')
 const RaceCommandRequest$json = {
   '1': 'RaceCommandRequest',

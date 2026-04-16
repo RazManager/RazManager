@@ -15,8 +15,77 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'race.v1.pbenum.dart' as $1;
+import 'session_type_id.v1.pbenum.dart' as $4;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
+
+class RaceSessionRequest extends $pb.GeneratedMessage {
+  factory RaceSessionRequest({
+    $core.String? id,
+    $4.SessionTypeId? sessionTypeId,
+  }) {
+    final result = create();
+    if (id != null) result.id = id;
+    if (sessionTypeId != null) result.sessionTypeId = sessionTypeId;
+    return result;
+  }
+
+  RaceSessionRequest._();
+
+  factory RaceSessionRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory RaceSessionRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'RaceSessionRequest',
+      package: const $pb.PackageName(
+          _omitMessageNames ? '' : 'razmanager.protobuf.public.v1'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..aE<$4.SessionTypeId>(2, _omitFieldNames ? '' : 'sessionTypeId',
+        enumValues: $4.SessionTypeId.values)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceSessionRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  RaceSessionRequest copyWith(void Function(RaceSessionRequest) updates) =>
+      super.copyWith((message) => updates(message as RaceSessionRequest))
+          as RaceSessionRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static RaceSessionRequest create() => RaceSessionRequest._();
+  @$core.override
+  RaceSessionRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static RaceSessionRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RaceSessionRequest>(create);
+  static RaceSessionRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get id => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set id($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $4.SessionTypeId get sessionTypeId => $_getN(1);
+  @$pb.TagNumber(2)
+  set sessionTypeId($4.SessionTypeId value) => $_setField(2, value);
+  @$pb.TagNumber(2)
+  $core.bool hasSessionTypeId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearSessionTypeId() => $_clearField(2);
+}
 
 class RaceCommandRequest extends $pb.GeneratedMessage {
   factory RaceCommandRequest({

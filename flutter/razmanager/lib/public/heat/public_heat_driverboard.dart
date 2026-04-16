@@ -579,7 +579,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                     series: publicHeatChildState.heatAnalysisLapTimeLapSeries.entries
                                                         .where((x) => x.key == heatIndicator.indicatorId)
                                                         .map(
-                                                          (kv) => LineSeries<HeatAnalysisLapTimeLapData, int>(
+                                                          (kv) => LineSeries<HeatAnalysisLap, int>(
                                                             onRendererCreated: (controller) {
                                                               Future.microtask(() {
                                                                 //debugPrint("_PublicHeatAnalysesPositionsChartState onRendererCreated microtask");
@@ -590,7 +590,7 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                                 .skip(max(kv.value.data.length - constraints.maxWidth / 50, 0).toInt())
                                                                 .toList(),
                                                             xValueMapper: (data, _) => data.lap,
-                                                            yValueMapper: (data, _) => data.lapTime,
+                                                            yValueMapper: (data, _) => data.time.hasValue() ? data.time.value : null,
                                                             animationDuration: 0,
                                                             color: Theme.of(context).colorScheme.primary,
                                                             // trendlines: [
@@ -606,13 +606,13 @@ class _PublicHeatDriverboardForegroundState extends State<_PublicHeatDriverboard
                                                             dataLabelSettings: DataLabelSettings(
                                                               isVisible: true,
                                                               builder: (data, point, series, pointIndex, seriesIndex) {
-                                                                final d = data as HeatAnalysisLapTimeLapData;
+                                                                final d = data as HeatAnalysisLap;
                                                                 if (d.pitlanes > 0) {
                                                                   return Icon(Icons.car_repair);
                                                                 } else if (d.deslots > 0) {
                                                                   return Icon(Icons.car_crash);
                                                                 }
-                                                                return Text(d.lapTime != null ? d.lapTime.toString() : '');
+                                                                return d.time.hasValue() ? Text(d.time.value.toString()) : Container();
                                                               },
                                                             ),
                                                           ),

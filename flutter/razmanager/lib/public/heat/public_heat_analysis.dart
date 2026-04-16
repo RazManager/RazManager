@@ -146,7 +146,7 @@ class _PublicHeatAnalysesPositionsChartState extends State<_PublicHeatAnalysesPo
                 zoomMode: ZoomMode.x,
                 seriesGenerator: (isDataLabelVisible) => publicHeatChildState.heatAnalysisPositionSeries.entries
                     .map(
-                      (kv) => LineSeries<HeatAnalysisPositionData, int>(
+                      (kv) => LineSeries<HeatAnalysisLap, int>(
                         onRendererCreated: (controller) {
                           Future.microtask(() {
                             kv.value.chartSeriesController = controller;
@@ -502,19 +502,19 @@ class _PublicHeatAnalysesLapsChartState extends State<_PublicHeatAnalysesLapsCha
                         },
                         dataSource: kv.value.data,
                         xValueMapper: (data, _) => data.timerElapsed,
-                        yValueMapper: (data, _) => data.lapTime,
+                        yValueMapper: (data, _) => data.heatAnalysisLap.time.hasValue() ? data.heatAnalysisLap.time.value : null,
                         dataLabelSettings: DataLabelSettings(
                           isVisible: isDataLabelVisible,
                           builder: (data, point, series, pointIndex, seriesIndex) {
                             final d = data as HeatAnalysisLapData;
-                            if (d.teamEventUserId != null) {
+                            if (d.heatAnalysisLap.teamEventUserId.hasValue()) {
                               return Icon(Icons.sports_motorsports, color: heatModel.heatIndicatorColors[kv.key]);
-                            } else if (d.pitlanes > 0) {
+                            } else if (d.heatAnalysisLap.pitlanes > 0) {
                               return Icon(Icons.car_repair, color: heatModel.heatIndicatorColors[kv.key]);
-                            } else if (d.deslots > 0) {
+                            } else if (d.heatAnalysisLap.deslots > 0) {
                               return Icon(Icons.car_crash, color: heatModel.heatIndicatorColors[kv.key]);
                             }
-                            return Text('${d.lap}');
+                            return Text('${d.heatAnalysisLap.lap}');
                           },
                         ),
                         animationDuration: 0,

@@ -108,7 +108,7 @@
 	<ItemGroup>
 		<PackageReference Include="Grpc.AspNetCore" Version="2.76.0" />
 		<PackageReference Include="System.Device.Gpio" Version="4.2.0" />
-		<PackageReference Include="System.IO.Ports" Version="10.0.5" />
+		<PackageReference Include="System.IO.Ports" Version="10.0.6" />
 	</ItemGroup>
 
 
@@ -143,9 +143,6 @@
 
 	<ItemGroup>
 	  <Content Update="settings - Prod.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="settings.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>

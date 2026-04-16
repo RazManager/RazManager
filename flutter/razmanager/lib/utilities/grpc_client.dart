@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import '../app_model.dart';
 
 mixin class GrpcClient {
-  ClientChannel createClientChannel() => ClientChannel('app.razmanager.com',  options: const ChannelOptions(keepAlive: ClientKeepAliveOptions(pingInterval: Duration(seconds: 50),  permitWithoutCalls: true)));
-  // ClientChannel createClientChannel() => ClientChannel('app.razmanager.localhost',
-  //     options: ChannelOptions(
-  //         keepAlive: const ClientKeepAliveOptions(pingInterval: Duration(seconds: 50), permitWithoutCalls: true),
-  //         credentials: ChannelCredentials.secure(onBadCertificate: (certificate, host) => true)));
+  //ClientChannel createClientChannel() => ClientChannel('app.razmanager.com',  options: const ChannelOptions(keepAlive: ClientKeepAliveOptions(pingInterval: Duration(seconds: 50),  permitWithoutCalls: true)));
+  ClientChannel createClientChannel() => ClientChannel('app.razmanager.localhost',
+      options: ChannelOptions(
+          keepAlive: const ClientKeepAliveOptions(pingInterval: Duration(seconds: 50), permitWithoutCalls: true),
+          credentials: ChannelCredentials.secure(onBadCertificate: (certificate, host) => true)));
 
   CallOptions callOptionsFromContext(BuildContext context) {
     final model = Provider.of<AppModel>(context, listen: false);

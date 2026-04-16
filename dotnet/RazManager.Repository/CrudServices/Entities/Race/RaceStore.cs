@@ -203,7 +203,8 @@ namespace RazManager.Repository.CrudServices.Entities.Race
                         {
                             foreach (var raceIndicator in entity.RaceIndicators.Select((x, index) => new { Item = x, Index = index }))
                             {
-                                var heatNumber = (raceEventUser.Index / entity.RaceIndicators.Count) + (raceIndicator.Index - raceEventUser.Index + entity.RaceIndicators.Count) % entity.RaceIndicators.Count + 1;
+                                var heatNumber = (raceIndicator.Index + raceEventUser.Index) % entity.RaceIndicators.Count + 1 + Convert.ToInt32(raceEventUser.Index / entity.RaceIndicators.Count) * entity.RaceIndicators.Count;
+                                //var heatNumber = (raceEventUser.Index / entity.RaceIndicators.Count) + (raceIndicator.Index - raceEventUser.Index + entity.RaceIndicators.Count) % entity.RaceIndicators.Count + 1;
 
                                 Console.WriteLine($"raceEventUser.Index={raceEventUser.Index}  raceIndicator.Index={raceIndicator.Index}  heatNumber={heatNumber}");
 
