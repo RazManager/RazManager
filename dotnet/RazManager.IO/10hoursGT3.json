@@ -1,0 +1,487 @@
+[
+  {
+    "indicatorId": 1,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "KRI"
+      },
+      {
+        "lap": 318,
+        "teamEventUserShortName": "GIL"
+      },
+      {
+        "lap": 611,
+        "teamEventUserShortName": "KRI"
+      },
+      {
+        "lap": 918,
+        "teamEventUserShortName": "GIL"
+      }
+    ]
+  },
+  {
+    "indicatorId": 2,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "GUN"
+      },
+      {
+        "lap": 262,
+        "teamEventUserShortName": "STE"
+      },
+      {
+        "lap": 660,
+        "teamEventUserShortName": "STE"
+      },
+      {
+        "lap": 717,
+        "teamEventUserShortName": "GRE"
+      }
+    ]
+  },
+  {
+    "indicatorId": 3,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "FRA"
+      },
+      {
+        "lap": 152,
+        "teamEventUserShortName": "CYN"
+      },
+      {
+        "lap": 223,
+        "teamEventUserShortName": "CYN"
+      },
+      {
+        "lap": 234,
+        "teamEventUserShortName": "CYN"
+      },
+      {
+        "lap": 460,
+        "teamEventUserShortName": "JAI"
+      }
+    ]
+  },
+  {
+    "indicatorId": 5,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "EDP"
+      },
+      {
+        "lap": 195,
+        "teamEventUserShortName": "ALX"
+      },
+      {
+        "lap": 208,
+        "teamEventUserShortName": "ALX"
+      },
+      {
+        "lap": 354,
+        "teamEventUserShortName": "EDP"
+      },
+      {
+        "lap": 527,
+        "teamEventUserShortName": "ALX"
+      },
+      {
+        "lap": 719,
+        "teamEventUserShortName": "BER"
+      }
+    ]
+  },
+  {
+    "indicatorId": 6,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "GIO"
+      },
+      {
+        "lap": 183,
+        "teamEventUserShortName": "GIO"
+      },
+      {
+        "lap": 185,
+        "teamEventUserShortName": "GIO"
+      },
+      {
+        "lap": 188,
+        "teamEventUserShortName": "GIO"
+      },
+      {
+        "lap": 204,
+        "teamEventUserShortName": "SLA"
+      },
+      {
+        "lap": 318,
+        "teamEventUserShortName": "SLA"
+      },
+      {
+        "lap": 485,
+        "teamEventUserShortName": "DAN"
+      },
+      {
+        "lap": 795,
+        "teamEventUserShortName": "GIO"
+      }
+    ]
+  },
+  {
+    "indicatorId": 7,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "OSK"
+      },
+      {
+        "lap": 353,
+        "teamEventUserShortName": "JON"
+      },
+      {
+        "lap": 598,
+        "teamEventUserShortName": "JON"
+      },
+      {
+        "lap": 632,
+        "teamEventUserShortName": "WAY"
+      },
+      {
+        "lap": 967,
+        "teamEventUserShortName": "OSK"
+      }
+    ]
+  },
+  {
+    "indicatorId": 8,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "GRA"
+      },
+      {
+        "lap": 204,
+        "teamEventUserShortName": "MAR"
+      },
+      {
+        "lap": 373,
+        "teamEventUserShortName": "GRA"
+      },
+      {
+        "lap": 559,
+        "teamEventUserShortName": "MAR"
+      },
+      {
+        "lap": 900,
+        "teamEventUserShortName": "GRA"
+      }
+    ]
+  },
+  {
+    "indicatorId": 9,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "HEN"
+      },
+      {
+        "lap": 146,
+        "teamEventUserShortName": "WIG"
+      },
+      {
+        "lap": 408,
+        "teamEventUserShortName": "HEN"
+      },
+      {
+        "lap": 576,
+        "teamEventUserShortName": "WIG"
+      },
+      {
+        "lap": 924,
+        "teamEventUserShortName": "HEN"
+      },
+      {
+        "lap": 970,
+        "teamEventUserShortName": "WIG"
+      }
+    ]
+  },
+  {
+    "indicatorId": 10,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "WHI"
+      },
+      {
+        "lap": 145,
+        "teamEventUserShortName": "NIC"
+      },
+      {
+        "lap": 285,
+        "teamEventUserShortName": "GAR"
+      },
+      {
+        "lap": 373,
+        "teamEventUserShortName": "THO"
+      },
+      {
+        "lap": 530,
+        "teamEventUserShortName": "WHI"
+      },
+      {
+        "lap": 646,
+        "teamEventUserShortName": "NIC"
+      },
+      {
+        "lap": 703,
+        "teamEventUserShortName": "NIC"
+      },
+      {
+        "lap": 919,
+        "teamEventUserShortName": "THO"
+      }
+    ]
+  },
+  {
+    "indicatorId": 11,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "TOM"
+      },
+      {
+        "lap": 274,
+        "teamEventUserShortName": "PHI"
+      },
+      {
+        "lap": 454,
+        "teamEventUserShortName": "NIK"
+      },
+      {
+        "lap": 511,
+        "teamEventUserShortName": "PHI"
+      },
+      {
+        "lap": 666,
+        "teamEventUserShortName": "PHI"
+      },
+      {
+        "lap": 822,
+        "teamEventUserShortName": "TOM"
+      }
+    ]
+  },
+  {
+    "indicatorId": 12,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "DID"
+      },
+      {
+        "lap": 145,
+        "teamEventUserShortName": "TIB"
+      },
+      {
+        "lap": 282,
+        "teamEventUserShortName": "LEU"
+      },
+      {
+        "lap": 440,
+        "teamEventUserShortName": "YVE"
+      },
+      {
+        "lap": 572,
+        "teamEventUserShortName": "DID"
+      },
+      {
+        "lap": 695,
+        "teamEventUserShortName": "TIB"
+      },
+      {
+        "lap": 839,
+        "teamEventUserShortName": "LEU"
+      },
+      {
+        "lap": 976,
+        "teamEventUserShortName": "DID"
+      }
+    ]
+  },
+  {
+    "indicatorId": 13,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "SOM"
+      },
+      {
+        "lap": 312,
+        "teamEventUserShortName": "DRI"
+      },
+      {
+        "lap": 609,
+        "teamEventUserShortName": "SOM"
+      },
+      {
+        "lap": 662,
+        "teamEventUserShortName": "SOM"
+      },
+      {
+        "lap": 685,
+        "teamEventUserShortName": "SOM"
+      },
+      {
+        "lap": 822,
+        "teamEventUserShortName": "DRI"
+      }
+    ]
+  },
+  {
+    "indicatorId": 14,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "TAM"
+      },
+      {
+        "lap": 120,
+        "teamEventUserShortName": "TIM"
+      },
+      {
+        "lap": 249,
+        "teamEventUserShortName": "LAM"
+      },
+      {
+        "lap": 529,
+        "teamEventUserShortName": "MIC"
+      },
+      {
+        "lap": 715,
+        "teamEventUserShortName": "TIM"
+      },
+      {
+        "lap": 890,
+        "teamEventUserShortName": "LAM"
+      }
+    ]
+  },
+  {
+    "indicatorId": 15,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "PAU"
+      },
+      {
+        "lap": 290,
+        "teamEventUserShortName": "NAL"
+      },
+      {
+        "lap": 479,
+        "teamEventUserShortName": "VES"
+      },
+      {
+        "lap": 547,
+        "teamEventUserShortName": "VES"
+      },
+      {
+        "lap": 841,
+        "teamEventUserShortName": "RAL"
+      }
+    ]
+  },
+  {
+    "indicatorId": 16,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "DIR"
+      },
+      {
+        "lap": 187,
+        "teamEventUserShortName": "PAO"
+      },
+      {
+        "lap": 370,
+        "teamEventUserShortName": "DAM"
+      },
+      {
+        "lap": 418,
+        "teamEventUserShortName": "DAM"
+      },
+      {
+        "lap": 501,
+        "teamEventUserShortName": "DIR"
+      },
+      {
+        "lap": 685,
+        "teamEventUserShortName": "PAO"
+      },
+      {
+        "lap": 922,
+        "teamEventUserShortName": "DAM"
+      }
+    ]
+  },
+  {
+    "indicatorId": 18,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "FRA"
+      },
+      {
+        "lap": 185,
+        "teamEventUserShortName": "DAL"
+      },
+      {
+        "lap": 362,
+        "teamEventUserShortName": "GUI"
+      },
+      {
+        "lap": 755,
+        "teamEventUserShortName": "DAL"
+      },
+      {
+        "lap": 972,
+        "teamEventUserShortName": "FRA"
+      }
+    ]
+  },
+  {
+    "indicatorId": 19,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "SEB"
+      },
+      {
+        "lap": 310,
+        "teamEventUserShortName": "ROB"
+      },
+      {
+        "lap": 454,
+        "teamEventUserShortName": "SEB"
+      },
+      {
+        "lap": 627,
+        "teamEventUserShortName": "ROB"
+      },
+      {
+        "lap": 751,
+        "teamEventUserShortName": "SEB"
+      },
+      {
+        "lap": 1063,
+        "teamEventUserShortName": "ROB"
+      }
+    ]
+  }
+]

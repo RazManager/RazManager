@@ -167,65 +167,65 @@ namespace RazManager.IO.Services.Device
 
                 // Polly...
 
-                using (var call = deviceServiceClient.DeviceResponseRequest(metadata, null, stoppingToken))
-                {
-                    await foreach (var deviceRequest in call.ResponseStream.ReadAllAsync(stoppingToken))
-                    {
-                        switch (deviceRequest.ValueCase)
-                        {
-                            case Razmanager.Protobuf.Public.V1.DeviceRequest.ValueOneofCase.DeviceSystemInformationRequest:
-                                var result = new Razmanager.Protobuf.Public.V1.DeviceSystemInformationResponse
-                                {
-                                    HardwareModel = _cpuInfoService.CpuInfo.Model,
-                                    HardwareProcessor = _cpuInfoService.CpuInfo.ModelName,
-                                    SoftwareAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Version?.ToString(),
-                                    SoftwareSnapVersion = Environment.GetEnvironmentVariable("SNAP_VERSION"),
-                                    SoftwareDotNetVersion = Environment.Version.ToString(),
-                                    SoftwareOsVersion = $"{Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")})",
-                                    SoftwareOsReleaseVersion = _osReleaseService.OsRelease.PrettyName,
-                                };
-                                result.SerialPortNames.AddRange(SerialPort.GetPortNames().OrderBy(x => x));
+                //using (var call = deviceServiceClient.DeviceResponseRequest(metadata, null, stoppingToken))
+                //{
+                //    await foreach (var deviceRequest in call.ResponseStream.ReadAllAsync(stoppingToken))
+                //    {
+                //        switch (deviceRequest.ValueCase)
+                //        {
+                //            case Razmanager.Protobuf.Public.V1.DeviceRequest.ValueOneofCase.DeviceSystemInformationRequest:
+                //                var result = new Razmanager.Protobuf.Public.V1.DeviceSystemInformationResponse
+                //                {
+                //                    HardwareModel = _cpuInfoService.CpuInfo.Model,
+                //                    HardwareProcessor = _cpuInfoService.CpuInfo.ModelName,
+                //                    SoftwareAssemblyVersion = System.Reflection.Assembly.GetEntryAssembly()?.GetName()?.Version?.ToString(),
+                //                    SoftwareSnapVersion = Environment.GetEnvironmentVariable("SNAP_VERSION"),
+                //                    SoftwareDotNetVersion = Environment.Version.ToString(),
+                //                    SoftwareOsVersion = $"{Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit")})",
+                //                    SoftwareOsReleaseVersion = _osReleaseService.OsRelease.PrettyName,
+                //                };
+                //                result.SerialPortNames.AddRange(SerialPort.GetPortNames().OrderBy(x => x));
 
-                                await call.RequestStream.WriteAsync(new Razmanager.Protobuf.Public.V1.DeviceResponse
-                                {
-                                    CorrelationId = deviceRequest.CorrelationId,
-                                    DeviceSystemInformationResponse = result
-                                });
+                //                await call.RequestStream.WriteAsync(new Razmanager.Protobuf.Public.V1.DeviceResponse
+                //                {
+                //                    CorrelationId = deviceRequest.CorrelationId,
+                //                    DeviceSystemInformationResponse = result
+                //                });
 
-                                break;
+                //                break;
 
-                            case Razmanager.Protobuf.Public.V1.DeviceRequest.ValueOneofCase.DeviceSettingsReadRequest:
-                                await call.RequestStream.WriteAsync(new Razmanager.Protobuf.Public.V1.DeviceResponse
-                                {
-                                    CorrelationId = deviceRequest.CorrelationId,
-                                    DeviceSettingsResponse = new DeviceSettingsResponse
-                                    {
-                                        DeviceSettings = _settingsService.DeviceSettings
-                                    }
-                                });
-                                break;
+                //            case Razmanager.Protobuf.Public.V1.DeviceRequest.ValueOneofCase.DeviceSettingsReadRequest:
+                //                await call.RequestStream.WriteAsync(new Razmanager.Protobuf.Public.V1.DeviceResponse
+                //                {
+                //                    CorrelationId = deviceRequest.CorrelationId,
+                //                    DeviceSettingsResponse = new DeviceSettingsResponse
+                //                    {
+                //                        DeviceSettings = _settingsService.DeviceSettings
+                //                    }
+                //                });
+                //                break;
 
-                            case Razmanager.Protobuf.Public.V1.DeviceRequest.ValueOneofCase.DeviceSettingsUpsertRequest:
-                                _settingsService.DeviceSettings = deviceRequest.DeviceSettingsUpsertRequest.DeviceSettings;
-                                await call.RequestStream.WriteAsync(new Razmanager.Protobuf.Public.V1.DeviceResponse
-                                {
-                                    CorrelationId = deviceRequest.CorrelationId,
-                                    DeviceSettingsResponse = new DeviceSettingsResponse
-                                    {
-                                        DeviceSettings = _settingsService.DeviceSettings
-                                    }
-                                });
+                //            case Razmanager.Protobuf.Public.V1.DeviceRequest.ValueOneofCase.DeviceSettingsUpsertRequest:
+                //                _settingsService.DeviceSettings = deviceRequest.DeviceSettingsUpsertRequest.DeviceSettings;
+                //                await call.RequestStream.WriteAsync(new Razmanager.Protobuf.Public.V1.DeviceResponse
+                //                {
+                //                    CorrelationId = deviceRequest.CorrelationId,
+                //                    DeviceSettingsResponse = new DeviceSettingsResponse
+                //                    {
+                //                        DeviceSettings = _settingsService.DeviceSettings
+                //                    }
+                //                });
 
-                                await _settingsService.SaveAsync();
-                                break;
+                //                await _settingsService.SaveAsync();
+                //                break;
 
-                            default:
-                                break;
-                        }
-                    }
+                //            default:
+                //                break;
+                //        }
+                //    }
 
-                    await call.RequestStream.CompleteAsync();
-                }
+                //    await call.RequestStream.CompleteAsync();
+                //}
 
                 await Task.Delay(Timeout.InfiniteTimeSpan, stoppingToken);
             }

@@ -144,7 +144,7 @@ namespace RazManager.IO.Services.ChronoLog
                     _logger.LogInformation("File opened.");
                     _logger.LogInformation($"Lines={lines.Length}");
 
-                    var latestCarLaps = new Dictionary<byte, (short Laps, short? LapsDifference)>();
+                    var latestCarLaps = new Dictionary<byte, (short Laps, short? LapsDifference2)>();
 
                     var deviceServiceClient = new Razmanager.Protobuf.Public.V1.DeviceService.DeviceServiceClient(deviceChannel);
                     var deviceConfigurationServiceClient = new Razmanager.Protobuf.Public.V1.DeviceConfigurationService.DeviceConfigurationServiceClient(deviceChannel);
@@ -343,29 +343,27 @@ namespace RazManager.IO.Services.ChronoLog
 
                                     if (laps > 1 && lapDifference != 1)
                                     {
-                                        Console.WriteLine($"{car}\t{teamColumn}\t{laps}\t{lapDifference}\t{lastLapColumn}\t{lastEventColumn}");
+                                        Console.WriteLine($"{car}\t{teamColumn}\t{laps}\t{previousLap.Laps}\t{lapDifference}\t{lastLapColumn}\t{lastEventColumn}");
                                     }
 
-                                    if (car != 4 && car != 13 && car != 12)
+                                    ignoreLap = laps > 1 && (lapDifference <= 0 || lapDifference > 10);
+                                    if (!ignoreLap)
                                     {
-                                        ignoreLap = laps > 1 && lapDifference <= 0;
-                                        if (!ignoreLap)
+                                        //if (lapDifference != 1 && laps > 0 && previousLap.LapsDifference.HasValue && lapDifference + previousLap.LapsDifference != 0)
+                                        if (lapDifference != 1 && laps > 0)
                                         {
-                                            if (lapDifference != 1 && laps > 0 && previousLap.LapsDifference.HasValue && lapDifference + previousLap.LapsDifference != 0)
-                                            {
-                                                ignoreLapTime = true;
+                                            ignoreLapTime = true;
 
-                                                for (short i = Convert.ToInt16(previousLap.Laps + 1); i < laps; i++)
+                                            for (short i = Convert.ToInt16(previousLap.Laps + 1); i < laps; i++)
+                                            {
+                                                deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
                                                 {
-                                                    deviceConfigurationInputs.Items.Add(new Razmanager.Protobuf.Public.V1.DeviceConfigurationInput
-                                                    {
-                                                        DeviceConfigurationId = deviceConfigurationId,
-                                                        CorrelationId = Guid.NewGuid().ToString(),
-                                                        Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
-                                                        DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
-                                                        DeviceConfigurationInputId = car
-                                                    });
-                                                }
+                                                    DeviceConfigurationId = deviceConfigurationId,
+                                                    CorrelationId = Guid.NewGuid().ToString(),
+                                                    Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(timeStamp),
+                                                    DeviceConfigurationInputTypeId = Razmanager.Protobuf.Public.V1.DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime,
+                                                    DeviceConfigurationInputId = car
+                                                });
                                             }
                                         }
                                     }
@@ -421,7 +419,6 @@ namespace RazManager.IO.Services.ChronoLog
                                     {
                                         ignoreLapTime = true;
                                     }
-
 
                                     var correlationId = Guid.NewGuid();
                                     var now = DateTime.UtcNow;

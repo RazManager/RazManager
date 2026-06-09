@@ -1,0 +1,155 @@
+[
+  {
+    "indicatorId": 1,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "KRI"
+      }
+    ]
+  },
+  {
+    "indicatorId": 20,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "GUN"
+      }
+    ]
+  },
+  {
+    "indicatorId": 3,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "FRA"
+      }
+    ]
+  },
+  {
+    "indicatorId": 5,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "EDP"
+      }
+    ]
+  },
+  {
+    "indicatorId": 6,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "GIO"
+      }
+    ]
+  },
+  {
+    "indicatorId": 7,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "OSK"
+      }
+    ]
+  },
+  {
+    "indicatorId": 8,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "GRA"
+      }
+    ]
+  },
+  {
+    "indicatorId": 9,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "WIG"
+      }
+    ]
+  },
+  {
+    "indicatorId": 10,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "WHI"
+      }
+    ]
+  },
+  {
+    "indicatorId": 11,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "TOM"
+      }
+    ]
+  },
+  {
+    "indicatorId": 12,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "DID"
+      }
+    ]
+  },
+  {
+    "indicatorId": 4,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "SOM"
+      }
+    ]
+  },
+  {
+    "indicatorId": 14,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "TIM"
+      }
+    ]
+  },
+  {
+    "indicatorId": 15,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "PAU"
+      }
+    ]
+  },
+  {
+    "indicatorId": 16,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "DIR"
+      }
+    ]
+  },
+  {
+    "indicatorId": 18,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "FRA"
+      }
+    ]
+  },
+  {
+    "indicatorId": 19,
+    "preconfiguredLapTeamEventUsers": [
+      {
+        "lap": 1,
+        "teamEventUserShortName": "SEB"
+      }
+    ]
+  }
+]
