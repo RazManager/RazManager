@@ -146,6 +146,7 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
             await _repositoryDbContext.HeatJournals
                 .Where(x => x.HeatId == new Guid(request.Value))
                 .ExecuteDeleteAsync();
+
             return new Empty();
         }
 
@@ -159,7 +160,6 @@ namespace RazManager.Repository.SystemServices.Entities.Heat
             await foreach (var heatIndicatorStint in heatIndicatorStints)
             {
                 _repositoryDbContext.Remove(heatIndicatorStint);
-
             }
             await _repositoryDbContext.SaveChangesAsync().ConfigureAwait(false);
 

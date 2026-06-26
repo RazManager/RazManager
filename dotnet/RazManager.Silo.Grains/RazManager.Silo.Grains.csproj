@@ -7,15 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.34.1" />
-    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.76.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.80.0">
+    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.81.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="10.1.0" />
-    <PackageReference Include="Microsoft.Orleans.Reminders" Version="10.1.0" />
-    <PackageReference Include="Microsoft.Orleans.Streaming" Version="10.1.0" />
+    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="10.2.0" />
+    <PackageReference Include="Microsoft.Orleans.Reminders" Version="10.2.0" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="10.2.0" />
   </ItemGroup>
 
   <ItemGroup>

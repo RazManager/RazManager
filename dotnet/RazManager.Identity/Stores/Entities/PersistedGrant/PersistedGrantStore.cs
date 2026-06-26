@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -27,19 +28,18 @@ namespace RazManager.Identity.Stores.Entities.PersistedGrant
             _logger = logger;
         }
 
-
-        public Task<IEnumerable<Duende.IdentityServer.Models.PersistedGrant>> GetAllAsync(PersistedGrantFilter filter)
+        public Task<IReadOnlyCollection<Duende.IdentityServer.Models.PersistedGrant>> GetAllAsync(PersistedGrantFilter filter, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
 
 
-        public async Task<Duende.IdentityServer.Models.PersistedGrant> GetAsync(string key)
+        public async Task<Duende.IdentityServer.Models.PersistedGrant?> GetAsync(string key, CancellationToken ct)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<Context.IdentityDbContext>();
-                var entity = await dbContext.PersistedGrants.SingleOrDefaultAsync(x => x.Key == key).ConfigureAwait(false);
+                var entity = await dbContext.PersistedGrants.SingleOrDefaultAsync(x => x.Key == key, ct).ConfigureAwait(false);
                 if (entity is null)
                 {
                     _logger.LogError($"Cannot find a PersistedGrant with key={key}");
@@ -50,37 +50,36 @@ namespace RazManager.Identity.Stores.Entities.PersistedGrant
             }
         }
 
-
-        public Task RemoveAllAsync(PersistedGrantFilter filter)
+        public Task RemoveAllAsync(PersistedGrantFilter filter, CancellationToken ct)
         {
             throw new NotImplementedException();
         }
 
 
-        public async Task RemoveAsync(string key)
+        public async Task RemoveAsync(string key, CancellationToken ct)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<Context.IdentityDbContext>();
-                var entity = await dbContext.PersistedGrants.AsTracking().SingleOrDefaultAsync(x => x.Key == key).ConfigureAwait(false);
+                var entity = await dbContext.PersistedGrants.AsTracking().SingleOrDefaultAsync(x => x.Key == key, ct).ConfigureAwait(false);
                 if (entity is not null)
                 {
                     dbContext.Remove(entity);
-                    await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync(ct);
                 }
             }
         }
 
 
-        public async Task StoreAsync(Duende.IdentityServer.Models.PersistedGrant grant)
+        public async Task StoreAsync(Duende.IdentityServer.Models.PersistedGrant grant, CancellationToken ct)
         {
-            var client = await _clientStore.FindClientByIdAsync(grant.ClientId);
+            var client = await _clientStore.FindClientByIdAsync(grant.ClientId, ct);
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<Context.IdentityDbContext>();
 
-                var entity = await dbContext.PersistedGrants.AsTracking().SingleOrDefaultAsync(x => x.Key == grant.Key);
+                var entity = await dbContext.PersistedGrants.AsTracking().SingleOrDefaultAsync(x => x.Key == grant.Key, ct);
                 if (entity is null)
                 {
                     entity = new PersistedGrantEntity();
@@ -102,7 +101,7 @@ namespace RazManager.Identity.Stores.Entities.PersistedGrant
                         throw new NotImplementedException($"No time to live specified for {grant.Type}.");
                 }
 
-                await dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync(ct);
             }
         }
     }

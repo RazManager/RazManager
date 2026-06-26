@@ -110,12 +110,13 @@ message RaceLeaderboardEventUser {
 
 message RaceLeaderboardHeatEventUserUpdate {
   string heat_id = 1;
-  string event_user_id = 2;
-  google.protobuf.Duration timer_elapsed = 3;
+  uint32 heat_number = 2;
+  string event_user_id = 3;
+  google.protobuf.Duration timer_elapsed = 4;
   oneof value {
-	google.protobuf.DoubleValue laps = 4;
+	google.protobuf.DoubleValue laps = 5;
 	bool finished = 9;
-	HeatIndicatorFlag flags = 10;
+	//HeatIndicatorFlag flags = 10;
 
 	//uint32 pit_lanes = 10;
 	//uint32 car_off_tracks = 11;

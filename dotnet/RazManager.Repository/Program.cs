@@ -92,11 +92,17 @@ builder.Services.AddGrpc(options =>
 });
 
 builder.Services.AddDbContextPool<RazManager.Repository.Stores.Context.RepositoryDbContext>(options =>
+{
     options.UseNpgsql(
         databaseOptions!.DbContextConnectionStringRepository,
         npqsqlOptions => {
             npqsqlOptions.EnableRetryOnFailure();
-        }));
+        });
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+    }
+});
 
 builder.Services.AddScoped<RazManager.Repository.CrudServices.Entities.Car.ICarStore, RazManager.Repository.CrudServices.Entities.Car.CarStore>();
 builder.Services.AddScoped<RazManager.Repository.CrudServices.Entities.CarTag.ICarTagStore, RazManager.Repository.CrudServices.Entities.CarTag.CarTagStore>();

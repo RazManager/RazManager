@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -11,17 +12,20 @@ namespace RazManager.Identity.IdentityServer
 {
     public class ProfileService : IProfileService
     {
-        public Task GetProfileDataAsync(ProfileDataRequestContext context)
+        public Task GetProfileDataAsync(ProfileDataRequestContext context, CancellationToken ct)
         {
-            if (context.ValidatedRequest is null)
+            var validatedTokenRequest = context.ProtocolRequest as Duende.IdentityServer.Validation.ValidatedTokenRequest;
+
+            if (validatedTokenRequest is null)
             {
                 return Task.CompletedTask;
             }
 
+
             var id = context.Subject.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Sub)?.Value;
             var claims = new List<Claim>();
 
-            var tenantId = context.ValidatedRequest.Raw["tenantId"];
+            var tenantId = validatedTokenRequest.Raw["tenantId"];
             if (tenantId is not null)
             {
                 claims.Add(new Claim("tenantId", tenantId));
@@ -33,8 +37,10 @@ namespace RazManager.Identity.IdentityServer
         }
 
 
-        public Task IsActiveAsync(IsActiveContext context)
+        public Task IsActiveAsync(IsActiveContext context, CancellationToken ct)
         {
+            // TODO: check if the user is active
+            context.IsActive = true;
             return Task.CompletedTask;
         }
     }

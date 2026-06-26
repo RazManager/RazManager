@@ -1,6 +1,7 @@
 ﻿using Duende.IdentityServer.Validation;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -17,7 +18,7 @@ namespace RazManager.Identity.IdentityServer
         }
 
 
-        public async Task ValidateAsync(CustomTokenRequestValidationContext context)
+        public async Task ValidateAsync(CustomTokenRequestValidationContext context, CancellationToken ct)
         {
             if (context.Result?.ValidatedRequest is null)
             {

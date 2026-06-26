@@ -1,5 +1,6 @@
 ﻿using Duende.IdentityServer.Validation;
 using Razmanager.Protobuf.Internal.Repository.SystemServices.User;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -17,13 +18,13 @@ namespace RazManager.Identity.IdentityServer
         }
 
 
-        public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
+        public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context, CancellationToken ct)
         {
             var userId = await _serviceClient.SignInAsync(new()
             {
                 UserName = context.UserName,
                 Password = context.Password
-            });
+            }, null, null, ct);
 
             if (!string.IsNullOrEmpty(userId.Value))
             {

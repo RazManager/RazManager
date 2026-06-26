@@ -77,7 +77,9 @@ namespace RazManager.Silo.Grains.Entities.Heat
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Restart();
+
                 InitializeIndicators();
+
                 var heatJournalsResponse = await _serviceClient.ListHeatJournalsAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
 
                 if (heatJournalsResponse.HeatJournals.Any())
@@ -434,11 +436,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
                     return RaiseHeatStateTypeAsync(HeatStateTypeId.Closed);
 
                 case HeatCommandTypeId.Reset:
-                    if (_heatJournalState.HeatStateTypeId == HeatStateTypeId.Pending)
-                    {
-                        return Task.CompletedTask;
-                    }
-
                     return RaiseHeatStateTypeAsync(HeatStateTypeId.Pending);
 
                 default:
@@ -449,8 +446,8 @@ namespace RazManager.Silo.Grains.Entities.Heat
 
         public async Task RaiseHeatStateTypeAsync(Razmanager.Protobuf.Public.V1.HeatStateTypeId heatStateTypeId)
         {
-            if (_heatJournalState.HeatStateTypeId == HeatStateTypeId.Pending ||
-                _heatJournalState.HeatStateTypeId == HeatStateTypeId.Opened)
+            if (heatStateTypeId == HeatStateTypeId.Pending ||
+                heatStateTypeId == HeatStateTypeId.Opened)
             {
                 await _serviceClient.DeleteStintsAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
                 await _serviceClient.DeleteHeatJournalsAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
@@ -494,25 +491,6 @@ namespace RazManager.Silo.Grains.Entities.Heat
             }
 
             _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId)).HeatStateTypeUpdatedAsync(this.GetPrimaryKey(), _heat!.HeatStateType);
-
-            if (!_singleHeat)
-            {
-                if (_heatJournalState.HeatStateTypeId == HeatStateTypeId.Pending ||
-                    _heatJournalState.HeatStateTypeId == HeatStateTypeId.Opened)
-                {
-                    foreach (var heatIndicator in _heat!.HeatIndicators)
-                    {
-                        _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_heat!.RaceId))
-                            .RaceLeaderboardHeatEventUserUpdateAsync(new RaceLeaderboardHeatEventUserUpdate
-                            {
-                                HeatId = this.GetPrimaryKey().ToString(),
-                                EventUserId = heatIndicator.EventUserId,
-                                TimerElapsed = new Google.Protobuf.WellKnownTypes.Duration(),
-                                Laps = 0
-                            });
-                    }
-                }
-            }
 
             var deviceConfigurationOutputs = new DeviceConfigurationOutputs();
             switch (_heatJournalState.HeatStateTypeId)
@@ -853,6 +831,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                             .RaceLeaderboardHeatEventUserUpdateAsync(new RaceLeaderboardHeatEventUserUpdate
                             {
                                 HeatId = this.GetPrimaryKey().ToString(),
+                                HeatNumber = _heat.Number,
                                 EventUserId = item.Value.EventUserId,
                                 TimerElapsed = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(ClockElapsedNow),
                                 Finished = true
@@ -1091,6 +1070,7 @@ namespace RazManager.Silo.Grains.Entities.Heat
                                     .RaceLeaderboardHeatEventUserUpdateAsync(new RaceLeaderboardHeatEventUserUpdate
                                     {
                                         HeatId = this.GetPrimaryKey().ToString(),
+                                        HeatNumber = _heat.Number,
                                         EventUserId = heatStateIndicator.EventUserId,
                                         TimerElapsed = timerElapsed,
                                         Laps = heatStateIndicator.Laps

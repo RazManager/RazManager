@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import '../../protobuf/razmanager/protobuf/public/event.v1.pb.dart';
 import '../../protobuf/razmanager/protobuf/public/heat.v1.pb.dart';
-import '../../protobuf/razmanager/protobuf/public/race_feature_type_id.v1.pb.dart';
 import '../../utilities/exception_message.dart';
 import '../public_mixin.dart';
 import 'public_race_child_base.dart';
@@ -95,7 +94,7 @@ class _PublicRaceLeaderboardForegroundState extends State<_PublicRaceLeaderboard
         _PublicRaceLeaderboardColumnKey.lapsPredicted: _PublicRaceLeaderboardColumnValue(text: "Predicted", width: textWidth("  Predicted", fontSize)),
         _PublicRaceLeaderboardColumnKey.gapLapsPredictedInterval: _PublicRaceLeaderboardColumnValue(
           text: "Gap",
-          width: textWidth("000000", fontSize) + 8 + fontSize,
+          width: textWidth("000000", fontSize) + 8 + fontSize + 11 * fontSize,
         ),
         _PublicRaceLeaderboardColumnKey.gapLapsPredictedLeader: _PublicRaceLeaderboardColumnValue(text: "Leader", width: textWidth("  Leader", fontSize)),
         _PublicRaceLeaderboardColumnKey.indicators: _PublicRaceLeaderboardColumnValue(
@@ -164,7 +163,7 @@ class _PublicRaceLeaderboardForegroundState extends State<_PublicRaceLeaderboard
 
                 var hasUserImage = publicRaceChildState.raceModel.raceUsers.where((x) => x.image.hasValue() && x.image.value.isNotEmpty).isNotEmpty;
 
-                final indicatorColumns = 2; //publicRaceChildState.eventModel.raceLeaderBoardIndicatorColumns;
+                final indicatorColumns = 1; //publicRaceChildState.eventModel.raceLeaderBoardIndicatorColumns;
                 final indicatorMaxWidth = constraints.maxWidth / indicatorColumns - ((indicatorColumns - 1) * 16);
                 final indicatorMaxRows = (publicRaceChildState.raceModel.raceUsers.length / indicatorColumns).ceil();
 
@@ -480,7 +479,9 @@ class _PublicRaceLeaderboardForegroundState extends State<_PublicRaceLeaderboard
                                                     children: [
                                                       Expanded(
                                                         child: Text(
-                                                          raceLeaderboardEventUser.gapLapsPredictedInterval.hasValue() ? raceLeaderboardEventUser.gapLapsPredictedInterval.value : '',
+                                                          raceLeaderboardEventUser.gapLapsPredictedInterval.hasValue()
+                                                              ? raceLeaderboardEventUser.gapLapsPredictedInterval.value
+                                                              : '',
                                                           textAlign: TextAlign.end,
                                                           style: TextStyle(fontSize: fontSize),
                                                         ),
@@ -488,20 +489,26 @@ class _PublicRaceLeaderboardForegroundState extends State<_PublicRaceLeaderboard
                                                       SizedBox(width: 8),
                                                       if (raceLeaderboardEventUser.gapLapsPredictedIntervalFraction.hasValue())
                                                         AnimatedRotation(
-                                                          turns: -raceLeaderboardEventUser.gapLapsPredictedIntervalFraction.value,
+                                                          turns: min(max(-raceLeaderboardEventUser.gapLapsPredictedIntervalFraction.value / 10, -0.25), 0.25),
                                                           duration: const Duration(seconds: 1),
                                                           child: Icon(Icons.arrow_forward, size: fontSize),
                                                         )
                                                       else
                                                         SizedBox(width: fontSize),
+                                                      SizedBox(
+                                                        width: 10 * fontSize,
+                                                        child: Text(raceLeaderboardEventUser.gapLapsPredictedIntervalFraction.toString()),
+                                                      ),
                                                     ],
                                                   ),
                                                 );
                                               case _PublicRaceLeaderboardColumnKey.gapLapsPredictedLeader:
                                                 return SizedBox(
                                                   width: x.value.width,
-                                                  child: Text(raceLeaderboardEventUser.gapLapsPredictedLeader.hasValue() ?
-                                                    raceLeaderboardEventUser.gapLapsPredictedLeader.value.toString() : '',
+                                                  child: Text(
+                                                    raceLeaderboardEventUser.gapLapsPredictedLeader.hasValue()
+                                                        ? raceLeaderboardEventUser.gapLapsPredictedLeader.value.toString()
+                                                        : '',
                                                     textAlign: TextAlign.end,
                                                     style: TextStyle(fontSize: fontSize),
                                                   ),
@@ -518,18 +525,19 @@ class _PublicRaceLeaderboardForegroundState extends State<_PublicRaceLeaderboard
                                                         children: [
                                                           SizedBox(width: 8),
                                                           ...publicRaceChildState.raceModel.raceProto!.raceIndicators.map((x) {
-                                                            if (raceEventUserState != null && raceEventUserState.indicatorIdsFinished.contains(x.indicatorId)) {
-                                                              return x.hasColor()
-                                                                  ? CircleAvatar(backgroundColor: Color(x.color.value), radius: fontSize / 2)
-                                                                  : Text(x.indicatorId.toString(), style: TextStyle(fontSize: fontSize));
-                                                            } else {
-                                                              return Opacity(
-                                                                opacity: 0.20,
-                                                                child: x.hasColor()
+                                                            return Stack(
+                                                              children: [
+                                                                x.hasColor()
                                                                     ? CircleAvatar(backgroundColor: Color(x.color.value), radius: fontSize / 2)
                                                                     : Text(x.indicatorId.toString(), style: TextStyle(fontSize: fontSize)),
-                                                              );
-                                                            }
+                                                                if (raceEventUserState != null &&
+                                                                    raceEventUserState.indicatorIdsFinished.contains(x.indicatorId))
+                                                                  Icon(Icons.done, size: fontSize, blendMode: BlendMode.difference)
+                                                                else if (raceEventUserState != null &&
+                                                                    raceEventUserState.indicatorIdCurrent.value == x.indicatorId)
+                                                                  Icon(Icons.toys_outlined, size: fontSize, blendMode: BlendMode.difference),
+                                                              ],
+                                                            );
                                                           }),
                                                         ],
                                                       );
