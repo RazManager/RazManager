@@ -63,12 +63,6 @@ namespace RazManager.App.CrudServices.Entities.Race
         }
 
 
-        public override async Task<RaceSelectResponse> Select(RaceSelectRequest request, ServerCallContext context)
-        {
-            return await _serviceClient.SelectAsync(request);
-        }
-
-
         public override async Task<CreateResponse> Copy(IdRequest request, ServerCallContext context)
         {
             return await _serviceClient.CopyAsync(request);

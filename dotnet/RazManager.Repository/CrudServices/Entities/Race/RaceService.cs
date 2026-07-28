@@ -69,18 +69,6 @@ namespace RazManager.Repository.CrudServices.Entities.Race
         }
 
 
-        public override async Task<RaceSelectResponse> Select(RaceSelectRequest request, ServerCallContext context)
-        {
-            var response = _entityCrudStore.SelectAsync(new Guid(request.EventId));
-            var result = new RaceSelectResponse();
-            await foreach (var item in response)
-            {
-                result.Result.Add(item);
-            }
-            return result;
-        }
-
-
         public override Task<CreateResponse> Copy(IdRequest request, ServerCallContext context)
         {
             return _entityCrudStore.CopyAsync(new Guid(request.Id));

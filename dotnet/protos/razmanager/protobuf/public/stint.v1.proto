@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/detail_state_type_id.v1.proto";
+import "razmanager/protobuf/public/indicator_flag_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message Stint {
+  string id = 1;
+  string heat_with_stint_id = 2;
+  uint32 number = 4;
+  repeated StintIndicator stint_indicators = 6;
+  DetailStateType stint_state_type = 7;
+}
+
+message StintIndicator {
+  string id = 1;
+  uint32 indicator_id = 2;
+  google.protobuf.UInt32Value color = 3;
+  string event_user_id = 4;
+  google.protobuf.BytesValue car_image = 6;
+}
+
+
+message StintAnalyses {
+  repeated StintAnalysis items = 1;
+  google.protobuf.DoubleValue progress = 2;
+}
+
+message StintAnalysis {
+  google.protobuf.Duration timer_elapsed = 1;
+  google.protobuf.UInt32Value indicator_id = 2;
+  oneof value {
+    DetailStateTypeId stint_state_type_id = 3;
+    StintAnalysisLap lap = 4;
+    StintAnalysisGap gap = 5;
+  }
+}
+
+message StintAnalysisLap {
+  uint32 position = 1;
+  uint32 lap = 2;
+  google.protobuf.DoubleValue time = 3;
+  uint32 pitlanes = 4;
+  uint32 deslots = 5;
+  google.protobuf.StringValue team_event_user_id = 6;
+}
+
+message StintAnalysisGap {
+  uint32 indicator_id = 1;
+  double value = 2;
+  string display_value = 3;
+  google.protobuf.DoubleValue delta_value = 4;
+  google.protobuf.DoubleValue delta_fraction = 5;
+  repeated IndicatorFlag flags = 6;
+}

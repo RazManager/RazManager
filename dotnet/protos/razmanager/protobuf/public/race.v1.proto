@@ -1,39 +1,13 @@
 syntax = "proto3";
 
-import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
 import "razmanager/protobuf/public/track_configuration.v1.proto";
 import "razmanager/protobuf/public/race_feature_type_id.v1.proto";
-import "razmanager/protobuf/public/session_type_id.v1.proto";
-import "razmanager/protobuf/public/heat.v1.proto";
+import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
+import "razmanager/protobuf/public/indicator_flag_id.v1.proto";
+import "razmanager/protobuf/public/race_session.v1.proto";
 
 package razmanager.protobuf.public.v1;
-
-
-enum RaceCommandTypeId {
-  RACE_COMMAND_TYPE_ID_START = 0;
-  RACE_COMMAND_TYPE_ID_PAUSE = 1;
-  RACE_COMMAND_TYPE_ID_END = 2;
-  RACE_COMMAND_TYPE_ID_RESET = 3;
-}
-
-message RaceCommandPermissions {
-  repeated RaceCommandTypeId items = 1;
-}
-
-
-enum RaceStateTypeId {
-  RACE_STATE_TYPE_ID_PENDING = 0;
-  RACE_STATE_TYPE_ID_STARTED = 1;
-  RACE_STATE_TYPE_ID_PAUSED = 2;
-  RACE_STATE_TYPE_ID_ENDED = 3;
-}
-
-
-message RaceStateType {
-  RaceStateTypeId id = 1;
-  string name = 2;
-}
 
 
 message Race {
@@ -43,82 +17,16 @@ message Race {
   string event_id = 4;
   TrackConfiguration track_configuration = 7;
   google.protobuf.StringValue points_scheme_id = 8;
-  //bool practice_session = 7;
-  //bool qualifying_session = 8;
-  //bool race_session = 9;
-  //race_format_type.RaceFormatTypeId race_format_type_id = 13;
-  HeatEndTypeId race_heat_end_type_id = 14;
-  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
-  google.protobuf.Duration race_heat_end_duration_duration = 16;
 
-  repeated RaceIndicator race_indicators = 19;
-  repeated string race_event_users = 20;
-
-  RaceStateType race_state_type = 21;
-  repeated RaceFeatureTypeId race_features = 22;
-  repeated Heat heats = 23;
+  repeated RaceIndicator race_indicators = 10;
+  repeated string race_event_users = 11;
+  repeated RaceFeatureTypeId race_features = 12;
+  SummaryStateType race_state_type = 13;
+  repeated RaceSession race_sessions = 14;
 }
+
 
 message RaceIndicator {
   uint32 indicator_id = 1;
   google.protobuf.UInt32Value color = 2;
-}
-
-message RaceState {
-  SessionTypeId session_type_id = 1;
-  RaceStateType race_state_type = 2;
-  repeated RaceEventUserState race_event_user_states = 3;
-  google.protobuf.StringValue heat_id = 4;
-  google.protobuf.UInt32Value heat_number = 5;
-  HeatState heat_state = 6;
-}
-
-message RaceEventUserState {
-  string event_user_id = 1;
-  google.protobuf.UInt32Value indicator_id_current = 2;
-  repeated uint32 indicator_ids_finished = 3;
-}
-
-message RaceLeaderboard {
-  SessionTypeId session_type_id = 1;
-  repeated RaceLeaderboardEventUser event_users = 2;
-}
-
-
-message RaceLeaderboardEventUser {
-  string event_user_id = 1;
-  uint32 position = 2;
-  //uint32 position_estimate = 3;
-  google.protobuf.StringValue laps_completed = 4;
-  google.protobuf.StringValue laps_predicted = 5;
-  //google.protobuf.UInt32Value points = 6;
-  //google.protobuf.UInt32Value points_predicted = 7;
-  google.protobuf.StringValue gap_laps_predicted_leader = 8;
-  google.protobuf.StringValue gap_laps_predicted_interval = 9;
-  google.protobuf.DoubleValue gap_laps_predicted_interval_fraction = 10;
-  //google.protobuf.StringValue gap_leader = 8;
-  //google.protobuf.StringValue gap_interval = 9;
-  //google.protobuf.DoubleValue gap_interval_fraction = 10;
-
-  repeated HeatIndicatorFlag flags = 11;
-
-  //uint32 pit_lanes = 10;
-  //uint32 car_off_tracks = 11;
-  google.protobuf.StringValue team_event_user_id = 12;
-}
-
-
-message RaceLeaderboardHeatEventUserUpdate {
-  string heat_id = 1;
-  uint32 heat_number = 2;
-  string event_user_id = 3;
-  google.protobuf.Duration timer_elapsed = 4;
-  oneof value {
-	google.protobuf.DoubleValue laps = 5;
-	bool finished = 9;
-	//HeatIndicatorFlag flags = 10;
-
-	//uint32 pit_lanes = 10;
-	//uint32 car_off_tracks = 11;
-  }
 }

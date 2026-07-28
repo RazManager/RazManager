@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/summary_command_type_id.v1.proto";
+import "razmanager/protobuf/public/race_session.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service RaceSessionService {
+  rpc Subscribe (google.protobuf.StringValue) returns (stream RaceSession);
+  rpc RaceSessionWithoutStintStateSubscribe (google.protobuf.StringValue) returns (stream RaceSessionWithoutStintState);
+  rpc RaceSessionWithStintStateSubscribe (google.protobuf.StringValue) returns (stream RaceSessionWithStintState);
+  rpc RaceSessionLeaderboardSubscribe (google.protobuf.StringValue) returns (stream RaceSessionLeaderboard);
+  rpc Command (RaceSessionCommandRequest) returns (google.protobuf.Empty);
+  rpc CommandPermissions (google.protobuf.StringValue) returns (SummaryCommandPermissions);
+}
+
+
+message RaceSessionCommandRequest {
+  string id = 1;
+  SummaryCommandTypeId race_session_command_type_id = 2;
+}

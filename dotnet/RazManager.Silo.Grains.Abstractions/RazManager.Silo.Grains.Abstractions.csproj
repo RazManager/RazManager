@@ -7,11 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.35.1" />
-    <PackageReference Include="Grpc.Tools" Version="2.81.1">
+    <PackageReference Include="Grpc.Tools" Version="2.82.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.2.0" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,8 +19,20 @@
 		  <Link>Protos/internal/silo/user_services/event.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/silo/system_services/event_user_update.proto" GrpcServices="None">
+		  <Link>Protos/internal/silo/system_services/event_user_update.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/internal/silo/system_services/track_configuration.proto" GrpcServices="None">
 		  <Link>Protos/internal/silo/system_services/track_configuration.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/detail_command_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/detail_command_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/detail_state_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/detail_state_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/device.v1.proto" GrpcServices="None">
@@ -51,6 +63,10 @@
 		  <Link>Protos/public/device_configuration_output_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/device_configuration_input_output_id_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/driver_identification_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
@@ -67,12 +83,24 @@
 		  <Link>Protos/public/event_user_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/heat.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/heat.v1.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat_without_stint.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/device_configuration_input_output_id_type_id.v1.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_with_stint.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat_with_stint.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_stint_end_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat_stint_end_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/indicator_time_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/indicator_time_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/indicator_flag_id.v1.proto" GrpcServices="Server">
+		  <Link>Protos/public/indicator_flag_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/race.v1.proto" GrpcServices="None">
@@ -83,8 +111,24 @@
 		  <Link>Protos/public/race_feature_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race_session.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race_session.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/stint.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/stint.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/session_type_id.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/session_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/summary_state_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/summary_state_type_id.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/summary_command_type_id.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/summary_command_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/track.v1.proto" GrpcServices="None">

@@ -8,3 +8,9 @@ enum SessionTypeId {
   SESSION_TYPE_ID_QUALIFYING = 1;
   SESSION_TYPE_ID_PRACTICE = 2;
 }
+
+
+message SessionType {
+  SessionTypeId id = 1;
+  string name = 2;
+}

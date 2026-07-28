@@ -1,12 +1,10 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Razmanager.Protobuf.Internal.Repository.CrudServices.Common;
 using Razmanager.Protobuf.Internal.Repository.CrudServices.Race;
 using Razmanager.Protobuf.Internal.Repository.CrudServices.RaceFormatType;
-using Razmanager.Protobuf.Public.V1;
 using RazManager.Repository.CrudServices.Utilities;
 using RazManager.Repository.Stores.Context;
-using RazManager.Repository.Stores.Entities.Heat;
+using RazManager.Repository.Stores.Entities.HeatWithoutStint;
 using RazManager.Repository.Stores.Entities.HeatIndicator;
 using RazManager.Repository.Stores.Entities.HeatIndicatorStint;
 using RazManager.Repository.Stores.Entities.Race;
@@ -44,7 +42,8 @@ namespace RazManager.Repository.CrudServices.Entities.Race
                 .Include(x => x.RaceIndicators)
                 .Include(x => x.RaceEventUsers)
                 .Include(x => x.RaceIndicatorEventUsers)
-                .Include(x => x.Heats);
+                .Include(x => x.HeatWithoutStints)
+                .Include(x => x.HeatWithStints);
         }
 
 
@@ -92,13 +91,13 @@ namespace RazManager.Repository.CrudServices.Entities.Race
         {
             var entity = base.CreateMap(proto);
 
-            entity.RaceStateTypeId = Razmanager.Protobuf.Public.V1.RaceStateTypeId.Pending;
+            entity.RaceStateTypeId = Razmanager.Protobuf.Public.V1.SummaryStateTypeId.Pending;
 
             CreateUpdateMapCarTags(proto.CarTagIds, entity);
             CreateUpdateMapRaceIndicators(proto.RaceIndicators, entity);
             CreateUpdateMapRaceEventUsers(proto.RaceEventUsers, entity);
             CreateUpdateMapRaceIndicatorEventUsers(proto.RaceIndicatorEventUsers, entity);
-            CreateUpdateMapHeats(proto.RaceFormatTypeId, entity);
+            CreateUpdateMapHeats(proto.RaceFormatTypeId, proto.RaceSessionGroups, entity);
             return entity;
         }
 
@@ -110,7 +109,7 @@ namespace RazManager.Repository.CrudServices.Entities.Race
             CreateUpdateMapRaceIndicators(proto.RaceIndicators, entity);
             CreateUpdateMapRaceEventUsers(proto.RaceEventUsers, entity);
             CreateUpdateMapRaceIndicatorEventUsers(proto.RaceIndicatorEventUsers, entity);
-            CreateUpdateMapHeats(proto.RaceFormatTypeId, entity);
+            CreateUpdateMapHeats(proto.RaceFormatTypeId, proto.RaceSessionGroups, entity);
         }
 
 
@@ -177,105 +176,149 @@ namespace RazManager.Repository.CrudServices.Entities.Race
         }
 
 
-        private void CreateUpdateMapHeats(Razmanager.Protobuf.Internal.Repository.CrudServices.RaceFormatType.RaceFormatTypeId raceFormatTypeId, RaceEntity entity)
+        private void CreateUpdateMapRaceSessionGroups(IEnumerable<RaceSessionGroupCreateUpdate> raceSessionGroupProtos, RaceEntity entity)
         {
-            entity.Heats.Clear();
-
-            HeatEntity? heat;
-
-            if (entity.RaceSession)
-            {
-                switch (raceFormatTypeId)
+            entity.RaceSessionGroups.RemoveAll(x => !raceSessionGroupProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+            foreach (var raceSessionGroupProto in raceSessionGroupProtos)
+            {   
+                var raceSessionGroupEntity = entity.RaceSessionGroups.SingleOrDefault(x => x.Id == new Guid(raceSessionGroupProto.Id));
+                if (raceSessionGroupEntity is null)
                 {
-                    case RaceFormatTypeId.AllDriversAllLanesNext:
-                        for (int heatNumber = 1; heatNumber <= Math.Max(entity.RaceEventUsers.Count, entity.RaceIndicators.Count); heatNumber++)
+                    entity.RaceSessionGroups.Add(Mapper.Map<Stores.Entities.RaceSessionGroup.RaceSessionGroupEntity>(raceSessionGroupProto));
+                }
+                else
+                {
+                    Mapper.Map(raceSessionGroupProto, raceSessionGroupEntity);
+                }
+            }
+        }
+
+
+        private void CreateUpdateMapHeats(
+            Razmanager.Protobuf.Internal.Repository.CrudServices.RaceFormatType.RaceFormatTypeId raceFormatTypeId,
+            IEnumerable<RaceSessionGroupCreateUpdate> raceSessionGroupProtos,
+            RaceEntity entity
+        )
+        {
+            entity.HeatWithoutStints.RemoveAll(x => !raceSessionGroupProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+            entity.HeatWithStints.RemoveAll(x => !raceSessionGroupProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+
+            foreach (var raceSessionGroupProtoSession in raceSessionGroupProtos.GroupBy(x => x.SessionTypeId))
+            {
+                uint heatNumber = 1;
+                foreach (var raceSessionGroupProto in raceSessionGroupProtoSession)
+                {
+                    var raceSessionGroupEntity = entity.RaceSessionGroups.SingleOrDefault(x => x.Id == new Guid(raceSessionGroupProto.Id));
+                    if (raceSessionGroupEntity is null)
+                    {
+                        raceSessionGroupEntity = Mapper.Map<Stores.Entities.RaceSessionGroup.RaceSessionGroupEntity>(raceSessionGroupProto);
+                        entity.RaceSessionGroups.Add(raceSessionGroupEntity);
+                    }
+                    else
+                    {
+                        Mapper.Map(raceSessionGroupProto, raceSessionGroupEntity);
+                    }
+
+                    raceSessionGroupEntity.Heats.Clear();
+
+                    HeatEntity? heat;
+
+                    if (entity.RaceSession)
+                    {
+                        switch (raceFormatTypeId)
                         {
-                            heat = new HeatEntity
-                            {
-                                Number = heatNumber,
-                                SessionTypeId = Razmanager.Protobuf.Public.V1.SessionTypeId.Race,
-                            };
+                            case RaceFormatTypeId.AllDriversAllLanesNext:
+                                //for (uint heatNumber = 1; heatNumber <= Math.Max(entity.RaceEventUsers.Count, entity.RaceIndicators.Count); heatNumber++)
+                                //{
+                                //    heat = new HeatEntity
+                                //    {
+                                //        Number = heatNumber,
+                                //        SessionTypeId = Razmanager.Protobuf.Public.V1.SessionTypeId.Race,
+                                //    };
 
-                            entity.Heats.Add(heat);
-                        }
+                                //    raceSessionGroupEntity.Heats.Add(heat);
+                                //}
 
-                        foreach (var raceEventUser in entity.RaceEventUsers.Select((x, index) => new { Item = x, Index = index }))
-                        {
-                            foreach (var raceIndicator in entity.RaceIndicators.Select((x, index) => new { Item = x, Index = index }))
-                            {
-                                var heatNumber =
-                                    (raceIndicator.Index + raceEventUser.Index) % entity.RaceIndicators.Count +
-                                    1 +
-                                    Convert.ToInt32(raceEventUser.Index / entity.RaceIndicators.Count) * entity.RaceIndicators.Count;
-                                //var heatNumber = (raceEventUser.Index / entity.RaceIndicators.Count) + (raceIndicator.Index - raceEventUser.Index + entity.RaceIndicators.Count) % entity.RaceIndicators.Count + 1;
+                                //foreach (var raceEventUser in entity.RaceEventUsers.Select((x, index) => new { Item = x, Index = index }))
+                                //{
+                                //    foreach (var raceIndicator in entity.RaceIndicators.Select((x, index) => new { Item = x, Index = index }))
+                                //    {
+                                //        var heatNumber =
+                                //            (raceIndicator.Index + raceEventUser.Index) % entity.RaceIndicators.Count +
+                                //            1 +
+                                //            Convert.ToInt32(raceEventUser.Index / entity.RaceIndicators.Count) * entity.RaceIndicators.Count;
+                                //        //var heatNumber = (raceEventUser.Index / entity.RaceIndicators.Count) + (raceIndicator.Index - raceEventUser.Index + entity.RaceIndicators.Count) % entity.RaceIndicators.Count + 1;
 
-                                Console.WriteLine($"raceEventUser.Index={raceEventUser.Index}  raceIndicator.Index={raceIndicator.Index}  heatNumber={heatNumber}");
+                                //        Console.WriteLine($"raceEventUser.Index={raceEventUser.Index}  raceIndicator.Index={raceIndicator.Index}  heatNumber={heatNumber}");
 
-                                heat = entity.Heats.SingleOrDefault(x => x.Number == heatNumber);
-                                heat!.HeatIndicators.Add(new HeatIndicatorEntity
+                                //        heat = entity.Heats.SingleOrDefault(x => x.Number == heatNumber);
+                                //        heat!.HeatIndicators.Add(new HeatIndicatorEntity
+                                //        {
+                                //            IndicatorId = raceIndicator.Item.IndicatorId,
+                                //            EventUserId = raceEventUser.Item.EventUserId,
+                                //            CarId = entity.HeatCarTypeId == Razmanager.Protobuf.Internal.Repository.CrudServices.HeatCarType.HeatCarTypeId.Indicator ?
+                                //                        raceIndicator.Item.CarId :
+                                //                        entity.HeatCarTypeId == Razmanager.Protobuf.Internal.Repository.CrudServices.HeatCarType.HeatCarTypeId.Driver ?
+                                //                            raceEventUser.Item.CarId :
+                                //                            null
+                                //        });
+                                //    }
+                                //}
+
+                                break;
+
+                            case RaceFormatTypeId.AllDriversAllLanesSpread:
+                                break;
+
+                            case RaceFormatTypeId.AllDriversAllLanesAllDrivers:
+                                break;
+
+                            case RaceFormatTypeId.AllDriversUniqueController:
+                                heat = new HeatEntity
                                 {
-                                    IndicatorId = raceIndicator.Item.IndicatorId,
-                                    EventUserId = raceEventUser.Item.EventUserId,
-                                    CarId = entity.HeatCarTypeId == Razmanager.Protobuf.Internal.Repository.CrudServices.HeatCarType.HeatCarTypeId.Indicator ?
-                                                raceIndicator.Item.CarId :
-                                                entity.HeatCarTypeId == Razmanager.Protobuf.Internal.Repository.CrudServices.HeatCarType.HeatCarTypeId.Driver ?
-                                                    raceEventUser.Item.CarId :
-                                                    null
-                                });
-                            }
+                                    Number = heatNumber,
+                                };
+                                heatNumber++;
+
+                                foreach (var raceIndicatorEventUser in entity.RaceIndicatorEventUsers)
+                                {
+                                    var heatIndicatorStint = new HeatIndicatorStintEntity { Lap = 1 };
+
+                                    //var heatIndicatorEventUserEventUsers = RepositoryDbContext.EventUsers
+                                    //    .Include(x => x.EventUsers)
+                                    //    .SingleOrDefault(x => x.Id == raceIndicatorEventUser.EventUserId);
+
+                                    //if (heatIndicatorEventUserEventUsers is not null && heatIndicatorEventUserEventUsers.EventUsers.Count >= 2)
+                                    //{
+                                    //    var teamEventUser = heatIndicatorEventUserEventUsers.EventUsers[new Random().Next(heatIndicatorEventUserEventUsers.EventUsers.Count)];
+                                    //    if (teamEventUser is not null)
+                                    //    {
+                                    //        heatIndicatorStint.EventUserId = teamEventUser.Id;
+                                    //    }
+                                    //}
+
+                                    heat.HeatIndicators.Add(new HeatIndicatorEntity
+                                    {
+                                        IndicatorId = raceIndicatorEventUser.IndicatorId,
+                                        EventUserId = raceIndicatorEventUser.EventUserId,
+                                        CarClassColor = raceIndicatorEventUser.CarClassColor,
+                                        CarId = raceIndicatorEventUser.CarId,
+                                        HeatIndicatorStints = { heatIndicatorStint }
+                                    });
+                                }
+
+                                raceSessionGroupEntity.Heats.Add(heat);
+
+                                break;
+
+                            case RaceFormatTypeId.StepUp:
+                                break;
+
+                            default:
+                                break;
                         }
 
-                        break;
-
-                    case RaceFormatTypeId.AllDriversAllLanesSpread:
-                        break;
-
-                    case RaceFormatTypeId.AllDriversAllLanesAllDrivers:
-                        break;
-
-                    case RaceFormatTypeId.AllDriversUniqueController:
-                        heat = new HeatEntity
-                        {
-                            Number = 1,
-                            SessionTypeId = Razmanager.Protobuf.Public.V1.SessionTypeId.Race
-                        };
-
-                        foreach (var raceIndicatorEventUser in entity.RaceIndicatorEventUsers)
-                        {
-                            var heatIndicatorStint = new HeatIndicatorStintEntity { Lap = 1 };
-
-                            //var heatIndicatorEventUserEventUsers = RepositoryDbContext.EventUsers
-                            //    .Include(x => x.EventUsers)
-                            //    .SingleOrDefault(x => x.Id == raceIndicatorEventUser.EventUserId);
-
-                            //if (heatIndicatorEventUserEventUsers is not null && heatIndicatorEventUserEventUsers.EventUsers.Count >= 2)
-                            //{
-                            //    var teamEventUser = heatIndicatorEventUserEventUsers.EventUsers[new Random().Next(heatIndicatorEventUserEventUsers.EventUsers.Count)];
-                            //    if (teamEventUser is not null)
-                            //    {
-                            //        heatIndicatorStint.EventUserId = teamEventUser.Id;
-                            //    }
-                            //}
-
-                            heat.HeatIndicators.Add(new HeatIndicatorEntity
-                            {
-                                IndicatorId = raceIndicatorEventUser.IndicatorId,
-                                EventUserId = raceIndicatorEventUser.EventUserId,
-                                CarClassColor = raceIndicatorEventUser.CarClassColor,
-                                CarId = raceIndicatorEventUser.CarId,
-                                HeatIndicatorStints = { heatIndicatorStint }
-                            });
-                        }
-
-                        entity.Heats.Add(heat);
-
-                        break;
-
-                    case RaceFormatTypeId.StepUp:
-                        break;
-
-                    default:
-                        break;
+                    }
                 }
             }
         }
@@ -305,21 +348,6 @@ namespace RazManager.Repository.CrudServices.Entities.Race
             await foreach (var entity in response)
             {
                 yield return Mapper.Map<RaceList>(entity);
-            }
-        }
-
-
-        public async IAsyncEnumerable<RaceSelect> SelectAsync(Guid eventId)
-        {
-            var response = RepositoryDbContext.Races
-                .Where(x => x.Event.TenantId == HttpContextOptions.TenantId && x.EventId == eventId)
-                .OrderBy(x => x.Number)
-                .AsAsyncEnumerable()
-                .ConfigureAwait(false);
-
-            await foreach (var entity in response)
-            {
-                yield return Mapper.Map<RaceSelect>(entity);
             }
         }
 

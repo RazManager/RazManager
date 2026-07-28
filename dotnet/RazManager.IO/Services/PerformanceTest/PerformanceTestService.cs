@@ -59,13 +59,13 @@ namespace RazManager.IO.Services.PerformanceTest
                     HttpHandler = httpClientHandler,
                 };
 
-                var appTask = Task.Run(async () =>
+                var appTask = Task.Run(async () =>  
                 {
                     using (var channel = GrpcChannel.ForAddress(_connectionOptions.AppClientAddress.ToString(), grpcChannelOptions))
                     {
-                        var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(channel);
+                        var heatWithoutSServiceClient = new Razmanager.Protobuf.Public.V1.HeatWithoutStintService.HeatWithoutStintServiceClient(channel);
 
-                        using (var call = heatServiceClient.HeatLeaderboardSubscribe(new StringValue{ Value = "019d2979-dcbf-7460-bb0e-9eae1e1d5b6e" }, null, null, stoppingToken))
+                        using (var call = heatWithoutSServiceClient.HeatWithoutStintLeaderboardSubscribe(new StringValue{ Value = "019d2979-dcbf-7460-bb0e-9eae1e1d5b6e" }, null, null, stoppingToken))
                         {
                             await foreach (var heatLeaderboard in call.ResponseStream.ReadAllAsync(stoppingToken))
                             {

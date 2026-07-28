@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Razmanager.Protobuf.Internal.Repository.CrudServices.Race;
+using Razmanager.Protobuf.Public.V1;
+using RazManager.Repository.Stores.Entities.HeatWithoutStint;
+using RazManager.Repository.Stores.Entities.HeatWithStint;
 using RazManager.Repository.Stores.Entities.Race;
 using RazManager.Utilities.Protobuf;
 using System;
@@ -31,18 +34,17 @@ namespace RazManager.Repository.CrudServices.Entities.Race
                 .ForMember(dest => dest.RaceEventUsers, opt => opt.Ignore())
                 .ForMember(dest => dest.RaceIndicatorEventUsers, opt => opt.Ignore());
             CreateMap<RaceEntity, RaceList>()
-                .ForMember(dest => dest.RaceStateType, opt => opt.MapFrom(src => new RaceStateType
+                .ForMember(dest => dest.RaceStateType, opt => opt.MapFrom(src => new SummaryStateType
                 {
                     Id = src.RaceStateTypeId,
-                    Name = new ResourceManager(typeof(RazManager.Resources.RaceStateType)).GetString(src.RaceStateTypeId.ToString())
+                    Name = new ResourceManager(typeof(RazManager.Resources.SummaryStateType)).GetString(src.RaceStateTypeId.ToString())
                 }));
 
-            CreateMap<RaceEntity, RaceSelect>();
             CreateMap<RaceRead, RaceCreate>()
                 .ForMember(dest => dest.Name, opt => opt.Ignore());
-            CreateMap<RaceIndicatorReadCreateUpdate, RaceIndicatorReadCreateUpdate>();
-            CreateMap<RaceEventUserReadCreateUpdate, RaceEventUserReadCreateUpdate>();
-            CreateMap<RaceIndicatorEventUserReadCreateUpdate, RaceIndicatorEventUserReadCreateUpdate>();
+
+            CreateMap<HeatWithoutStintEntity, RaceSessionGroupRead>();
+            CreateMap<HeatWithStintEntity, RaceSessionGroupRead>();
         }
     }
 }

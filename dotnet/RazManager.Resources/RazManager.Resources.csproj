@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="HeatStateType.Designer.cs">
+    <Compile Update="DetailStateType.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>HeatStateType.resx</DependentUpon>
+      <DependentUpon>DetailStateType.resx</DependentUpon>
     </Compile>
-    <Compile Update="RaceStateType.Designer.cs">
+    <Compile Update="SummaryStateType.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>RaceStateType.resx</DependentUpon>
+      <DependentUpon>SummaryStateType.resx</DependentUpon>
     </Compile>
     <Compile Update="SessionType.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -24,13 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="HeatStateType.resx">
+    <EmbeddedResource Update="DetailStateType.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>HeatStateType.Designer.cs</LastGenOutput>
+      <LastGenOutput>DetailStateType.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="RaceStateType.resx">
+    <EmbeddedResource Update="SummaryStateType.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>RaceStateType.Designer.cs</LastGenOutput>
+      <LastGenOutput>SummaryStateType.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="SessionType.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

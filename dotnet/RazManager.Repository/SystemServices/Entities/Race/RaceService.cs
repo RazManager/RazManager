@@ -31,7 +31,7 @@ namespace RazManager.Repository.SystemServices.Entities.Race
                 .Include(x => x.RaceEventUsers)
                 .Include(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationIndicators)
                 .Include(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationDeviceConfigurations).ThenInclude(x => x.DeviceConfiguration).ThenInclude(x => x.DeviceConfigurationFeatures)
-                .Include(x => x.Heats.OrderBy(x => x.Number)).ThenInclude(x => x.HeatIndicators.OrderBy(x => x.IndicatorId))
+                .Include(x => x.RaceSessions.OrderBy(x => x.SessionTypeId))
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(x => x.Id == new System.Guid(request.Value));
             if (entity is null)

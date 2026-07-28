@@ -9,13 +9,13 @@
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.35.1" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.80.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.81.1">
+    <PackageReference Include="Grpc.Tools" Version="2.82.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="10.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Reminders" Version="10.2.0" />
-    <PackageReference Include="Microsoft.Orleans.Streaming" Version="10.2.0" />
+    <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="10.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Reminders" Version="10.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="10.2.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,8 +40,16 @@
 		  <Link>Protos/internal/repository/system_services/event.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat.proto" GrpcServices="Client">
-		  <Link>Protos/internal/repository/system_services/heat.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_without_stint.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/heat_without_stint.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_with_stint.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/heat_with_stint.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_stint_journal.proto" GrpcServices="None">
+		  <Link>Protos/internal/repository/system_services/heat_stint_journal.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_indicator_stint.proto" GrpcServices="Client">
@@ -50,6 +58,14 @@
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/race.proto" GrpcServices="Client">
 		  <Link>Protos/internal/repository/system_services/race.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/race_session.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/race_session.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/stint.proto" GrpcServices="Client">
+		  <Link>Protos/internal/repository/system_services/stint.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track.proto" GrpcServices="Client">

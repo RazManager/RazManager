@@ -13,23 +13,20 @@ namespace RazManager.Repository.PublicServices.Entities.Race
     public class RaceService : Razmanager.Protobuf.Public.V1.RaceService.RaceServiceBase
     {
         private readonly Stores.Context.RepositoryDbContext _repositoryDbContext;
-        private readonly AutoMapper.IMapper _mapper;
         private readonly IHttpContextOptions _httpContextOptions;
 
 
         public RaceService(Stores.Context.RepositoryDbContext dbContext,
-                            AutoMapper.IMapper mapper,
                             IHttpContextOptions httpContextOptions)
         {
             _repositoryDbContext = dbContext;
-            _mapper = mapper;
             _httpContextOptions = httpContextOptions;
         }
 
 
-        public override async Task<RaceCommandPermissions> CommandPermissions(StringValue request, ServerCallContext context)
+        public override async Task<SummaryCommandPermissions> CommandPermissions(StringValue request, ServerCallContext context)
         {
-            var result = new RaceCommandPermissions();
+            var result = new SummaryCommandPermissions();
 
             var entity = await _repositoryDbContext.Races
                 .SingleOrDefaultAsync(x => (x.Id == new Guid(request.Value) &&
@@ -37,7 +34,7 @@ namespace RazManager.Repository.PublicServices.Entities.Race
                 .ConfigureAwait(false);
             if (entity != null)
             {
-                result.Items.AddRange(System.Enum.GetValues<RaceCommandTypeId>());
+                result.Items.AddRange(System.Enum.GetValues<SummaryCommandTypeId>());
             }
 
             return result;

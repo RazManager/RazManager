@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/stint.v1.proto";
+import "razmanager/protobuf/internal/repository/system_services/heat_stint_journal.proto";
+
+package razmanager.protobuf.internal.repository.system_services.stint;
+
+
+service StintService {
+  rpc Read (google.protobuf.StringValue) returns (public.v1.Stint);
+  rpc ListStintJournals (google.protobuf.StringValue) returns (heat_stint_journal.HeatStintJournalListResponse);
+  rpc CreateStintJournal (heat_stint_journal.HeatStintJournalCreateRequest) returns (google.protobuf.Empty);
+  rpc DeleteStintJournals (google.protobuf.StringValue) returns (google.protobuf.Empty);
+}

@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
-import "razmanager/protobuf/public/device.v1.proto";
 
 package razmanager.protobuf.public.v1;
 

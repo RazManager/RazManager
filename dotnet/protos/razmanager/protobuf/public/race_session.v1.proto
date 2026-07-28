@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/session_type_id.v1.proto";
+import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
+import "razmanager/protobuf/public/heat_stint_end_type_id.v1.proto";
+import "razmanager/protobuf/public/indicator_flag_id.v1.proto";
+import "razmanager/protobuf/public/heat_without_stint.v1.proto";
+import "razmanager/protobuf/public/heat_with_stint.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message RaceSession {
+  string id = 1;
+  SessionType session_type = 2;
+  string race_id = 4;
+  HeatStintEndTypeId heat_stint_end_type_id = 5;
+  google.protobuf.UInt32Value heat_stint_end_lap_laps = 6;
+  google.protobuf.Duration heat_stint_end_duration_duration = 7;
+
+  SummaryStateType race_session_state_type = 10;
+  oneof heats {
+	HeatWithoutStints heat_without_stints = 11;
+	HeatWithStint heat_with_stints = 12;
+  }
+}
+
+message HeatWithoutStints {
+  repeated HeatWithoutStint heat_without_stints = 1;
+}
+
+message HeatWithStints {
+  repeated HeatWithStint heat_with_stints = 1;
+}
+
+
+message RaceSessionWithoutStintState {
+  SummaryStateType race_session_state_type = 1;
+  HeatWithoutStint current_heat_without_stint = 3;
+}
+
+message RaceSessionWithStintState {
+  SummaryStateType race_session_state_type = 1;
+  repeated RaceSessionWithStintEventUserState race_session_with_stint_event_user_states = 2;
+  HeatWithStint current_heat_with_stint = 3;
+}
+
+message RaceSessionWithStintEventUserState {
+  string event_user_id = 1;
+  google.protobuf.UInt32Value indicator_id_current = 2;
+  repeated uint32 indicator_ids_finished = 3;
+}
+
+message RaceSessionLeaderboard {
+  repeated RaceSessionLeaderboardEventUser event_users = 2;
+}
+
+
+message RaceSessionLeaderboardEventUser {
+  string event_user_id = 1;
+  uint32 position = 2;
+  //uint32 position_estimate = 3;
+  google.protobuf.StringValue laps_completed = 4;
+  google.protobuf.StringValue laps_predicted = 5;
+  //google.protobuf.UInt32Value points = 6;
+  //google.protobuf.UInt32Value points_predicted = 7;
+  google.protobuf.StringValue gap_laps_predicted_leader = 8;
+  google.protobuf.StringValue gap_laps_predicted_interval = 9;
+  google.protobuf.DoubleValue gap_laps_predicted_interval_fraction = 10;
+
+  repeated IndicatorFlag flags = 11;
+
+  //uint32 pit_lanes = 10;
+  //uint32 car_off_tracks = 11;
+  google.protobuf.StringValue team_event_user_id = 12;
+}

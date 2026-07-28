@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+enum SummaryCommandTypeId {
+  SUMMARY_COMMAND_TYPE_ID_START = 0;
+  SUMMARY_COMMAND_TYPE_ID_END = 2;
+  SUMMARY_COMMAND_TYPE_ID_RESET = 3;
+}
+
+message SummaryCommandPermissions {
+  repeated SummaryCommandTypeId items = 1;
+}

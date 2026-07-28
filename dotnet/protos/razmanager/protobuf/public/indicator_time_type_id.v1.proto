@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+enum IndicatorTimeTypeId {
+  INDICATOR_TIME_TYPE_ID_LAP = 0;
+  INDICATOR_TIME_TYPE_ID_SECTOR1 = 1;
+  INDICATOR_TIME_TYPE_ID_SECTOR2 = 2;
+  INDICATOR_TIME_TYPE_ID_SECTOR3 = 3;
+  INDICATOR_TIME_TYPE_ID_SPEED_TRAP = 4;
+}
+
+enum IndicatorFastestTimeTypeId {
+  INDICATOR_FASTEST_TIME_TYPE_ID_NONE = 0;
+  INDICATOR_FASTEST_TIME_TYPE_ID_INDICATOR = 1;
+  INDICATOR_FASTEST_TIME_TYPE_ID_ALL_INDICATORS = 2;
+}
+
+message IndicatorTimeTypeTime {
+  public.v1.IndicatorTimeTypeId time_type_id = 1;
+  google.protobuf.DoubleValue time = 2;
+  public.v1.IndicatorFastestTimeTypeId fastest_time_type_id = 3;
+  google.protobuf.DoubleValue fastest_time = 4;
+}
+

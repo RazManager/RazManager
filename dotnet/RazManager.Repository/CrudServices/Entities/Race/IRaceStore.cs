@@ -11,7 +11,6 @@ namespace RazManager.Repository.CrudServices.Entities.Race
     public interface IRaceStore : IEntityCrudStore<RaceEntity, RaceRead, RaceCreate, RaceUpdate>
     {
         IAsyncEnumerable<RaceList> ListAsync(int limit, int offset);
-        IAsyncEnumerable<RaceSelect> SelectAsync(Guid eventId);
         Task<Razmanager.Protobuf.Internal.Repository.CrudServices.Common.CreateResponse> CopyAsync(Guid id);
     }
 }

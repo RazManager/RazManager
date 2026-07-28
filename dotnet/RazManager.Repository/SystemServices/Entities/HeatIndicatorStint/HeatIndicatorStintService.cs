@@ -35,7 +35,7 @@ namespace RazManager.Repository.SystemServices.Entities.HeatIndicatorStint
 
             return new HeatIndicatorStintReadResponse
             {
-                HeatId = entity.HeatIndicator.HeatId.ToString(),
+                HeatWithoutStintId = entity.HeatIndicator.HeatWithoutStintId.ToString(),
                 HeatIndicatorId = entity.HeatIndicatorId.ToString()
             };
         }

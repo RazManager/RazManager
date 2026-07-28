@@ -14,7 +14,7 @@ namespace RazManager.Repository.Stores.Entities.Race
         public Event.EventEntity Event { get; set; } = null!;
 
         [Required]
-        public int Number { get; set; }
+        public uint Number { get; set; }
 
         [StringLength(100)]
         public string? Name { get; set; }
@@ -29,23 +29,7 @@ namespace RazManager.Repository.Stores.Entities.Race
         public PointsScheme.PointsSchemeEntity? PointsScheme { get; set; }
 
         [Required]
-        public bool QualifyingSession { get; set; }
-
-        [Required]
-        public bool PracticeSession { get; set; }
-
-        [Required]
-        public bool RaceSession { get; set; } = true;
-
-        [Required]
         public Razmanager.Protobuf.Internal.Repository.CrudServices.RaceFormatType.RaceFormatTypeId RaceFormatTypeId { get; set; }
-
-        [Required]
-        public Razmanager.Protobuf.Public.V1.HeatEndTypeId RaceHeatEndTypeId { get; set; }
-
-        public int? RaceHeatEndLapLaps { get; set; }
-
-        public TimeSpan? RaceHeatEndDurationDuration { get; set; }
 
         [Required]
         public List<RaceCarTag.RaceCarTagEntity> RaceCarTags { get; set; } = [];
@@ -63,12 +47,12 @@ namespace RazManager.Repository.Stores.Entities.Race
         public List<RaceIndicatorEventUser.RaceIndicatorEventUserEntity> RaceIndicatorEventUsers { get; set; } = [];
 
         [Required]
-        public List<Heat.HeatEntity> Heats { get; set; } = [];
-
-        [Required]
-        public Razmanager.Protobuf.Public.V1.RaceStateTypeId RaceStateTypeId { get; set; }
-
-        [Required]
         public bool EnergySimulation { get; set; }
+
+        [Required]
+        public List<RaceSession.RaceSessionEntity> RaceSessions { get; set; } = [];
+
+        [Required]
+        public Razmanager.Protobuf.Public.V1.SummaryStateTypeId RaceStateTypeId { get; set; }
     }
 }

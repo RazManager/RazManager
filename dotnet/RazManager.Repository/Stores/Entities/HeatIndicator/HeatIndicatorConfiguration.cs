@@ -8,8 +8,7 @@ namespace RazManager.Repository.Stores.Entities.HeatIndicator
     {
         public void Configure(EntityTypeBuilder<HeatIndicatorEntity> builder)
         {
-            builder.HasIndex(x => new { x.HeatId, x.EventUserId }).IsUnique();
-            builder.HasIndex(x => new { x.HeatId, x.IndicatorId }).IsUnique();
+            builder.HasIndex(x => new { x.HeatWithoutStintId, x.IndicatorId }).IsUnique();
         }
     }
 }

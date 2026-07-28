@@ -2,7 +2,6 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
-import "razmanager/protobuf/public/event.v1.proto";
 
 package razmanager.protobuf.internal.repository.system_services.heat_indicator_stint;
 
@@ -14,7 +13,7 @@ service HeatIndicatorStintService {
 
 
 message HeatIndicatorStintReadResponse {
-  string heat_id = 1;
+  string heat_without_stint_id = 1;
   string heat_indicator_id = 2;
 }
 

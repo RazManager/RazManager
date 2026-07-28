@@ -15,12 +15,10 @@ namespace RazManager.Repository.Stores.Context
         public DbSet<Entities.Autopilot.AutopilotEntity> Autopilots { get; set; }
         public DbSet<Entities.AutopilotImage.AutopilotImageEntity> AutopilotImages { get; set; }
         public DbSet<Entities.Car.CarEntity> Cars { get; set; }
+        public DbSet<Entities.CarCarTag.CarCarTagEntity> CarCarTags { get; set; }
         public DbSet<Entities.CarImage.CarImageEntity> CarImages { get; set; }
         public DbSet<Entities.CarTag.CarTagEntity> CarTags { get; set; }
-        public DbSet<Entities.CarCarTag.CarCarTagEntity> CarCarTags { get; set; }
-        //public DbSet<Entities.CarTrackConfiguration.CarTrackConfigurationEntity> CarTrackConfigurations { get; set; }
         public DbSet<Entities.Device.DeviceEntity> Devices { get; set; }
-        //public DbSet<Store.Entities.DeviceProperty.DevicePropertyEntity> DeviceProperties { get; set; }
         public DbSet<Entities.DeviceConfiguration.DeviceConfigurationEntity> DeviceConfigurations { get; set; }
         public DbSet<Entities.DeviceConfigurationFeature.DeviceConfigurationFeatureEntity> DeviceConfigurationFeatures { get; set; }
         public DbSet<Entities.DeviceConfigurationInput.DeviceConfigurationInputEntity> DeviceConfigurationInputs { get; set; }
@@ -30,26 +28,32 @@ namespace RazManager.Repository.Stores.Context
         public DbSet<Entities.EventInvite.EventInviteEntity> EventInvites { get; set; }
         public DbSet<Entities.EventUser.EventUserEntity> EventUsers { get; set; }
         public DbSet<Entities.EventUserImage.EventUserImageEntity> EventUserImages { get; set; }
-        public DbSet<Entities.Heat.HeatEntity> Heats { get; set; }
+        public DbSet<Entities.HeatWithoutStint.HeatWithoutStintEntity> HeatWithoutStints { get; set; }
         public DbSet<Entities.HeatIndicator.HeatIndicatorEntity> HeatIndicators { get; set; }
-        public DbSet<Entities.HeatJournal.HeatJournalEntity> HeatJournals { get; set; }
         public DbSet<Entities.HeatIndicatorStint.HeatIndicatorStintEntity> HeatIndicatorStints { get; set; }
+        public DbSet<Entities.HeatJournal.HeatJournalEntity> HeatJournals { get; set; }
+        public DbSet<Entities.HeatWithStint.HeatWithStintEntity> HeatWithStints { get; set; }
         public DbSet<Entities.PointsScheme.PointsSchemeEntity> PointsSchemas { get; set; }
         public DbSet<Entities.PointsSchemePosition.PointsSchemePositionEntity> PointsSchemePositions { get; set; }
         public DbSet<Entities.Race.RaceEntity> Races { get; set; }
+        public DbSet<Entities.RaceCarTag.RaceCarTagEntity> RaceCarTags { get; set; }
         public DbSet<Entities.RaceEventUser.RaceEventUserEntity> RaceEventUsers { get; set; }
         public DbSet<Entities.RaceIndicator.RaceIndicatorEntity> RaceIndicators { get; set; }
         public DbSet<Entities.RaceIndicatorEventUser.RaceIndicatorEventUserEntity> RaceIndicatorEventUsers { get; set; }
+        public DbSet<Entities.RaceSession.RaceSessionEntity> RaceSessions { get; set; }
+        public DbSet<Entities.Stint.StintEntity> Stints { get; set; }
+        public DbSet<Entities.StintIndicator.StintIndicatorEntity> StintIndicators { get; set; }
+        public DbSet<Entities.StintJournal.StintJournalEntity> StintJournals { get; set; }
         public DbSet<Entities.Tenant.TenantEntity> Tenants { get; set; }
         public DbSet<Entities.TenantImage.TenantImageEntity> TenantImages { get; set; }
         public DbSet<Entities.TenantInvite.TenantInviteEntity> TenantInvites { get; set; }
         public DbSet<Entities.TenantUser.TenantUserEntity> TenantUsers { get; set; }
         public DbSet<Entities.Track.TrackEntity> Tracks { get; set; }
-        public DbSet<Entities.TrackImage.TrackImageEntity> TrackImages { get; set; }
         public DbSet<Entities.TrackConfiguration.TrackConfigurationEntity> TrackConfigurations { get; set; }
         public DbSet<Entities.TrackConfigurationDeviceConfiguration.TrackConfigurationDeviceConfigurationEntity> TrackConfigurationDeviceConfigurations { get; set; }
         public DbSet<Entities.TrackConfigurationIndicator.TrackConfigurationIndicatorEntity> TrackConfigurationIndicators { get; set; }
         public DbSet<Entities.TrackConfigurationRaceFormat.TrackConfigurationRaceFormatEntity> TrackConfigurationRaceFormats { get; set; }
+        public DbSet<Entities.TrackImage.TrackImageEntity> TrackImages { get; set; }
         public DbSet<Entities.User.UserEntity> Users { get; set; }
         public DbSet<Entities.UserImage.UserImageEntity> UserImages { get; set; }
         public DbSet<Entities.Version.VersionEntity> Versions { get; set; }

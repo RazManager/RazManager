@@ -113,16 +113,16 @@
 			<Link>Protos/public/event.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
-		<Protobuf Include="../protos/razmanager/protobuf/public/heat.service.v1.proto" GrpcServices="Both">
-			<Link>Protos/public/heat.service.v1.proto</Link>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.service.v1.proto" GrpcServices="Both">
+			<Link>Protos/public/heat_without_stint.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 	    </Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Both">
 			<Link>Protos/public/race.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
-		<Protobuf Include="../protos/razmanager/protobuf/public/race_feature_type_id.v1.proto" GrpcServices="None">
-			<Link>Protos/public/race_feature_type_id.v1.proto</Link>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session.service.v1.proto" GrpcServices="Both">
+			<Link>Protos/public/race_session.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/version.v1.proto" GrpcServices="Both">
@@ -137,10 +137,10 @@
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
-		<PackageReference Include="Microsoft.Orleans.Client" Version="10.2.0" />
-		<PackageReference Include="Microsoft.Orleans.Serialization.Protobuf" Version="10.2.0" />
-		<PackageReference Include="Microsoft.Orleans.Streaming" Version="10.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Orleans.Client" Version="10.2.1" />
+		<PackageReference Include="Microsoft.Orleans.Serialization.Protobuf" Version="10.2.1" />
+		<PackageReference Include="Microsoft.Orleans.Streaming" Version="10.2.1" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
 		<PackageReference Include="Polly" Version="8.7.0" />
 	</ItemGroup>

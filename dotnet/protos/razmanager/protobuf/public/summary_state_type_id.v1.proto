@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum SummaryStateTypeId {
+  SUMMARY_STATE_TYPE_ID_PENDING = 0;
+  SUMMARY_STATE_TYPE_ID_STARTED = 1;
+  SUMMARY_STATE_TYPE_ID_ENDED = 3;
+}
+
+
+message SummaryStateType {
+  SummaryStateTypeId id = 1;
+  string name = 2;
+}

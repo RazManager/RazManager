@@ -92,11 +92,19 @@
 		  <Link>Protos/internal/repository/system_services/event.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat.proto" GrpcServices="Server">
-		  <Link>Protos/internal/repository/system_services/heat.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_without_stint.proto" GrpcServices="Server">
+		  <Link>Protos/internal/repository/system_services/heat_without_stint.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_indicator_stint.proto" GrpcServices="Server">
+		<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_with_stint.proto" GrpcServices="Server">
+			<Link>Protos/internal/repository/system_services/heat_with_stint.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_stint_journal.proto" GrpcServices="None">
+			<Link>Protos/internal/repository/system_services/heat_stint_journal.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/heat_indicator_stint.proto" GrpcServices="Server">
 		  <Link>Protos/internal/repository/system_services/heat_indicator_stint.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
@@ -104,7 +112,15 @@
 		  <Link>Protos/internal/repository/system_services/race.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track.proto" GrpcServices="Server">
+		<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/race_session.proto" GrpcServices="Server">
+			<Link>Protos/internal/repository/system_services/race_session.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/stint.proto" GrpcServices="Server">
+			<Link>Protos/internal/repository/system_services/stint.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/internal/repository/system_services/track.proto" GrpcServices="Server">
 		  <Link>Protos/internal/repository/system_services/track.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
@@ -140,7 +156,15 @@
 		  <Link>Protos/internal/repository/user_services/tenant_invite.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/device.v1.proto" GrpcServices="None">
+		<Protobuf Include="../protos/razmanager/protobuf/public/detail_state_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/detail_state_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/detail_command_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/detail_command_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/device.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/device.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
@@ -164,15 +188,15 @@
 		  <Link>Protos/public/device_configuration_output_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/driver_identification_type_id.v1.proto</Link>
-		  <ProtoRoot>../protos</ProtoRoot>
-	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/device_configuration_input_output_id_type_id.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/device_configuration_input_output_id_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/event.v1.proto" GrpcServices="None">
+		<Protobuf Include="../protos/razmanager/protobuf/public/driver_identification_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/driver_identification_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/event.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/event.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
@@ -180,31 +204,67 @@
 		  <Link>Protos/public/event_user_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/heat.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/heat.v1.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat_without_stint.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/heat.service.v1.proto" GrpcServices="Server">
-		  <Link>Protos/public/heat.service.v1.proto</Link>
-		  <ProtoRoot>../protos</ProtoRoot>
-	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/race.v1.proto" GrpcServices="None">
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.service.v1.proto" GrpcServices="Server">
+			<Link>Protos/public/heat_without_stint.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_with_stint.v1.proto" GrpcServices="None">
+			<Link>Protos/public/heat_with_stint.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_stint_end_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/heat_stint_end_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/indicator_time_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/indicator_time_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/indicator_flag_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/indicator_flag_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/race.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Server">
-		  <Link>Protos/public/race.service.v1.proto</Link>
-		  <ProtoRoot>../protos</ProtoRoot>
-	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/race_feature_type_id.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/race_feature_type_id.v1.proto</Link>
-		  <ProtoRoot>../protos</ProtoRoot>
-	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/session_type_id.v1.proto" GrpcServices="None">
+		<Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Server">
+			<Link>Protos/public/race.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_feature_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/race_feature_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session.v1.proto" GrpcServices="None">
+			<Link>Protos/public/race_session.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session.service.v1.proto" GrpcServices="Server">
+			<Link>Protos/public/race_session.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/stint.v1.proto" GrpcServices="None">
+			<Link>Protos/public/stint.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/session_type_id.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/session_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/track.v1.proto" GrpcServices="None">
+		<Protobuf Include="../protos/razmanager/protobuf/public/summary_state_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/summary_state_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/summary_command_type_id.v1.proto" GrpcServices="None">
+			<Link>Protos/public/summary_command_type_id.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/track.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/track.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
@@ -223,8 +283,8 @@
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.5.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.5">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

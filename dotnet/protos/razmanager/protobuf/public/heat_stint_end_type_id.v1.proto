@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum HeatStintEndTypeId {
+  HEAT_STINT_END_TYPE_ID_UNDEFINED = 0;
+  HEAT_STINT_END_TYPE_ID_LAP = 1;
+  HEAT_STINT_END_TYPE_ID_DURATION = 2;
+  HEAT_STINT_END_TYPE_ID_MANUAL = 3;
+}

@@ -151,9 +151,12 @@ app.MapGrpcService<RazManager.Repository.PublicServices.Entities.Version.Version
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Device.DeviceService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.DeviceConfiguration.DeviceConfigurationService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Event.EventService>();
-app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Heat.HeatService>();
+app.MapGrpcService<RazManager.Repository.SystemServices.Entities.HeatWithoutStint.HeatWithoutStintService>();
+app.MapGrpcService<RazManager.Repository.SystemServices.Entities.HeatWithStint.HeatWithStintService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.HeatIndicatorStint.HeatIndicatorStintService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Race.RaceService>();
+app.MapGrpcService<RazManager.Repository.SystemServices.Entities.RaceSession.RaceSessionService>();
+app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Stint.StintService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Tenant.TenantService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.Track.TrackService>();
 app.MapGrpcService<RazManager.Repository.SystemServices.Entities.TrackConfiguration.TrackConfigurationService>();

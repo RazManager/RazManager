@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "razmanager/protobuf/public/device_configuration_input.v1.proto";
+import "razmanager/protobuf/public/detail_state_type_id.v1.proto";
+
+package razmanager.protobuf.internal.repository.system_services.heat_stint_journal;
+
+
+message HeatStintJournalListResponse {
+  uint32 sequence_number = 1;
+  repeated HeatStintJournal heat_stint_journals = 2;
+}
+
+message HeatStintJournalCreateRequest {
+  string heat_stint_id = 1;
+  uint32 sequence_number = 2;
+  HeatStintJournal heat_stint_journal = 3;
+}
+
+message HeatStintJournalState {
+  google.protobuf.Timestamp timestamp = 1;
+  public.v1.DetailStateTypeId heat_stint_state_type_id = 2;
+  uint32 start_light_id = 3;
+  bool ended = 4;
+  google.protobuf.Duration timer_elapsed = 5;
+  google.protobuf.Timestamp timer_started_at = 6;
+}
+
+message HeatStintJournal {
+  HeatStintJournalState heat_stint_journal_state = 1;
+  oneof update_type {
+    public.v1.DetailStateTypeId heat_stint_state_type_id = 2;
+    public.v1.DeviceConfigurationInputs device_configuration_inputs = 3;
+  }
+}

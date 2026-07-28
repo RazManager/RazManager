@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+
+package razmanager.protobuf.internal.silo.system_services.event_user;
+
+
+message EventUserUpdate {
+  string id = 1;
+  string event_user_id = 2;
+  google.protobuf.Duration timer_elapsed = 3;
+  oneof value {
+	google.protobuf.DoubleValue laps = 4;
+	bool finished = 9;
+	//IndicatorFlag flags = 10;
+
+	//uint32 pit_lanes = 10;
+	//uint32 car_off_tracks = 11;
+  }
+}

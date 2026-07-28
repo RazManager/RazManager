@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/detail_state_type_id.v1.proto";
+import "razmanager/protobuf/public/indicator_flag_id.v1.proto";
+import "razmanager/protobuf/public/indicator_time_type_id.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message HeatWithoutStint {
+  string id = 1;
+  string race_session_id = 2;
+  uint32 number = 4;
+  google.protobuf.StringValue name = 5;
+  repeated HeatIndicator heat_indicators = 6;
+  DetailStateType heat_without_stint_state_type = 7;
+}
+
+message HeatIndicator {
+  string id = 1;
+  uint32 indicator_id = 2;
+  google.protobuf.UInt32Value color = 3;
+  string event_user_id = 4;
+  google.protobuf.UInt32Value car_class_color = 5;
+  google.protobuf.BytesValue car_image = 6;
+  repeated HeatIndicatorStint heat_indicator_stints = 7;
+  repeated HeatStintEventUsersIndicatorLap preconfigured_laps = 10;
+}
+
+
+message HeatIndicatorStint {
+  string id = 1;
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+}
+
+
+message HeatWithoutStintLeaderboard {
+  google.protobuf.StringValue correlation_id = 1;
+  repeated HeatWithoutStintLeaderboardIndicator indicators = 2;
+}
+
+
+message HeatWithoutStintLeaderboardIndicator {
+  uint32 indicator_id = 1;
+  uint32 position = 2;
+  google.protobuf.UInt32Value laps = 3;
+  repeated IndicatorTimeTypeTime time_type_times = 4;
+  google.protobuf.StringValue gap_leader = 5;
+  google.protobuf.StringValue gap_interval = 6;
+  google.protobuf.DoubleValue gap_interval_fraction = 13;
+  uint32 energy_percent = 7;
+  google.protobuf.UInt32Value energy_laps_left = 8;
+  repeated IndicatorFlag flags = 9;
+  uint32 pit_lanes = 10;
+  uint32 car_off_tracks = 11;
+  google.protobuf.StringValue team_event_user_id = 12;
+}
+
+
+message HeatAnalyses {
+  repeated HeatAnalysis items = 1;
+  google.protobuf.DoubleValue progress = 2;
+}
+
+message HeatAnalysis {
+  google.protobuf.Duration timer_elapsed = 1;
+  google.protobuf.UInt32Value indicator_id = 2;
+  oneof value {
+    DetailStateTypeId heat_state_type_id = 3;
+    HeatAnalysisLap lap = 4;
+    HeatAnalysisGap gap = 5;
+  }
+}
+
+message HeatAnalysisLap {
+  uint32 position = 1;
+  uint32 lap = 2;
+  google.protobuf.DoubleValue time = 3;
+  uint32 pitlanes = 4;
+  uint32 deslots = 5;
+  google.protobuf.StringValue team_event_user_id = 6;
+}
+
+message HeatAnalysisGap {
+  uint32 indicator_id = 1;
+  double value = 2;
+  string display_value = 3;
+  google.protobuf.DoubleValue delta_value = 4;
+  google.protobuf.DoubleValue delta_fraction = 5;
+  repeated IndicatorFlag flags = 6;
+}
+
+
+message HeatStintAnalysis {
+  bool refresh = 1;
+  HeatStintAnalysisIndicatorStints heat_stint_analysis_indicator_stints = 2;
+}
+
+
+message HeatStintAnalysisIndicatorStints {
+  repeated HeatStintAnalysisIndicatorStint items = 1;
+}
+
+message HeatStintAnalysisIndicatorStint {
+  string id = 1;
+  uint32 indicator_id = 2;
+  uint32 lap = 3;
+  google.protobuf.StringValue event_user_id = 4;
+  google.protobuf.StringValue comments = 5;
+
+  repeated HeatStintAnalysisIndicatorStintLap laps = 10;
+  google.protobuf.Duration duration = 11;
+  google.protobuf.DoubleValue average_time = 12;
+}
+
+
+message HeatStintAnalysisIndicatorStintLap {
+  uint32 indicator_id = 1;
+  uint32 lap = 2;
+  google.protobuf.Duration timer_elapsed = 3;
+  google.protobuf.DoubleValue time = 4;
+  uint32 pitlanes = 5;
+  uint32 deslots = 6;
+}
+
+message HeatStintEventUsers {
+  repeated HeatStintEventUsersIndicator indicators = 1;
+}
+
+message HeatStintEventUsersIndicator {
+  uint32 indicator_id = 1;
+  repeated HeatStintEventUsersIndicatorLap laps = 2;
+}
+
+message HeatStintEventUsersIndicatorLap {
+  uint32 lap = 1;
+  string event_user_id = 2;
+}

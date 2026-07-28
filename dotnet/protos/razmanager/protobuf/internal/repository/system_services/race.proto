@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
 import "razmanager/protobuf/public/race.v1.proto";
 
 package razmanager.protobuf.internal.repository.system_services.race;
@@ -15,5 +16,5 @@ service RaceService {
 
 message RaceStateUpdateRequest {
   string id = 1;
-  public.v1.RaceStateTypeId race_state_type_id = 2;
+  public.v1.SummaryStateTypeId race_state_type_id = 2;
 }

@@ -3,8 +3,9 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
-import "razmanager/protobuf/public/race.v1.proto";
-import "razmanager/protobuf/public/heat.v1.proto";
+import "razmanager/protobuf/public/session_type_id.v1.proto";
+import "razmanager/protobuf/public/heat_stint_end_type_id.v1.proto";
+import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
 import "razmanager/protobuf/internal/repository/crud_services/common.proto";
 import "razmanager/protobuf/internal/repository/crud_services/event.proto";
 import "razmanager/protobuf/internal/repository/crud_services/points_scheme.proto";
@@ -22,7 +23,7 @@ service RaceService {
   rpc Update (RaceUpdateRequest) returns (common.UpdateResponse);
   rpc Delete (common.DeleteRequest) returns (google.protobuf.Empty);
   rpc List (common.ListRequest) returns (RaceListResponse);
-  rpc Select (RaceSelectRequest) returns (RaceSelectResponse);
+  //rpc Select (RaceSelectRequest) returns (RaceSelectResponse);
   rpc Copy (common.IdRequest) returns (common.CreateResponse);
 }
 
@@ -42,19 +43,14 @@ message RaceRead {
   track_configuration.TrackConfigurationSelect track_configuration = 7;
   google.protobuf.StringValue points_scheme_id = 8;
   points_scheme.PointsSchemeSelect points_scheme = 9;
-  bool practice_session = 10;
-  bool qualifying_session = 11;
-  bool race_session = 12;
   race_format_type.RaceFormatTypeId race_format_type_id = 13;
-  public.v1.HeatEndTypeId race_heat_end_type_id = 14;
-  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
-  google.protobuf.Duration race_heat_end_duration_duration = 16;
   repeated string car_tag_ids = 17;
   heat_car_type.HeatCarTypeId heat_car_type_id = 18;
   repeated RaceIndicatorReadCreateUpdate race_indicators = 19;
   repeated RaceEventUserReadCreateUpdate race_event_users = 20;
   repeated RaceIndicatorEventUserReadCreateUpdate race_indicator_event_users = 21;
-  bool energy_simulation = 22;
+  repeated RaceSessionReadCreateUpdate race_sessions = 22;
+  bool energy_simulation = 23;
 }
 
 
@@ -63,19 +59,14 @@ message RaceCreate {
   google.protobuf.StringValue name = 5;
   string track_configuration_id = 6;
   google.protobuf.StringValue points_scheme_id = 8;
-  bool practice_session = 10;
-  bool qualifying_session = 11;
-  bool race_session = 12;
   race_format_type.RaceFormatTypeId race_format_type_id = 13;
-  public.v1.HeatEndTypeId race_heat_end_type_id = 14;
-  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
-  google.protobuf.Duration race_heat_end_duration_duration = 16;
   repeated string car_tag_ids = 17;
   heat_car_type.HeatCarTypeId heat_car_type_id = 18;
   repeated RaceIndicatorReadCreateUpdate race_indicators = 19;
   repeated RaceEventUserReadCreateUpdate race_event_users = 20;
   repeated RaceIndicatorEventUserReadCreateUpdate race_indicator_event_users = 21;
-  bool energy_simulation = 22;
+  repeated RaceSessionReadCreateUpdate race_sessions = 22;
+  bool energy_simulation = 23;
 }
 
 
@@ -88,19 +79,14 @@ message RaceUpdateRequest {
 message RaceUpdate {
   google.protobuf.StringValue name = 5;
   google.protobuf.StringValue points_scheme_id = 8;
-  bool practice_session = 10;
-  bool qualifying_session = 11;
-  bool race_session = 12;
   race_format_type.RaceFormatTypeId race_format_type_id = 13;
-  public.v1.HeatEndTypeId race_heat_end_type_id = 14;
-  google.protobuf.UInt32Value race_heat_end_lap_laps = 15;
-  google.protobuf.Duration race_heat_end_duration_duration = 16;
   repeated string car_tag_ids = 17;
   heat_car_type.HeatCarTypeId heat_car_type_id = 18;
   repeated RaceIndicatorReadCreateUpdate race_indicators = 19;
   repeated RaceEventUserReadCreateUpdate race_event_users = 20;
   repeated RaceIndicatorEventUserReadCreateUpdate race_indicator_event_users = 21;
-  bool energy_simulation = 22;
+  repeated RaceSessionReadCreateUpdate race_sessions = 22;
+  bool energy_simulation = 23;
 }
 
 
@@ -124,10 +110,17 @@ message RaceIndicatorEventUserReadCreateUpdate {
 }
 
 
+message RaceSessionReadCreateUpdate {
+  public.v1.SessionTypeId session_type_id = 2;
+  public.v1.HeatStintEndTypeId heat_stint_end_type_id = 3;
+  google.protobuf.UInt32Value heat_stint_end_lap_laps = 4;
+  google.protobuf.Duration heat_stint_end_duration_duration = 5;
+  repeated HeatReadCreateUpdate heats = 6;
+}
 
-message RaceStateType {
-  public.v1.RaceStateTypeId id = 1;
-  string name = 2;
+message HeatReadCreateUpdate {
+  google.protobuf.StringValue name = 1;
+  google.protobuf.UInt32Value event_user_count = 2;
 }
 
 
@@ -141,21 +134,21 @@ message RaceList {
   uint32 number = 3;
   google.protobuf.StringValue name = 4;
   track_configuration.TrackConfigurationList track_configuration = 5;
-  RaceStateType race_state_type = 6;
+  public.v1.SummaryStateType race_state_type = 6;
   string etag = 7;
 }
 
 
-message RaceSelectRequest {
-  string event_id = 1;
-}
+//message RaceSelectRequest {
+//  string event_id = 1;
+//}
 
-message RaceSelectResponse {
-  repeated RaceSelect result = 1;
-}
+//message RaceSelectResponse {
+//  repeated RaceSelect result = 1;
+//}
 
-message RaceSelect {
-  string id = 1;
-  string number = 2;
-  google.protobuf.StringValue name = 3;
-}
+//message RaceSelect {
+//  string id = 1;
+//  string number = 2;
+//  google.protobuf.StringValue name = 3;
+//}

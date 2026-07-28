@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package razmanager.protobuf.public.v1;
+
+
+enum DetailCommandTypeId {
+  DETAIL_COMMAND_TYPE_ID_OPEN = 0;
+  DETAIL_COMMAND_TYPE_ID_START = 1;
+  DETAIL_COMMAND_TYPE_ID_YELLOW = 2;
+  DETAIL_COMMAND_TYPE_ID_RED = 3;
+  DETAIL_COMMAND_TYPE_ID_END = 4;
+  DETAIL_COMMAND_TYPE_ID_REOPEN = 5;
+  DETAIL_COMMAND_TYPE_ID_CLOSE = 6;
+  DETAIL_COMMAND_TYPE_ID_RESET = 7;
+}
+
+message DetailCommandPermissions {
+  repeated DetailCommandTypeId items = 1;
+}
