@@ -4,7 +4,7 @@ using Razmanager.Protobuf.Internal.Repository.CrudServices.Race;
 using Razmanager.Protobuf.Internal.Repository.CrudServices.RaceFormatType;
 using RazManager.Repository.CrudServices.Utilities;
 using RazManager.Repository.Stores.Context;
-using RazManager.Repository.Stores.Entities.HeatWithoutStint;
+using RazManager.Repository.Stores.Entities.HeatWithoutStints;
 using RazManager.Repository.Stores.Entities.HeatIndicator;
 using RazManager.Repository.Stores.Entities.HeatIndicatorStint;
 using RazManager.Repository.Stores.Entities.Race;
@@ -42,8 +42,8 @@ namespace RazManager.Repository.CrudServices.Entities.Race
                 .Include(x => x.RaceIndicators)
                 .Include(x => x.RaceEventUsers)
                 .Include(x => x.RaceIndicatorEventUsers)
-                .Include(x => x.HeatWithoutStints)
-                .Include(x => x.HeatWithStints);
+                .Include(x => x.RaceSessionsWithoutStints)
+                .Include(x => x.RaceSessionsWithStints);
         }
 
 
@@ -91,13 +91,13 @@ namespace RazManager.Repository.CrudServices.Entities.Race
         {
             var entity = base.CreateMap(proto);
 
-            entity.RaceStateTypeId = Razmanager.Protobuf.Public.V1.SummaryStateTypeId.Pending;
+            entity.StateTypeId = Razmanager.Protobuf.Public.V1.SummaryStateTypeId.Pending;
 
             CreateUpdateMapCarTags(proto.CarTagIds, entity);
             CreateUpdateMapRaceIndicators(proto.RaceIndicators, entity);
             CreateUpdateMapRaceEventUsers(proto.RaceEventUsers, entity);
             CreateUpdateMapRaceIndicatorEventUsers(proto.RaceIndicatorEventUsers, entity);
-            CreateUpdateMapHeats(proto.RaceFormatTypeId, proto.RaceSessionGroups, entity);
+            CreateUpdateMapRaceSessions(proto.RaceFormatTypeId, proto.RaceSessions, entity);
             return entity;
         }
 
@@ -109,7 +109,7 @@ namespace RazManager.Repository.CrudServices.Entities.Race
             CreateUpdateMapRaceIndicators(proto.RaceIndicators, entity);
             CreateUpdateMapRaceEventUsers(proto.RaceEventUsers, entity);
             CreateUpdateMapRaceIndicatorEventUsers(proto.RaceIndicatorEventUsers, entity);
-            CreateUpdateMapHeats(proto.RaceFormatTypeId, proto.RaceSessionGroups, entity);
+            CreateUpdateMapRaceSessions(proto.RaceFormatTypeId, proto.RaceSessions, entity);
         }
 
 
@@ -176,34 +176,33 @@ namespace RazManager.Repository.CrudServices.Entities.Race
         }
 
 
-        private void CreateUpdateMapRaceSessionGroups(IEnumerable<RaceSessionGroupCreateUpdate> raceSessionGroupProtos, RaceEntity entity)
-        {
-            entity.RaceSessionGroups.RemoveAll(x => !raceSessionGroupProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
-            foreach (var raceSessionGroupProto in raceSessionGroupProtos)
-            {   
-                var raceSessionGroupEntity = entity.RaceSessionGroups.SingleOrDefault(x => x.Id == new Guid(raceSessionGroupProto.Id));
-                if (raceSessionGroupEntity is null)
-                {
-                    entity.RaceSessionGroups.Add(Mapper.Map<Stores.Entities.RaceSessionGroup.RaceSessionGroupEntity>(raceSessionGroupProto));
-                }
-                else
-                {
-                    Mapper.Map(raceSessionGroupProto, raceSessionGroupEntity);
-                }
-            }
-        }
-
-
-        private void CreateUpdateMapHeats(
+        private void CreateUpdateMapRaceSessions(
             Razmanager.Protobuf.Internal.Repository.CrudServices.RaceFormatType.RaceFormatTypeId raceFormatTypeId,
-            IEnumerable<RaceSessionGroupCreateUpdate> raceSessionGroupProtos,
+            IEnumerable<RaceSessionReadCreateUpdate> raceSessionProtos,
             RaceEntity entity
         )
         {
-            entity.HeatWithoutStints.RemoveAll(x => !raceSessionGroupProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
-            entity.HeatWithStints.RemoveAll(x => !raceSessionGroupProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+            entity.RaceSessionsWithoutStints.RemoveAll(x => !raceSessionProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+            entity.RaceSessionsWithStints.RemoveAll(x => !raceSessionProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+            foreach (var raceSessionProto in raceSessionProtos)
+            {
+                var raceSessionGroupEntity = entity.RaceSessionGroups.SingleOrDefault(x => x.Id == new Guid(raceSessionProto.Id));
+                if (raceSessionGroupEntity is null)
+                {
+                    entity.RaceSessionGroups.Add(Mapper.Map<Stores.Entities.RaceSessionGroup.RaceSessionGroupEntity>(raceSessionProto));
+                }
+                else
+                {
+                    Mapper.Map(raceSessionProto, raceSessionGroupEntity);
+                }
+            }
 
-            foreach (var raceSessionGroupProtoSession in raceSessionGroupProtos.GroupBy(x => x.SessionTypeId))
+
+
+            entity.HeatWithoutStints.RemoveAll(x => !raceSessionProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+            entity.HeatWithStints.RemoveAll(x => !raceSessionProtos.Where(p => p.Id is not null).Any(p => x.Id == new Guid(p.Id)));
+
+            foreach (var raceSessionGroupProtoSession in raceSessionProtos.GroupBy(x => x.SessionTypeId))
             {
                 uint heatNumber = 1;
                 foreach (var raceSessionGroupProto in raceSessionGroupProtoSession)

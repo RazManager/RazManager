@@ -111,11 +111,14 @@ message RaceIndicatorEventUserReadCreateUpdate {
 
 
 message RaceSessionReadCreateUpdate {
-  public.v1.SessionTypeId session_type_id = 2;
-  public.v1.HeatStintEndTypeId heat_stint_end_type_id = 3;
-  google.protobuf.UInt32Value heat_stint_end_lap_laps = 4;
-  google.protobuf.Duration heat_stint_end_duration_duration = 5;
-  repeated HeatReadCreateUpdate heats = 6;
+  google.protobuf.StringValue id = 1;
+  //string race_id = 2;
+  public.v1.SessionTypeId session_type_id = 3;
+  uint32 number = 4;
+  google.protobuf.StringValue name = 5;
+  public.v1.HeatStintEndTypeId heat_stint_end_type_id = 6;
+  google.protobuf.UInt32Value heat_stint_end_lap_laps = 7;
+  repeated HeatReadCreateUpdate heats = 8;
 }
 
 message HeatReadCreateUpdate {

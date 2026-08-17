@@ -11,11 +11,6 @@ namespace RazManager.Repository.Stores.Entities.HeatBase
         public Guid Id { get; set; }
 
         [Required]
-        public Guid RaceSessionId { get; set; }
-
-        public RaceSession.RaceSessionEntity RaceSession { get; set; } = null!;
-
-        [Required]
         public uint Number { get; set; }
 
         [StringLength(100)]

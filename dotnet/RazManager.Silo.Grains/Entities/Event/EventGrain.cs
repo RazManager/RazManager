@@ -1,6 +1,7 @@
 ﻿using Orleans.Streams;
 using Razmanager.Protobuf.Internal.Silo.UserServices.Event;
 using Razmanager.Protobuf.Public.V1;
+using System.Diagnostics;
 
 
 namespace RazManager.Silo.Grains.Entities.Event
@@ -9,7 +10,7 @@ namespace RazManager.Silo.Grains.Entities.Event
     {
         private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.Event.EventService.EventServiceClient _serviceClient;
         private Razmanager.Protobuf.Public.V1.Event? _event;
-        private Razmanager.Protobuf.Public.V1.EventState? _eventState;
+        private Guid? _currentRaceId = null;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.Event>? _eventStream;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.EventState>? _eventStateStream;
         private Dictionary<Guid, IAsyncStream<EventSpeechTexts>?> _eventSpeechTextsStreams = [];
@@ -23,45 +24,39 @@ namespace RazManager.Silo.Grains.Entities.Event
 
         public override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
-            _eventState = new EventState
-            {
-                Id = this.GetPrimaryKey().ToString()
-            };
-
             var streamProvider = this.GetStreamProvider(Constants.StreamProvider);
             _eventStream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.Event>(Constants.StreamName.Event.ToString(), this.GetPrimaryKey());
             _eventStateStream = streamProvider.GetStream<EventState>(Constants.StreamName.EventState.ToString(), this.GetPrimaryKey());
-
-            await RefreshAsync(false);
+            await RefreshAsync();
         }
 
 
-        public async Task RefreshAsync(bool publish)
+        public async Task RefreshAsync()
         {
             _event = await _serviceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
-            _eventState!.RaceId = null;
-            _eventState.HeatId = null;
 
-            foreach (var race in _event.Races)
+            _currentRaceId = null;
+
+            var tasks = _event.Races
+                .Select(x => GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(x.Id)).ReadAsync());
+            var results = await Task.WhenAll(tasks);
+
+            foreach (var result in results)
             {
-                var raceProto = await GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(race.Id)).ReadAsync();
-
-                if (race.RaceStateType.Id != RaceStateTypeId.Pending && race.RaceStateType.Id != RaceStateTypeId.Ended)
+                var race = _event.Races.SingleOrDefault(x => x.Id == result.Id);
+                if (race is not null)
                 {
-                    _eventState!.RaceId = race.Id;
-                    var heatId = await GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(race.Id)).CurrentHeatAsync();
-                    if (heatId.HasValue)
+                    race = result;
+
+                    if (race.StateType.Id == SummaryStateTypeId.Started)
                     {
-                        _eventState!.HeatId = heatId.Value.ToString();
+                        _currentRaceId = new Guid(race.Id);
+                        _ = _eventStateStream!.OnNextAsync(EventState());
                     }
                 }
             }
 
-            if (publish)
-            {
-                await _eventStream!.OnNextAsync(_event);
-                await _eventStateStream!.OnNextAsync(_eventState!);
-            }
+            _ = _eventStream!.OnNextAsync(_event);
         }
 
 
@@ -71,9 +66,9 @@ namespace RazManager.Silo.Grains.Entities.Event
         }
 
 
-        public Task<EventState> ReadEventStateAsync()
+        public Task<EventState> ReadStateAsync()
         {
-            return Task.FromResult(_eventState!);
+            return Task.FromResult(EventState());
         }
 
 
@@ -87,6 +82,20 @@ namespace RazManager.Silo.Grains.Entities.Event
             }
 
             await stream!.OnNextAsync(texts);
+        }
+
+
+        private EventState EventState()
+        {
+            var eventState = new EventState();
+
+            var currentRace = _event.Races.SingleOrDefault(x => x.Id == _currentRaceId.ToString());
+            if (currentRace is not null)
+            {
+                eventState.CurrentRace = currentRace;
+            }
+
+            return eventState;
         }
     }
 }

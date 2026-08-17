@@ -13,9 +13,9 @@ namespace RazManager.Repository.Stores.Entities.Stint
         public Guid Id { get; set; }
 
         [Required]
-        public Guid HeatWithStintId { get; set; }
+        public Guid HeatWithStintsId { get; set; }
 
-        public HeatWithStint.HeatWithStintEntity HeatWithStint { get; set; } = null!;
+        public HeatWithStints.HeatWithStintsEntity HeatWithStints { get; set; } = null!;
 
         [Required]
         public uint Number { get; set; }

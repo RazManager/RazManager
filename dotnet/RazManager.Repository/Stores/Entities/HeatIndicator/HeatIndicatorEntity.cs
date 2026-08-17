@@ -12,9 +12,9 @@ namespace RazManager.Repository.Stores.Entities.HeatIndicator
         public Guid Id { get; set; }
 
         [Required]
-        public Guid HeatWithoutStintId { get; set; }
+        public Guid HeatWithoutStintsId { get; set; }
 
-        public HeatWithoutStint.HeatWithoutStintEntity HeatWithoutStint { get; set; } = null!;
+        public HeatWithoutStints.HeatWithoutStintsEntity HeatWithoutStints { get; set; } = null!;
 
         [Required]
         public uint IndicatorId { get; set; }

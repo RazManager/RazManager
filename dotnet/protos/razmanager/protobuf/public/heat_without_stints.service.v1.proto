@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/detail_state_type_id.v1.proto";
+import "razmanager/protobuf/public/detail_command_type_id.v1.proto";
+import "razmanager/protobuf/public/heat_without_stints.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+service HeatWithoutStintsService {
+  rpc Subscribe (google.protobuf.StringValue) returns (stream HeatWithoutStints);
+  rpc StateSubscribe (google.protobuf.StringValue) returns (stream DetailState);
+  rpc LeaderboardSubscribe (google.protobuf.StringValue) returns (stream HeatWithoutStintsLeaderboard);
+  rpc HeatAnalysesSubscribe (google.protobuf.StringValue) returns (stream HeatAnalyses);
+  rpc HeatStintAnalysesSubscribe (HeatStintAnalysesRequest) returns (stream HeatStintAnalysis);
+  rpc HeatStintEventUsersSubscribe (HeatStintEventUsersRequest) returns (stream HeatStintEventUsers);
+  rpc Command (DetailCommandRequest) returns (google.protobuf.Empty);
+  rpc CommandPermissions (google.protobuf.StringValue) returns (DetailCommandPermissions);
+}
+
+message HeatStintAnalysesRequest {
+  string heat_id = 1;
+  uint32 indicator_id = 2;
+}
+
+message HeatStintEventUsersRequest {
+  string heat_id = 1;
+}

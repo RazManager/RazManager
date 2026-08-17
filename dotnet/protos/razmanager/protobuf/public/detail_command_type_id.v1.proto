@@ -14,6 +14,11 @@ enum DetailCommandTypeId {
   DETAIL_COMMAND_TYPE_ID_RESET = 7;
 }
 
+message DetailCommandRequest {
+  string id = 1;
+  DetailCommandTypeId command_type_id = 2;
+}
+
 message DetailCommandPermissions {
   repeated DetailCommandTypeId items = 1;
 }

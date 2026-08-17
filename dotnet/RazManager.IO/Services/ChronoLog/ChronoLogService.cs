@@ -12,7 +12,6 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -77,26 +76,26 @@ namespace RazManager.IO.Services.ChronoLog
                 var raceServiceClient = new Razmanager.Protobuf.Public.V1.RaceService.RaceServiceClient(appChannel);
 
                 _logger.LogInformation($"Resetting race {_chronoLogOptions.RaceId}");
-                await raceServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.RaceCommandRequest
+                await raceServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.SummaryCommandRequest
                 {
                     Id = _chronoLogOptions.RaceId,
-                    RaceCommandTypeId = Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.Reset
+                    CommandTypeId = Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.Reset
                 });
 
                 _logger.LogInformation($"Starting race {_chronoLogOptions.RaceId}");
-                await raceServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.RaceCommandRequest
+                await raceServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.SummaryCommandRequest
                 {
                     Id = _chronoLogOptions.RaceId,
-                    RaceCommandTypeId = Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.Start
+                    CommandTypeId = Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.Start
                 });
 
                 var heatWithoutStintServiceClient = new Razmanager.Protobuf.Public.V1.HeatWithoutStintService.HeatWithoutStintServiceClient(appChannel);
 
                 _logger.LogInformation($"Starting heat {_chronoLogOptions.HeatId}");
-                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
+                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.DetailCommandRequest
                 {
                     Id = _chronoLogOptions.HeatId,
-                    HeatWithoutStintCommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Start
+                    CommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Start
                 });
                 heatStateTypeId = DetailStateTypeId.Running;
 
@@ -225,10 +224,10 @@ namespace RazManager.IO.Services.ChronoLog
 
                                     _logger.LogInformation($"Starting heat {_chronoLogOptions.HeatId}");
                                     //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
-                                    await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
+                                    await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.DetailCommandRequest
                                     {
                                         Id = _chronoLogOptions.HeatId,
-                                        HeatWithoutStintCommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Start
+                                        CommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Start
                                     });
                                 }
 
@@ -239,10 +238,10 @@ namespace RazManager.IO.Services.ChronoLog
 
                                 _logger.LogInformation($"Yellow flag heat {_chronoLogOptions.HeatId}");
                                 //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
-                                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
+                                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.DetailCommandRequest
                                 {
                                     Id = _chronoLogOptions.HeatId,
-                                    HeatWithoutStintCommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Yellow
+                                    CommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Yellow
                                 });
 
                                 break;
@@ -252,10 +251,10 @@ namespace RazManager.IO.Services.ChronoLog
 
                                 _logger.LogInformation($"Red flag heat {_chronoLogOptions.HeatId}");
                                 //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
-                                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
+                                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.DetailCommandRequest
                                 {
                                     Id = _chronoLogOptions.HeatId,
-                                    HeatWithoutStintCommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Red
+                                    CommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Red
                                 });
 
                                 break;
@@ -455,10 +454,10 @@ namespace RazManager.IO.Services.ChronoLog
                 //var heatServiceClient = new Razmanager.Protobuf.Public.V1.HeatService.HeatServiceClient(appChannel);
 
                 _logger.LogInformation("Ending race");
-                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
+                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.DetailCommandRequest
                 {
                     Id = _chronoLogOptions.HeatId,
-                    HeatWithoutStintCommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.End
+                    CommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.End
                 }, null, DateTime.UtcNow.AddMinutes(2));
 
                 _logger.LogInformation($"Waiting...");
@@ -466,10 +465,10 @@ namespace RazManager.IO.Services.ChronoLog
                 await Task.Delay(TimeSpan.FromMinutes(1));
 
                 _logger.LogInformation("Closing race");
-                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.HeatCommandRequest
+                await heatWithoutStintServiceClient.CommandAsync(new Razmanager.Protobuf.Public.V1.DetailCommandRequest
                 {
                     Id = _chronoLogOptions.HeatId,
-                    HeatWithoutStintCommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Close
+                    CommandTypeId = Razmanager.Protobuf.Public.V1.DetailCommandTypeId.Close
                 });
 
                 foreach (var car in carControllerFirmwareVersions.Keys.OrderBy(x => x))

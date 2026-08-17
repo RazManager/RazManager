@@ -7,11 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.35.1" />
-    <PackageReference Include="Grpc.Tools" Version="2.82.0">
+    <PackageReference Include="Grpc.Tools" Version="2.83.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.2.1" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" Version="10.2.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,12 +83,12 @@
 		  <Link>Protos/public/event_user_type_id.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/heat_without_stint.v1.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stints.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat_without_stints.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
-	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_with_stint.v1.proto" GrpcServices="None">
-		  <Link>Protos/public/heat_with_stint.v1.proto</Link>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_with_stints.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/heat_with_stints.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/heat_stint_end_type_id.v1.proto" GrpcServices="None">
@@ -113,6 +113,14 @@
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/race_session.v1.proto" GrpcServices="None">
 		  <Link>Protos/public/race_session.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race_session_without_stints.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race_session_without_stints.v1.proto</Link>
+		  <ProtoRoot>../protos</ProtoRoot>
+	  </Protobuf>
+	  <Protobuf Include="../protos/razmanager/protobuf/public/race_session_with_stints.v1.proto" GrpcServices="None">
+		  <Link>Protos/public/race_session_with_stints.v1.proto</Link>
 		  <ProtoRoot>../protos</ProtoRoot>
 	  </Protobuf>
 	  <Protobuf Include="../protos/razmanager/protobuf/public/stint.v1.proto" GrpcServices="None">

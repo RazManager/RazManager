@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/wrappers.proto";
+import "razmanager/protobuf/public/session_type_id.v1.proto";
+import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
+import "razmanager/protobuf/public/heat_stint_end_type_id.v1.proto";
+import "razmanager/protobuf/public/heat_with_stints.v1.proto";
+
+package razmanager.protobuf.public.v1;
+
+
+message RaceSessionWithStints {
+  string id = 1;
+  string race_id = 2;
+  SessionType session_type = 3;
+  uint32 number = 4;
+  google.protobuf.StringValue name = 5;
+  HeatStintEndTypeId heat_stint_end_type_id = 6;
+  google.protobuf.UInt32Value heat_stint_end_lap_laps = 7;
+  google.protobuf.Duration heat_stint_end_duration_duration = 8;
+  repeated HeatWithStints heat_with_stints = 9;
+  SummaryStateType state_type = 10;
+}
+
+
+message RaceSessionWithStintsState {
+  SummaryStateType state_type = 1;
+  repeated RaceSessionWithStintsEventUserState race_session_with_stints_event_user_states = 2;
+  HeatWithStints current_heat_with_stints = 3;
+}
+
+message RaceSessionWithStintsEventUserState {
+  string event_user_id = 1;
+  google.protobuf.UInt32Value indicator_id_current = 2;
+  repeated uint32 indicator_ids_finished = 3;
+}

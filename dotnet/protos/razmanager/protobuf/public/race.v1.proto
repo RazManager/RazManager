@@ -4,8 +4,8 @@ import "google/protobuf/wrappers.proto";
 import "razmanager/protobuf/public/track_configuration.v1.proto";
 import "razmanager/protobuf/public/race_feature_type_id.v1.proto";
 import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
-import "razmanager/protobuf/public/indicator_flag_id.v1.proto";
-import "razmanager/protobuf/public/race_session.v1.proto";
+import "razmanager/protobuf/public/race_session_without_stints.v1.proto";
+import "razmanager/protobuf/public/race_session_with_stints.v1.proto";
 
 package razmanager.protobuf.public.v1;
 
@@ -21,12 +21,22 @@ message Race {
   repeated RaceIndicator race_indicators = 10;
   repeated string race_event_users = 11;
   repeated RaceFeatureTypeId race_features = 12;
-  SummaryStateType race_state_type = 13;
-  repeated RaceSession race_sessions = 14;
+  SummaryStateType state_type = 13;
+  repeated RaceSessionWithoutStints race_sessions_without_stints = 14;
+  repeated RaceSessionWithStints race_sessions_with_stints = 15;
 }
 
 
 message RaceIndicator {
   uint32 indicator_id = 1;
   google.protobuf.UInt32Value color = 2;
+}
+
+
+message RaceState {
+  SummaryStateType state_type = 1;
+  oneof current_race_session {
+	RaceSessionWithoutStints race_session_without_stints = 2;
+	RaceSessionWithStints race_session_with_stints = 3;
+  }
 }

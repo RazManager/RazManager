@@ -108,7 +108,7 @@ namespace RazManager.App.PublicServices.Entities.Event
 
         private async Task EventStateSubscribeExisting(Guid id, IServerStreamWriter<Razmanager.Protobuf.Public.V1.EventState> responseStream)
         {
-            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Event.IEventGrain>(id).ReadEventStateAsync();
+            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Event.IEventGrain>(id).ReadStateAsync();
             await responseStream.WriteAsync(proto);
         }
 

@@ -1,57 +1,16 @@
 syntax = "proto3";
 
-import "google/protobuf/duration.proto";
 import "google/protobuf/wrappers.proto";
-import "razmanager/protobuf/public/session_type_id.v1.proto";
-import "razmanager/protobuf/public/summary_state_type_id.v1.proto";
-import "razmanager/protobuf/public/heat_stint_end_type_id.v1.proto";
 import "razmanager/protobuf/public/indicator_flag_id.v1.proto";
-import "razmanager/protobuf/public/heat_without_stint.v1.proto";
-import "razmanager/protobuf/public/heat_with_stint.v1.proto";
 
 package razmanager.protobuf.public.v1;
 
 
-message RaceSession {
-  string id = 1;
-  SessionType session_type = 2;
-  string race_id = 4;
-  HeatStintEndTypeId heat_stint_end_type_id = 5;
-  google.protobuf.UInt32Value heat_stint_end_lap_laps = 6;
-  google.protobuf.Duration heat_stint_end_duration_duration = 7;
-
-  SummaryStateType race_session_state_type = 10;
-  oneof heats {
-	HeatWithoutStints heat_without_stints = 11;
-	HeatWithStint heat_with_stints = 12;
-  }
+enum RaceSessionTypeId {
+  RACE_SESSION_TYPE_ID_WITHOUT_STINT = 0;
+  RACE_SESSION_TYPE_ID_WITH_STINT = 1;
 }
 
-message HeatWithoutStints {
-  repeated HeatWithoutStint heat_without_stints = 1;
-}
-
-message HeatWithStints {
-  repeated HeatWithStint heat_with_stints = 1;
-}
-
-
-message RaceSessionWithoutStintState {
-  SummaryStateType race_session_state_type = 1;
-  HeatWithoutStint current_heat_without_stint = 3;
-}
-
-message RaceSessionWithStintState {
-  SummaryStateType race_session_state_type = 1;
-  repeated RaceSessionWithStintEventUserState race_session_with_stint_event_user_states = 2;
-  HeatWithStint current_heat_with_stint = 3;
-}
-
-message RaceSessionWithStintEventUserState {
-  string event_user_id = 1;
-  google.protobuf.UInt32Value indicator_id_current = 2;
-  repeated uint32 indicator_ids_finished = 3;
-}
 
 message RaceSessionLeaderboard {
   repeated RaceSessionLeaderboardEventUser event_users = 2;

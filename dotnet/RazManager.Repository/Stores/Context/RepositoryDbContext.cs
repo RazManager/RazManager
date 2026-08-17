@@ -28,11 +28,11 @@ namespace RazManager.Repository.Stores.Context
         public DbSet<Entities.EventInvite.EventInviteEntity> EventInvites { get; set; }
         public DbSet<Entities.EventUser.EventUserEntity> EventUsers { get; set; }
         public DbSet<Entities.EventUserImage.EventUserImageEntity> EventUserImages { get; set; }
-        public DbSet<Entities.HeatWithoutStint.HeatWithoutStintEntity> HeatWithoutStints { get; set; }
+        public DbSet<Entities.HeatWithoutStints.HeatWithoutStintsEntity> HeatWithoutStints { get; set; }
         public DbSet<Entities.HeatIndicator.HeatIndicatorEntity> HeatIndicators { get; set; }
         public DbSet<Entities.HeatIndicatorStint.HeatIndicatorStintEntity> HeatIndicatorStints { get; set; }
         public DbSet<Entities.HeatJournal.HeatJournalEntity> HeatJournals { get; set; }
-        public DbSet<Entities.HeatWithStint.HeatWithStintEntity> HeatWithStints { get; set; }
+        public DbSet<Entities.HeatWithStints.HeatWithStintsEntity> HeatWithStints { get; set; }
         public DbSet<Entities.PointsScheme.PointsSchemeEntity> PointsSchemas { get; set; }
         public DbSet<Entities.PointsSchemePosition.PointsSchemePositionEntity> PointsSchemePositions { get; set; }
         public DbSet<Entities.Race.RaceEntity> Races { get; set; }
@@ -40,7 +40,8 @@ namespace RazManager.Repository.Stores.Context
         public DbSet<Entities.RaceEventUser.RaceEventUserEntity> RaceEventUsers { get; set; }
         public DbSet<Entities.RaceIndicator.RaceIndicatorEntity> RaceIndicators { get; set; }
         public DbSet<Entities.RaceIndicatorEventUser.RaceIndicatorEventUserEntity> RaceIndicatorEventUsers { get; set; }
-        public DbSet<Entities.RaceSession.RaceSessionEntity> RaceSessions { get; set; }
+        public DbSet<Entities.RaceSessionWithoutStints.RaceSessionWithoutStintsEntity> RaceSessionsWithoutStints { get; set; }
+        public DbSet<Entities.RaceSessionWithStints.RaceSessionWithStintsEntity> RaceSessionsWithStints { get; set; }
         public DbSet<Entities.Stint.StintEntity> Stints { get; set; }
         public DbSet<Entities.StintIndicator.StintIndicatorEntity> StintIndicators { get; set; }
         public DbSet<Entities.StintJournal.StintJournalEntity> StintJournals { get; set; }

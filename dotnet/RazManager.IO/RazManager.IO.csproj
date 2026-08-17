@@ -78,12 +78,12 @@
 			<Link>Protos/public/event_user_type_id.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
-		<Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.v1.proto" GrpcServices="None">
-			<Link>Protos/public/heat_without_stint.v1.proto</Link>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stints.v1.proto" GrpcServices="None">
+			<Link>Protos/public/heat_without_stints.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
-		<Protobuf Include="../protos/razmanager/protobuf/public/heat_with_stint.v1.proto" GrpcServices="None">
-			<Link>Protos/public/heat_with_stint.v1.proto</Link>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_with_stints.v1.proto" GrpcServices="None">
+			<Link>Protos/public/heat_with_stints.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/heat_stint_end_type_id.v1.proto" GrpcServices="None">
@@ -108,6 +108,14 @@
 		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/race_session.v1.proto" GrpcServices="None">
 			<Link>Protos/public/race_session.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session_without_stints.v1.proto" GrpcServices="None">
+			<Link>Protos/public/race_session_without_stints.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session_with_stints.v1.proto" GrpcServices="None">
+			<Link>Protos/public/race_session_with_stints.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/stint.v1.proto" GrpcServices="None">
@@ -142,17 +150,21 @@
 			<Link>Protos/public/race.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
-		<Protobuf Include="../protos/razmanager/protobuf/public/race_session.service.v1.proto" GrpcServices="Client">
-			<Link>Protos/public/race_session.service.v1.proto</Link>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session_without_stints.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/race_session_without_stints.service.v1.proto</Link>
+			<ProtoRoot>../protos</ProtoRoot>
+		</Protobuf>
+		<Protobuf Include="../protos/razmanager/protobuf/public/race_session_with_stints.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/race_session_with_stints.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
 	</ItemGroup>
 
 
 	<ItemGroup>
-		<PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
+		<PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
 		<PackageReference Include="System.Device.Gpio" Version="4.2.0" />
-		<PackageReference Include="System.IO.Ports" Version="10.0.10" />
+		<PackageReference Include="System.IO.Ports" Version="10.0.11" />
 	</ItemGroup>
 
 

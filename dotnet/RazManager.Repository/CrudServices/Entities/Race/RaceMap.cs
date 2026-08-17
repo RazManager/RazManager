@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Razmanager.Protobuf.Internal.Repository.CrudServices.Race;
 using Razmanager.Protobuf.Public.V1;
-using RazManager.Repository.Stores.Entities.HeatWithoutStint;
-using RazManager.Repository.Stores.Entities.HeatWithStint;
+using RazManager.Repository.Stores.Entities.HeatWithoutStints;
+using RazManager.Repository.Stores.Entities.HeatWithStints;
 using RazManager.Repository.Stores.Entities.Race;
 using RazManager.Utilities.Protobuf;
 using System;
@@ -43,8 +43,8 @@ namespace RazManager.Repository.CrudServices.Entities.Race
             CreateMap<RaceRead, RaceCreate>()
                 .ForMember(dest => dest.Name, opt => opt.Ignore());
 
-            CreateMap<HeatWithoutStintEntity, RaceSessionGroupRead>();
-            CreateMap<HeatWithStintEntity, RaceSessionGroupRead>();
+            CreateMap<HeatWithoutStintsEntity, RaceSessionGroupRead>();
+            CreateMap<HeatWithStintsEntity, RaceSessionGroupRead>();
         }
     }
 }

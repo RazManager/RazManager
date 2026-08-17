@@ -13,7 +13,7 @@ message Stint {
   string heat_with_stint_id = 2;
   uint32 number = 4;
   repeated StintIndicator stint_indicators = 6;
-  DetailStateType stint_state_type = 7;
+  DetailStateType state_type = 7;
 }
 
 message StintIndicator {
@@ -34,7 +34,7 @@ message StintAnalysis {
   google.protobuf.Duration timer_elapsed = 1;
   google.protobuf.UInt32Value indicator_id = 2;
   oneof value {
-    DetailStateTypeId stint_state_type_id = 3;
+    DetailStateTypeId state_type_id = 3;
     StintAnalysisLap lap = 4;
     StintAnalysisGap gap = 5;
   }

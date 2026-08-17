@@ -46,7 +46,7 @@ namespace RazManager.App.CrudServices.Entities.Event
         public override async Task<UpdateResponse> Update(EventUpdateRequest request, ServerCallContext context)
         {
             var response = await _serviceClient.UpdateAsync(request);
-            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Event.IEventGrain>(new Guid(request.Id)).RefreshAsync(true);
+            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.Event.IEventGrain>(new Guid(request.Id)).RefreshAsync();
             return response;
         }
 

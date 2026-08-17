@@ -44,7 +44,7 @@ namespace RazManager.App.CrudServices.Entities.HeatIndicatorStint
         {
             var response = await _serviceClient.CreateAsync(request);
             var parentIds = await _systemServiceClient.ReadAsync(new StringValue { Value = response.Id});
-            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(parentIds.HeatWithoutStintId)).RefreshHeatIndicatorStintsAsync(new Guid(parentIds.HeatIndicatorId));
+            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(parentIds.HeatWithoutStintId)).RefreshHeatIndicatorStintsAsync(new Guid(parentIds.HeatIndicatorId));
             return response;
         }
 
@@ -53,7 +53,7 @@ namespace RazManager.App.CrudServices.Entities.HeatIndicatorStint
         {
             var response = await _serviceClient.UpdateAsync(request);
             var parentIds = await _systemServiceClient.ReadAsync(new StringValue { Value = request.Id });
-            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(parentIds.HeatWithoutStintId)).RefreshHeatIndicatorStintsAsync(new Guid(parentIds.HeatIndicatorId));
+            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(parentIds.HeatWithoutStintId)).RefreshHeatIndicatorStintsAsync(new Guid(parentIds.HeatIndicatorId));
             return response;
         }
 
@@ -62,7 +62,7 @@ namespace RazManager.App.CrudServices.Entities.HeatIndicatorStint
         {
             var parentIds = await _systemServiceClient.ReadAsync(new StringValue { Value = request.Id });
             var response = await _serviceClient.DeleteAsync(request);
-            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(parentIds.HeatWithoutStintId)).RefreshHeatIndicatorStintsAsync(new Guid(parentIds.HeatIndicatorId));
+            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(parentIds.HeatWithoutStintId)).RefreshHeatIndicatorStintsAsync(new Guid(parentIds.HeatIndicatorId));
             return response;
         }
     }

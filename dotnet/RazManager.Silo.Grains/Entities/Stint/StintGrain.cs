@@ -10,9 +10,11 @@ namespace RazManager.Silo.Grains.Entities.Stint
 {
     public class StintGrain : HeatStintGrainBase, IStintGrain
     {
-        private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.HeatWithStint.HeatWithStintService.HeatWithStintServiceClient _heatWithStintServiceClient;
+        private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSessionWithoutStints.RaceSessionWithoutStintsService.RaceSessionWithoutStintsServiceClient _raceSessionWithoutStintsServiceClient;
+        private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.HeatWithStints.HeatWithStintsService.HeatWithStintsServiceClient _heatWithStintsServiceClient;
         private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.Stint.StintService.StintServiceClient _serviceClient;
-        private Razmanager.Protobuf.Public.V1.HeatWithStint? _heatWithStint;
+        private Razmanager.Protobuf.Public.V1.RaceSessionWithoutStints? _raceSessionWithoutStints;
+        private Razmanager.Protobuf.Public.V1.HeatWithStints? _heatWithStints;
         private Razmanager.Protobuf.Public.V1.Stint? _stint;
 
         //private HeatAnalyses _heatAnalyses = new();
@@ -32,12 +34,13 @@ namespace RazManager.Silo.Grains.Entities.Stint
 
         public StintGrain(Razmanager.Protobuf.Internal.Repository.SystemServices.Event.EventService.EventServiceClient eventServiceClient, 
                           Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceService.RaceServiceClient raceServiceClient,
-                          Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSession.RaceSessionService.RaceSessionServiceClient raceSessionServiceClient,
-                          Razmanager.Protobuf.Internal.Repository.SystemServices.HeatWithStint.HeatWithStintService.HeatWithStintServiceClient heatWithStintServiceClient,
+                          Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSessionWithoutStints.RaceSessionWithoutStintsService.RaceSessionWithoutStintsServiceClient raceSessionWithoutStintsServiceClient,
+                          Razmanager.Protobuf.Internal.Repository.SystemServices.HeatWithStints.HeatWithStintsService.HeatWithStintsServiceClient heatWithStintsServiceClient,
                           Razmanager.Protobuf.Internal.Repository.SystemServices.Stint.StintService.StintServiceClient serviceClient,
-                          ILogger<StintGrain> logger) : base(eventServiceClient, raceServiceClient, raceSessionServiceClient, logger)
+                          ILogger<StintGrain> logger) : base(eventServiceClient, raceServiceClient, logger)
         {
-            _heatWithStintServiceClient = heatWithStintServiceClient;
+            _raceSessionWithoutStintsServiceClient = raceSessionWithoutStintsServiceClient;
+            _heatWithStintsServiceClient = heatWithStintsServiceClient;
             _serviceClient = serviceClient;
             _logger = logger;
         }
@@ -48,9 +51,9 @@ namespace RazManager.Silo.Grains.Entities.Stint
             try
             {
                 _stint = await _serviceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
-                _heatWithStint = await _heatWithStintServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _stint.HeatWithStintId });
-                raceSession = await raceSessionServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _heatWithStint.RaceSessionId });
-                race = await raceServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = raceSession.RaceId });
+                _heatWithStints = await _heatWithStintsServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _stint.HeatWithStintId });
+                _raceSessionWithoutStints = await _raceSessionWithoutStintsServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _heatWithStints.RaceSessionId });
+                race = await raceServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _raceSessionWithoutStints.RaceId });
                 @event = await eventServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = race.EventId });
 
                 var heatStintJournalsResponse = await _serviceClient.ListStintJournalsAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
@@ -63,7 +66,7 @@ namespace RazManager.Silo.Grains.Entities.Stint
 
                 await OnActivateBaseAsync(2, heatStintJournalsResponse.HeatStintJournals);
 
-                _stint!.StintStateType = new Razmanager.Protobuf.Public.V1.DetailStateType
+                _stint!.StateType = new Razmanager.Protobuf.Public.V1.DetailStateType
                 {
                     Id = heatStintJournalState!.HeatStintStateTypeId,
                     Name = new ResourceManager(typeof(RazManager.Resources.DetailStateType)).GetString(heatStintJournalState.HeatStintStateTypeId.ToString())
@@ -155,7 +158,7 @@ namespace RazManager.Silo.Grains.Entities.Stint
         }
 
 
-        public Task<Razmanager.Protobuf.Public.V1.DetailState> ReadStintStateAsync()
+        public Task<Razmanager.Protobuf.Public.V1.DetailState> ReadStateAsync()
         {
             heatStintJournalState!.Timestamp = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow);
             return Task.FromResult(HeatStintState());
@@ -189,7 +192,7 @@ namespace RazManager.Silo.Grains.Entities.Stint
 
             TransitionStateHeatStintStateType(heatStintStateTypeId);
 
-            _stint!.StintStateType = new Razmanager.Protobuf.Public.V1.DetailStateType
+            _stint!.StateType = new Razmanager.Protobuf.Public.V1.DetailStateType
             {
                 Id = heatStintJournalState.HeatStintStateTypeId,
                 Name = new ResourceManager(typeof(RazManager.Resources.DetailStateType)).GetString(heatStintJournalState.HeatStintStateTypeId.ToString())
@@ -207,7 +210,7 @@ namespace RazManager.Silo.Grains.Entities.Stint
                 _offDisposable = this.RegisterGrainTimer(() => RaiseHeatStintStateTypeAsync(DetailStateTypeId.Off), TimeSpan.FromSeconds(30), TimeSpan.FromDays(1));
             }
 
-            _ = GrainFactory.GetGrain<HeatWithStint.IHeatWithStintGrain>(new Guid(_stint.HeatWithStintId)).StintStateTypeUpdatedAsync(_stint);
+            _ = GrainFactory.GetGrain<HeatWithStints.IHeatWithStintsGrain>(new Guid(_stint.HeatWithStintId)).StintStateTypeUpdatedAsync(_stint);
 
             _ = RaisedHeatStintStateTypeAsync(heatStintStateTypeId);
         }
@@ -279,8 +282,8 @@ namespace RazManager.Silo.Grains.Entities.Stint
                             var deviceConfigurationInputStartFinishPrevious = indicatorState.DeviceConfigurationInputs.LastOrDefault(x => x.DeviceConfigurationInputTypeId == DeviceConfigurationInputTypeId.StartFinishIndicator || x.DeviceConfigurationInputTypeId == DeviceConfigurationInputTypeId.StartFinishIndicatorIgnoreLapTime);
                             CalculateTime(indicatorId, indicatorState, deviceConfigurationInputStartFinishPrevious, deviceConfigurationInput, IndicatorTimeTypeId.Lap);
 
-                            if ((raceSession!.HeatStintEndTypeId == HeatStintEndTypeId.Lap && raceSession.HeatStintEndLapLaps <= indicatorState.Laps.Value ||
-                                raceSession!.HeatStintEndTypeId == HeatStintEndTypeId.Duration && raceSession.HeatStintEndDurationDuration.ToTimeSpan() <=
+                            if ((_raceSessionWithoutStints!.HeatStintEndTypeId == HeatStintEndTypeId.Lap && _raceSessionWithoutStints.HeatStintEndLapLaps <= indicatorState.Laps.Value ||
+                                _raceSessionWithoutStints!.HeatStintEndTypeId == HeatStintEndTypeId.Duration && _raceSessionWithoutStints.HeatStintEndDurationDuration.ToTimeSpan() <=
                                     Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(heatStintJournalState.TimerElapsed.ToTimeSpan().Add((heatStintJournalState.Timestamp - heatStintJournalState.TimerStartedAt).ToTimeSpan())).ToTimeSpan()))
                             {
                                 indicatorState.Finished = true;
@@ -293,7 +296,7 @@ namespace RazManager.Silo.Grains.Entities.Stint
                             var eventUsersEventSpeechTexts = new Dictionary<Guid, EventSpeechTexts>();
 
                             var timerElapsed = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(heatStintJournalState.TimerElapsed.ToTimeSpan().Add((deviceConfigurationInput.Timestamp - heatStintJournalState.TimerStartedAt!).ToTimeSpan()));
-                            _ = GrainFactory.GetGrain<HeatWithStint.IHeatWithStintGrain>(new Guid(_stint!.HeatWithStintId))
+                            _ = GrainFactory.GetGrain<HeatWithStints.IHeatWithStintsGrain>(new Guid(_stint!.HeatWithStintId))
                                 .EventUserUpdateAsync(new EventUserUpdate
                                 {
                                     Id = this.GetPrimaryKey().ToString(),
@@ -514,6 +517,18 @@ namespace RazManager.Silo.Grains.Entities.Stint
                     }
                 }
             }
+        }
+
+
+        protected override async Task CreateHeatStintJournalAsync(Razmanager.Protobuf.Internal.Repository.SystemServices.HeatStintJournal.HeatStintJournalCreateRequest proto)
+        {
+            await _serviceClient.CreateStintJournalAsync(proto);
+        }
+
+
+        protected override Task PublishStateAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

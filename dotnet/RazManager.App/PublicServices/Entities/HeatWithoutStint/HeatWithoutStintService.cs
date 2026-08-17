@@ -36,11 +36,11 @@ namespace RazManager.App.PublicServices.Entities.HeatWithoutStint
             StreamSubscriptionHandle<Razmanager.Protobuf.Public.V1.HeatWithoutStint>? subscriptionHandle = null;
             try
             {
-                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(request.Value)).ReadAsync();
+                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(request.Value)).ReadAsync();
                 await responseStream.WriteAsync(proto);
 
                 var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
-                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.HeatWithoutStint>(RazManager.Silo.Grains.Constants.StreamName.HeatWithoutStint.ToString(), new Guid(request.Value));
+                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.HeatWithoutStint>(RazManager.Silo.Grains.Constants.StreamName.HeatWithoutStints.ToString(), new Guid(request.Value));
                 subscriptionHandle = await stream.SubscribeAsync(async sequentialItemList =>
                 {
                     await foreach (var sequentialItem in sequentialItemList.ToAsyncEnumerable().WithCancellation(context.CancellationToken))
@@ -67,18 +67,18 @@ namespace RazManager.App.PublicServices.Entities.HeatWithoutStint
         }
 
 
-        public override async Task HeatWithoutStintStateSubscribe(StringValue request, IServerStreamWriter<DetailState> responseStream, ServerCallContext context)
+        public override async Task StateSubscribe(StringValue request, IServerStreamWriter<DetailState> responseStream, ServerCallContext context)
         {
             // TODO: Validate permissions
 
             StreamSubscriptionHandle<Razmanager.Protobuf.Public.V1.DetailState>? subscriptionHandle = null;
             try
             {
-                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(request.Value)).ReadHeatWithoutStintStateAsync();
+                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(request.Value)).ReadStateAsync();
                 await responseStream.WriteAsync(proto);
 
                 var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
-                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.DetailState>(RazManager.Silo.Grains.Constants.StreamName.HeatWithoutStintState.ToString(), new Guid(request.Value));
+                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.DetailState>(RazManager.Silo.Grains.Constants.StreamName.HeatWithoutStintsState.ToString(), new Guid(request.Value));
                 subscriptionHandle = await stream.SubscribeAsync(async sequentialItemList =>
                 {
                     await foreach (var sequentialItem in sequentialItemList.ToAsyncEnumerable().WithCancellation(context.CancellationToken))
@@ -105,18 +105,18 @@ namespace RazManager.App.PublicServices.Entities.HeatWithoutStint
         }
 
 
-        public override async Task HeatWithoutStintLeaderboardSubscribe(StringValue request, IServerStreamWriter<HeatWithoutStintLeaderboard> responseStream, ServerCallContext context)
+        public override async Task LeaderboardSubscribe(StringValue request, IServerStreamWriter<HeatWithoutStintLeaderboard> responseStream, ServerCallContext context)
         {
             // TODO: Validate permissions
 
             StreamSubscriptionHandle<Razmanager.Protobuf.Public.V1.HeatWithoutStintLeaderboard>? subscriptionHandle = null;
             try
             {
-                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(request.Value)).ReadHeatWithoutStintLeaderboardAsync();
+                var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(request.Value)).ReadLeaderboardAsync();
                 await responseStream.WriteAsync(proto);
 
                 var streamProvider = _clusterClient.GetStreamProvider(RazManager.Silo.Grains.Constants.StreamProvider);
-                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.HeatWithoutStintLeaderboard>(RazManager.Silo.Grains.Constants.StreamName.HeatWithoutStintLeaderboard.ToString(), new Guid(request.Value));
+                var stream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.HeatWithoutStintLeaderboard>(RazManager.Silo.Grains.Constants.StreamName.HeatWithoutStintsLeaderboard.ToString(), new Guid(request.Value));
                 subscriptionHandle = await stream.SubscribeAsync(async sequentialItemList =>
                 {
                     await foreach (var sequentialItem in sequentialItemList.ToAsyncEnumerable().WithCancellation(context.CancellationToken))
@@ -183,7 +183,7 @@ namespace RazManager.App.PublicServices.Entities.HeatWithoutStint
         {
             var stopwatch = new Stopwatch();
             stopwatch.Restart();
-            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(id).ReadHeatAnalysesAsync();
+            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(id).ReadHeatAnalysesAsync();
             var readDuration = stopwatch.Elapsed;
             stopwatch.Restart();
 
@@ -274,7 +274,7 @@ namespace RazManager.App.PublicServices.Entities.HeatWithoutStint
 
         private async Task HeatStintAnalysesSubscribeExisting(Guid id, byte indicatorId, IServerStreamWriter<HeatStintAnalysis> responseStream)
         {
-            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(id).ReadHeatStintAnalysisIndicatorStintsAsync(indicatorId);
+            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(id).ReadHeatStintAnalysisIndicatorStintsAsync(indicatorId);
             await responseStream.WriteAsync(new HeatStintAnalysis
             {
                 Refresh = true,
@@ -322,14 +322,14 @@ namespace RazManager.App.PublicServices.Entities.HeatWithoutStint
 
         private async Task HeatStintEventUsersSubscribeExisting(Guid id, IServerStreamWriter<HeatStintEventUsers> responseStream)
         {
-            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(id).ReadHeatStintEventUsersAsync();
+            var proto = await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(id).ReadHeatStintEventUsersAsync();
             await responseStream.WriteAsync(proto);
         }
 
 
-        public override async Task<Empty> Command(HeatCommandRequest request, ServerCallContext context)
+        public override async Task<Empty> Command(DetailCommandRequest request, ServerCallContext context)
         {
-            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(request.Id)).CommandAsync(request.HeatWithoutStintCommandTypeId);
+            await _clusterClient.GetGrain<RazManager.Silo.Grains.Entities.HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(request.Id)).CommandAsync(request.CommandTypeId);
             return new Empty();
         }
 

@@ -10,13 +10,6 @@ package razmanager.protobuf.public.v1;
 
 service RaceService {
   rpc Subscribe (google.protobuf.StringValue) returns (stream Race);
-  //rpc RaceStateSubscribe (RaceSessionRequest) returns (stream RaceState);
-  rpc Command (RaceCommandRequest) returns (google.protobuf.Empty);
+  rpc Command (SummaryCommandRequest) returns (google.protobuf.Empty);
   rpc CommandPermissions (google.protobuf.StringValue) returns (SummaryCommandPermissions);
-}
-
-
-message RaceCommandRequest {
-  string id = 1;
-  SummaryCommandTypeId race_command_type_id = 2;
 }

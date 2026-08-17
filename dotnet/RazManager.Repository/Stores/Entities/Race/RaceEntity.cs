@@ -50,9 +50,12 @@ namespace RazManager.Repository.Stores.Entities.Race
         public bool EnergySimulation { get; set; }
 
         [Required]
-        public List<RaceSession.RaceSessionEntity> RaceSessions { get; set; } = [];
+        public List<RaceSessionWithoutStints.RaceSessionWithoutStintsEntity> RaceSessionsWithoutStints { get; set; } = [];
 
         [Required]
-        public Razmanager.Protobuf.Public.V1.SummaryStateTypeId RaceStateTypeId { get; set; }
+        public List<RaceSessionWithStints.RaceSessionWithStintsEntity> RaceSessionsWithStints { get; set; } = [];
+
+        [Required]
+        public Razmanager.Protobuf.Public.V1.SummaryStateTypeId StateTypeId { get; set; }
     }
 }

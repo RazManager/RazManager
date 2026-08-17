@@ -10,6 +10,6 @@ namespace RazManager.Repository.Stores.Entities.HeatJournal
         [Required]
         public Guid HeatWithoutStintId { get; set; }
 
-        public HeatWithoutStint.HeatWithoutStintEntity HeatWithoutStint { get; set; } = null!;
+        public HeatWithoutStint.HeatWithoutStintsEntity HeatWithoutStint { get; set; } = null!;
     }
 }

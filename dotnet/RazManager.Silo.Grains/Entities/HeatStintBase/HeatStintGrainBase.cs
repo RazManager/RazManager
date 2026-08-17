@@ -12,10 +12,8 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
     {
         protected readonly Razmanager.Protobuf.Internal.Repository.SystemServices.Event.EventService.EventServiceClient eventServiceClient;
         protected readonly Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceService.RaceServiceClient raceServiceClient;
-        protected readonly Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSession.RaceSessionService.RaceSessionServiceClient raceSessionServiceClient;
         protected Razmanager.Protobuf.Public.V1.Event? @event;
         protected Razmanager.Protobuf.Public.V1.Race? race;
-        protected Razmanager.Protobuf.Public.V1.RaceSession? raceSession;
         protected byte trackLaptimeDecimals;
         protected string trackLaptimeDecimalsFormat = "F2";
 
@@ -43,12 +41,10 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
 
         public HeatStintGrainBase(Razmanager.Protobuf.Internal.Repository.SystemServices.Event.EventService.EventServiceClient eventServiceClient, 
                                   Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceService.RaceServiceClient raceServiceClient,                                    
-                                  Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSession.RaceSessionService.RaceSessionServiceClient raceSessionServiceClient,
                                   ILogger<HeatStintGrainBase> logger)
         {
             this.eventServiceClient = eventServiceClient;
             this.raceServiceClient = raceServiceClient;
-            this.raceSessionServiceClient = raceSessionServiceClient;
             _logger = logger;
         }
 
@@ -292,7 +288,7 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
                         new DeviceConfigurationOutput { DeviceConfigurationOutputTypeId = DeviceConfigurationOutputTypeId.HeatOff },
                         new DeviceConfigurationOutput { DeviceConfigurationOutputTypeId = DeviceConfigurationOutputTypeId.CountdownOff }
                     ]);
-                    _ = GrainFactory.GetGrain<HeatWithoutStint.IHeatWithoutStintGrain>(this.GetPrimaryKey()).StartLightAsync();
+                    _ = GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(this.GetPrimaryKey()).StartLightAsync();
                     break;
 
                 case DetailStateTypeId.Running:
@@ -320,7 +316,7 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
                         new DeviceConfigurationOutput { DeviceConfigurationOutputTypeId = DeviceConfigurationOutputTypeId.HeatYellow },
                         new DeviceConfigurationOutput { DeviceConfigurationOutputTypeId = DeviceConfigurationOutputTypeId.CountdownOff }
                     ]);
-                    _ = GrainFactory.GetGrain<HeatWithoutStint.IHeatWithoutStintGrain>(this.GetPrimaryKey()).StartLightAsync();
+                    _ = GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(this.GetPrimaryKey()).StartLightAsync();
                     break;
 
                 case DetailStateTypeId.Red:
@@ -339,7 +335,7 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
                         new DeviceConfigurationOutput { DeviceConfigurationOutputTypeId = DeviceConfigurationOutputTypeId.HeatRed },
                         new DeviceConfigurationOutput { DeviceConfigurationOutputTypeId = DeviceConfigurationOutputTypeId.CountdownOff }
                     ]);
-                    _ = GrainFactory.GetGrain<HeatWithoutStint.IHeatWithoutStintGrain>(this.GetPrimaryKey()).StartLightAsync();
+                    _ = GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(this.GetPrimaryKey()).StartLightAsync();
                     break;
 
                 case DetailStateTypeId.Ended:
@@ -510,7 +506,7 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
                         DeviceConfigurationInputs = deviceConfigurationInputs,
                     }
                 };
-                await _serviceClient.CreateHeatJournalAsync(proto);
+                await CreateHeatStintJournalAsync(proto);
 
                 TransitionStateDeviceConfigurationInputs(deviceConfigurationInputs, false);
 
@@ -624,7 +620,7 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
                 var heatAnalysis = new HeatAnalysis
                 {
                     TimerElapsed = Google.Protobuf.WellKnownTypes.Duration.FromTimeSpan(ClockElapsedNow),
-                    HeatStateTypeId = heatStintStateTypeId
+                    StateTypeId = heatStintStateTypeId
                 };
 
                 heatAnalyses.Items.Add(heatAnalysis);
@@ -838,6 +834,9 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
         }
 
 
+        protected abstract Task CreateHeatStintJournalAsync(Razmanager.Protobuf.Internal.Repository.SystemServices.HeatStintJournal.HeatStintJournalCreateRequest proto);
+
+
         protected Razmanager.Protobuf.Public.V1.DetailState HeatStintState()
         {
             var lapsCurrent = indicators.Max(x => x.Value.Laps);
@@ -892,6 +891,10 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
         }
 
 
+        protected abstract Task PublishStateAsync();
+
+
+
         private class StartLightMessage
         {
         }
@@ -924,7 +927,7 @@ namespace RazManager.Silo.Grains.Entities.HeatStint
             public uint Motor { get; set; }
             public Google.Protobuf.WellKnownTypes.Timestamp? LastEnergyTimestamp { get; set; }
             public double CurrentEnergyLapLevel { get; set; }
-            public double TotalEnergyLevel { get; set; } = totalEnergyLevel;
+            public double TotalEnergyLevel { get; set; }  //= totalEnergyLevel;
             public Queue<double> LastEnergyLapLevels = new();
         }
 

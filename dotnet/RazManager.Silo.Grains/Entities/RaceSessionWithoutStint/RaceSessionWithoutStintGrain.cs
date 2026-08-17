@@ -5,23 +5,27 @@ using System.Globalization;
 using System.Resources;
 
 
-namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
+namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStints
 {
-    public class RaceSessionWithoutStintGrain : Grain, IRaceSessionWithoutStintGrain
+    public class RaceSessionWithoutStintGrain : Grain, IRaceSessionWithoutStintsGrain
     {
-        private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSession.RaceSessionService.RaceSessionServiceClient _serviceClient;
-        private Razmanager.Protobuf.Public.V1.RaceSession? _raceSession;
-        private IAsyncStream<Razmanager.Protobuf.Public.V1.RaceSession>? _raceSessionStream;
-        private IAsyncStream<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStintState>? _raceSessionWithoutStintStateStream;
+        private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceService.RaceServiceClient _raceServiceClient;
+        private readonly Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSessionWithoutStints.RaceSessionWithoutStintsService.RaceSessionWithoutStintsServiceClient _serviceClient;
+        private Razmanager.Protobuf.Public.V1.Race? _race;
+        private Razmanager.Protobuf.Public.V1.RaceSessionWithoutStints? _raceSessionWithoutStints;
+        private IAsyncStream<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStints>? _raceSessionWithoutStintsStream;
+        private IAsyncStream<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStintsState>? _raceSessionWithoutStintsStateStream;
         private IAsyncStream<Razmanager.Protobuf.Public.V1.RaceSessionLeaderboard>? _raceSessionLeaderboardStream;
-        private Guid? _currentHeatWithoutStintId = null;
+        private Guid? _currentHeatWithoutStintsId = null;
         private Dictionary<(Guid EventUserId, Guid HeatId), uint> _eventUserHeatIndicators = [];
         private Dictionary<Guid, RaceSessionLeaderboardEventUser> _raceSessionLeaderboardEventUsers = [];
         private string _trackLaptimeDecimalsFormat = "F2";
 
 
-        public RaceSessionWithoutStintGrain(Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSession.RaceSessionService.RaceSessionServiceClient serviceClient)
+        public RaceSessionWithoutStintGrain(Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceService.RaceServiceClient raceServiceClient, 
+                                            Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSessionWithoutStints.RaceSessionWithoutStintsService.RaceSessionWithoutStintsServiceClient serviceClient)
         {
+            _raceServiceClient = raceServiceClient;
             _serviceClient = serviceClient;
         }
 
@@ -29,8 +33,8 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
         public override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             var streamProvider = this.GetStreamProvider(Constants.StreamProvider);
-            _raceSessionStream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceSession> (Constants.StreamName.race .RaceSession.ToString(), this.GetPrimaryKey());
-            _raceSessionWithoutStintStateStream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStintState>(Constants.StreamName.RaceSessionWithoutStintState.ToString(), this.GetPrimaryKey());
+            _raceSessionWithoutStintsStream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStints> (Constants.StreamName.RaceSessionWithoutStints.ToString(), this.GetPrimaryKey());
+            _raceSessionWithoutStintsStateStream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStintsState>(Constants.StreamName.RaceSessionWithoutStintsState.ToString(), this.GetPrimaryKey());
             _raceSessionLeaderboardStream = streamProvider.GetStream<Razmanager.Protobuf.Public.V1.RaceSessionLeaderboard>(Constants.StreamName.RaceSessionLeaderboard.ToString(), this.GetPrimaryKey());
             await RefreshAsync();
         }
@@ -38,9 +42,11 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
 
         public async Task RefreshAsync()
         {
-            _raceSession = await _serviceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
+            _raceSessionWithoutStints = await _serviceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = this.GetPrimaryKey().ToString() });
+            _race = await _raceServiceClient.ReadAsync(new Google.Protobuf.WellKnownTypes.StringValue { Value = _raceSessionWithoutStints.RaceId });
 
-            foreach (var item in _raceSession.HeatWithoutStints.HeatWithoutStints_
+            _eventUserHeatIndicators.Clear();
+            foreach (var item in _raceSessionWithoutStints.HeatWithoutStints
                     .SelectMany(x => x.HeatIndicators, (Heat, HeatIndicator) => new { Heat, HeatIndicator }))
             {
                 _eventUserHeatIndicators.Add((new Guid(item.HeatIndicator.EventUserId), new Guid(item.Heat.Id)), item.HeatIndicator.IndicatorId); // For quick lookup of the current indicator for each event user in a heat
@@ -48,119 +54,100 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
 
             Initialize();
 
-            var tasks = _raceSession.HeatWithoutStints.HeatWithoutStints_
-                .Select(x => GrainFactory.GetGrain<HeatWithoutStint.IHeatWithoutStintGrain>(new Guid(x.Id)).ReadAsync());
+            var tasks = _raceSessionWithoutStints.HeatWithoutStints
+                .Select(x => GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(x.Id)).ReadAsync());
             var results = await Task.WhenAll(tasks);
 
             foreach (var result in results)
             {
-                var heatWithoutStint = _raceSession.HeatWithoutStints.HeatWithoutStints_.SingleOrDefault(x => x.Id == result.Id);
-                if (heatWithoutStint is not null)
+                var heatWithoutStints = _raceSessionWithoutStints.HeatWithoutStints.SingleOrDefault(x => x.Id == result.Id);
+                if (heatWithoutStints is not null)
                 {
-                    heatWithoutStint = result;
+                    heatWithoutStints = result;
 
-                    if (heatWithoutStint.HeatWithoutStintStateType.Id != DetailStateTypeId.Pending && heatWithoutStint.HeatWithoutStintStateType.Id != DetailStateTypeId.Closed)
+                    if (heatWithoutStints.StateType.Id != DetailStateTypeId.Pending && heatWithoutStints.StateType.Id != DetailStateTypeId.Closed)
                     {
-                        _currentHeatWithoutStintId = new Guid(heatWithoutStint.Id);
-                        _ = _raceSessionWithoutStintStateStream!.OnNextAsync(RaceState(raceSessionGroupHeat.RaceSessionGroup.SessionType.Id));
+                        _currentHeatWithoutStintsId = new Guid(heatWithoutStints.Id);
+                        _ = _raceSessionWithoutStintsStateStream!.OnNextAsync(RaceSessionWithoutStintsState());
                     }
                 }
             }
 
-            _ = _raceSessionStream!.OnNextAsync(_raceSession);
+            _ = _raceSessionWithoutStintsStream!.OnNextAsync(_raceSessionWithoutStints);
 
-            _ = GrainFactory.GetGrain<Event.IEventGrain>(new Guid(_raceSession.EventId)).RefreshAsync(true);
+            _ = GrainFactory.GetGrain<Race.IRaceGrain>(new Guid(_raceSessionWithoutStints.RaceId)).RefreshAsync();
         }
 
 
         private void Initialize()
         {
-            _currentHeatWithoutStintId = null;
+            _currentHeatWithoutStintsId = null;
 
             _raceSessionLeaderboardEventUsers.Clear();
-            foreach (var sessionTypeId in Enum.GetValues<SessionTypeId>())
+            foreach (var item in _raceSessionWithoutStints!.HeatWithoutStints
+                    .SelectMany(x => x.HeatIndicators, (Heat, HeatIndicator) => new { Heat, HeatIndicator })
+                    .GroupBy(x => x.HeatIndicator.EventUserId)
+                    .Select((x, index) => new { x.Key, index }))
             {
-                var raceEventUsers = new Dictionary<Guid, RaceSessionLeaderboardEventUser>();
-                foreach (var raceEventUserKv in _raceSession.RaceEventUsers.Select((id, index) => new { id, index }))
-                {
-                    raceEventUsers.Add(new Guid(raceEventUserKv.id), new RaceSessionLeaderboardEventUser { Position = Convert.ToUInt32(raceEventUserKv.index + 1) });
-                }
-
-                _raceSessionLeaderboardEventUsers.Add(sessionTypeId, raceEventUsers);
+                _raceSessionLeaderboardEventUsers.Add(new Guid(item.Key), new RaceSessionLeaderboardEventUser { Position = Convert.ToUInt32(item.index + 1) });
             }
         }
 
 
-        public Task<Razmanager.Protobuf.Public.V1.Race> ReadAsync()
+        public Task<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStints> ReadAsync()
         {
-            return Task.FromResult(_raceSession!);
+            return Task.FromResult(_raceSessionWithoutStints!);
         }
 
 
-        public Task<Guid?> CurrentHeatAsync()
+        public Task<Razmanager.Protobuf.Public.V1.RaceSessionWithoutStintsState> ReadStateAsync()
         {
-            return Task.FromResult(_currentHeatWithoutStintId);
+            return Task.FromResult(RaceSessionWithoutStintsState());
         }
 
 
-        public Task<RaceState> ReadRaceStateAsync(SessionTypeId sessionTypeId)
+        public Task<Razmanager.Protobuf.Public.V1.RaceSessionLeaderboard> ReadLeaderboardAsync()
         {
-            return Task.FromResult(RaceState(sessionTypeId));
+            return Task.FromResult(RaceSessionLeaderboard());
         }
 
 
-        public Task<RaceLeaderboard> ReadRaceLeaderboardAsync(SessionTypeId sessionTypeId)
+        public async Task CommandAsync(Razmanager.Protobuf.Public.V1.SummaryCommandTypeId commandTypeId)
         {
-            return Task.FromResult(RaceLeaderboard(sessionTypeId));
-        }
-
-
-        public async Task CommandAsync(Razmanager.Protobuf.Public.V1.RaceCommandTypeId raceCommandTypeId)
-        {
-            switch (raceCommandTypeId)
+            switch (commandTypeId)
             {
-                case RaceCommandTypeId.Start:
-                    if (!(_raceSession!.RaceStateType.Id == RaceStateTypeId.Pending || _raceSession!.RaceStateType.Id == RaceStateTypeId.Paused))
+                case Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.Start:
+                    if (_raceSessionWithoutStints!.StateType.Id != SummaryStateTypeId.Pending)
                     {
                         return;
                     }
 
-                    await RaceStateSetAsync(RaceStateTypeId.Started);
+                    await RaceSessionStateSetAsync(SummaryStateTypeId.Started);
                     break;
 
-                case RaceCommandTypeId.Pause:
-                    if (!(_raceSession!.RaceStateType.Id == RaceStateTypeId.Started))
+                case Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.End:
+                    if (_raceSessionWithoutStints!.StateType.Id != SummaryStateTypeId.Started)
                     {
                         return;
                     }
 
-                    await RaceStateSetAsync(RaceStateTypeId.Paused);
+                    await RaceSessionStateSetAsync(SummaryStateTypeId.Ended);
                     break;
 
-                case RaceCommandTypeId.End:
-                    if (!(_raceSession!.RaceStateType.Id == RaceStateTypeId.Started || _raceSession.RaceStateType.Id == RaceStateTypeId.Paused))
-                    {
-                        return;
-                    }
-
-                    await RaceStateSetAsync(RaceStateTypeId.Ended);
-                    break;
-
-                case RaceCommandTypeId.Reset:
-                    if (!(_raceSession.RaceStateType.Id == RaceStateTypeId.Started || _raceSession.RaceStateType.Id == RaceStateTypeId.Paused || _raceSession.RaceStateType.Id == RaceStateTypeId.Ended))
+                case Razmanager.Protobuf.Public.V1.SummaryCommandTypeId.Reset:
+                    if (!(_raceSessionWithoutStints!.StateType.Id == SummaryStateTypeId.Started || _raceSessionWithoutStints!.StateType.Id == SummaryStateTypeId.Ended))
                     {
                         return;
                     }
 
                     Initialize();
 
-                    foreach (var raceSessionGroupHeat in _raceSession!.RaceSessionGroups
-                                            .SelectMany(x => x.Heats, (RaceSessionGroup, Heat) => new { RaceSessionGroup, Heat }))
+                    foreach (var heatWithoutStint in _raceSessionWithoutStints!.HeatWithoutStints)
                     {
-                        _ = GrainFactory.GetGrain<Heat.IHeatWithoutStintGrain>(new Guid(raceSessionGroupHeat.Heat.Id)).CommandAsync(HeatCommandTypeId.Reset);
+                        _ = GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(heatWithoutStint.Id)).CommandAsync(DetailCommandTypeId.Reset);
                     }
 
-                    await RaceStateSetAsync(RaceStateTypeId.Pending);
+                    await RaceSessionStateSetAsync(SummaryStateTypeId.Pending);
                     break;
 
                 default:
@@ -169,147 +156,138 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
        }
 
 
-        private async Task RaceStateSetAsync(RaceStateTypeId raceStateTypeId)
+        private async Task RaceSessionStateSetAsync(SummaryStateTypeId stateTypeId)
         {
-            _raceSession!.RaceStateType = new Razmanager.Protobuf.Public.V1.RaceStateType
+            _raceSessionWithoutStints!.StateType = new Razmanager.Protobuf.Public.V1.SummaryStateType
             {
-                Id = raceStateTypeId,
-                Name = new ResourceManager(typeof(RazManager.Resources.RaceStateType)).GetString(raceStateTypeId.ToString())
+                Id = stateTypeId,
+                Name = new ResourceManager(typeof(RazManager.Resources.SummaryStateType)).GetString(stateTypeId.ToString())
             };
 
-            await _serviceClient.UpdateStateAsync(new Razmanager.Protobuf.Internal.Repository.SystemServices.Race.RaceStateUpdateRequest
+            await _serviceClient.UpdateStateAsync(new Razmanager.Protobuf.Internal.Repository.SystemServices.RaceSessionWithoutStints.RaceSessionWithoutStintsStateUpdateRequest
             {
                 Id = this.GetPrimaryKey().ToString(),
-                RaceStateTypeId = raceStateTypeId
+                StateTypeId = stateTypeId
             });
 
-            if (raceStateTypeId == RaceStateTypeId.Started)
+            if (stateTypeId == SummaryStateTypeId.Started)
             {
-                var heatId = _raceSession.RaceSessionGroups
-                    .SelectMany(x => x.Heats, (RaceSessionGroup, Heat) => new { RaceSessionGroup, Heat })
-                    .OrderBy(x => x.RaceSessionGroup.SessionType.Id)
-                    .ThenBy(x => x.Heat.Number)
-                    .First().Heat.Id;
-                _ = GrainFactory.GetGrain<Heat.IHeatWithoutStintGrain>(new Guid(heatId)).CommandAsync(HeatCommandTypeId.Open);
+                var heatWithoutStintId = _raceSessionWithoutStints.HeatWithoutStints
+                    .OrderBy(x => x.Number)
+                    .First().Id;
+                _ = GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(heatWithoutStintId)).CommandAsync(DetailCommandTypeId.Open);
                 return;
             }
 
-            _ = _raceSessionStream!.OnNextAsync(_raceSession);
+            _ = _raceSessionWithoutStintsStream!.OnNextAsync(_raceSessionWithoutStints);
         }
 
 
-        public Task HeatStateTypeUpdatedAsync(Guid id, Razmanager.Protobuf.Public.V1.HeatStateType heatStateType)
+        public Task HeatWithoutStintsStateTypeUpdatedAsync(Razmanager.Protobuf.Public.V1.HeatWithoutStints heatWithoutStints)
         {
-            var raceSessionGroupHeat = _raceSession.RaceSessionGroups
-                    .SelectMany(x => x.Heats, (RaceSessionGroup, Heat) => new { RaceSessionGroup, Heat })
-                    .SingleOrDefault(x => x.Heat.Id == id.ToString());
-            if (raceSessionGroupHeat is not null)
+            var oldHeatWithoutStints = _raceSessionWithoutStints!.HeatWithoutStints
+                    .SingleOrDefault(x => x.Id == heatWithoutStints.Id.ToString());
+            if (oldHeatWithoutStints is not null)
             {
-                raceSessionGroupHeat.Heat.HeatStateType = heatStateType;
+                oldHeatWithoutStints = heatWithoutStints;
 
-                switch (heatStateType.Id)
+                switch (heatWithoutStints.StateType.Id)
                 {
-                    case HeatStateTypeId.Pending:
-                    case HeatStateTypeId.Opened:
-                        var raceLeaderboardEventUsers = _raceSessionLeaderboardEventUsers[raceSessionGroupHeat.RaceSessionGroup.SessionType.Id];
-                        foreach (var raceLeaderboardEventUser in raceLeaderboardEventUsers)
+                    case DetailStateTypeId.Pending:
+                    case DetailStateTypeId.Opened:
+                        foreach (var raceSessionLeaderboardEventUser in _raceSessionLeaderboardEventUsers)
                         {
-                            raceLeaderboardEventUser.Value.EventUserHeats.Remove(id);
-                            CalculateLaps(raceLeaderboardEventUser.Value, null);
+                            raceSessionLeaderboardEventUser.Value.EventUserHeats.Remove(new Guid(heatWithoutStints.Id));
+                            CalculateLaps(raceSessionLeaderboardEventUser.Value, null);
                         }
 
-                        CalculatePositions(raceLeaderboardEventUsers, null);
+                        CalculatePositions(null);
 
-                        _ = _raceSessionLeaderboardStream!.OnNextAsync(RaceLeaderboard(raceSessionGroupHeat.RaceSessionGroup.SessionType.Id));
+                        _ = _raceSessionLeaderboardStream!.OnNextAsync(RaceSessionLeaderboard());
 
                         break;
 
-                    case HeatStateTypeId.Countdown:
-                    case HeatStateTypeId.Running:
-                    case HeatStateTypeId.Yellow:
-                    case HeatStateTypeId.CountdownYellow:
-                    case HeatStateTypeId.Red:
-                    case HeatStateTypeId.CountdownRed:
-                    case HeatStateTypeId.Ended:
-                    case HeatStateTypeId.Off:
+                    case DetailStateTypeId.Countdown:
+                    case DetailStateTypeId.Running:
+                    case DetailStateTypeId.Yellow:
+                    case DetailStateTypeId.CountdownYellow:
+                    case DetailStateTypeId.Red:
+                    case DetailStateTypeId.CountdownRed:
+                    case DetailStateTypeId.Ended:
+                    case DetailStateTypeId.Off:
                         break;
 
-                    case HeatStateTypeId.Closed:
-                        foreach (var rsgh in _raceSession.RaceSessionGroups
-                            .SelectMany(x => x.Heats, (RaceSessionGroup, Heat) => new { RaceSessionGroup, Heat })
-                            .OrderBy(x => x.RaceSessionGroup.SessionType.Id)
-                            .ThenBy(x => x.Heat.Number))
+                    case DetailStateTypeId.Closed:
+                        foreach (var h in _raceSessionWithoutStints!.HeatWithoutStints
+                            .OrderBy(x => x.Number))
                         {
-                            if (rsgh.Heat.HeatStateType.Id == HeatStateTypeId.Pending)
+                            if (h.StateType.Id == DetailStateTypeId.Pending)
                             {
-                                _ = GrainFactory.GetGrain<Heat.IHeatWithoutStintGrain>(new Guid(rsgh.Heat.Id)).CommandAsync(HeatCommandTypeId.Open);
+                                _ = GrainFactory.GetGrain<HeatWithoutStints.IHeatWithoutStintsGrain>(new Guid(h.Id)).CommandAsync(DetailCommandTypeId.Open);
                                 break;
                             }
                         }
                         break;
 
                     default:
-                        throw new ArgumentException($"Unhandled HeatStateTypeId: {heatStateType.Id}", nameof(heatStateType.Id));
+                        throw new ArgumentException($"Unhandled StateType: {heatWithoutStints.StateType.Id}", nameof(heatWithoutStints.StateType.Id));
                 }
             }
 
-            _ = _raceSessionStream!.OnNextAsync(_raceSession);
+            _ = _raceSessionWithoutStintsStream!.OnNextAsync(_raceSessionWithoutStints);
 
             return Task.CompletedTask;
         }
 
 
-        public Task HeatStateUpdatedAsync(Guid id, Razmanager.Protobuf.Public.V1.HeatState heatState)
+        public Task HeatWithoutStintsStateUpdatedAsync(Guid id, Razmanager.Protobuf.Public.V1.HeatWithoutStints heatWithoutStints)
         {
-            var raceSessionGroupHeat = _raceSession?.RaceSessionGroups
-                    .SelectMany(x => x.Heats, (RaceSessionGroup, Heat) => new { RaceSessionGroup, Heat })
-                    .SingleOrDefault(x => x.Heat.Id == id.ToString());
-            if (raceSessionGroupHeat?.Heat is not null)
+            var oldHeatWithoutStints = _raceSessionWithoutStints!.HeatWithoutStints
+                    .SingleOrDefault(x => x.Id == heatWithoutStints.Id.ToString());
+            if (oldHeatWithoutStints is not null)
             {
-                _heatState = heatState;
-                _ = _raceSessionWithoutStintStateStream!.OnNextAsync(RaceState(raceSessionGroupHeat.RaceSessionGroup.SessionType.Id));
+                oldHeatWithoutStints = heatWithoutStints;
+                _ = _raceSessionWithoutStintsStateStream!.OnNextAsync(RaceSessionWithoutStintsState());
             }
 
             return Task.CompletedTask;
         }
 
 
-        public async Task EventUserUpdateAsync(EventUserUpdate update)
+        public async Task EventUserUpdateAsync(Razmanager.Protobuf.Internal.Silo.SystemServices.EventUser.EventUserUpdate update)
         {
-            var heatWithStint = _raceSession.HeatWithStints.  _raceSession?.RaceSessionGroups
-                    .SelectMany(x => x.Heats, (RaceSessionGroup, Heat) => new { RaceSessionGroup, Heat })
-                    .SingleOrDefault(x => x.Heat.Id == update.HeatId);
-            if (heatWithStint?.Heat is null)
+            var heatWithoutStints = _raceSessionWithoutStints!.HeatWithoutStints
+                    .SingleOrDefault(x => x.Id == update.Id.ToString());
+            if (heatWithoutStints is null)
             {
                 return;
             }
 
-            var raceLeaderboardEventUsers = _raceSessionLeaderboardEventUsers[heatWithStint.RaceSessionGroup.SessionType.Id];
-            if (!raceLeaderboardEventUsers.TryGetValue(new Guid(update.EventUserId), out var raceLeaderboardEventUser))
+            if (!_raceSessionLeaderboardEventUsers.TryGetValue(new Guid(update.EventUserId), out var raceSessionLeaderboardEventUser))
             {
                 return;
             }
 
-            if (!raceLeaderboardEventUser.EventUserHeats.TryGetValue(new Guid(update.HeatId), out var raceLeaderboardEventUserHeat))
+            if (!raceSessionLeaderboardEventUser.EventUserHeats.TryGetValue(new Guid(update.Id), out var raceLeaderboardEventUserHeat))
             {
                 raceLeaderboardEventUserHeat = new RaceSessionLeaderboardEventUserHeat();
-                raceLeaderboardEventUser.EventUserHeats[new Guid(update.HeatId)] = raceLeaderboardEventUserHeat;
+                raceSessionLeaderboardEventUser.EventUserHeats[new Guid(update.Id)] = raceLeaderboardEventUserHeat;
             }
 
             switch (update.ValueCase)
             {
-                case RaceLeaderboardHeatEventUserUpdate.ValueOneofCase.Laps:
+                case EventUserUpdate.ValueOneofCase.Laps:
                     raceLeaderboardEventUserHeat.EventUserUpdatesLap = update;
-                    raceLeaderboardEventUser.PreviousGapLapsPredictedInterval = raceLeaderboardEventUser.GapLapsPredictedInterval;
-                    CalculateLaps(raceLeaderboardEventUser, update);
-                    CalculatePositions(raceLeaderboardEventUsers, update);
-                    _ = _raceSessionLeaderboardStream!.OnNextAsync(RaceSessionLeaderboard(heatWithStint.RaceSessionGroup.SessionType.Id));
+                    raceSessionLeaderboardEventUser.PreviousGapLapsPredictedInterval = raceSessionLeaderboardEventUser.GapLapsPredictedInterval;
+                    CalculateLaps(raceSessionLeaderboardEventUser, update);
+                    CalculatePositions(update);
+                    _ = _raceSessionLeaderboardStream!.OnNextAsync(RaceSessionLeaderboard());
 
                     break;
 
-                case RaceLeaderboardHeatEventUserUpdate.ValueOneofCase.Finished:
+                case EventUserUpdate.ValueOneofCase.Finished:
                     raceLeaderboardEventUserHeat.Finished = true;
-                    _ = _raceSessionLeaderboardStream!.OnNextAsync(RaceSessionLeaderboard(heatWithStint.RaceSessionGroup.SessionType.Id));
+                    _ = _raceSessionLeaderboardStream!.OnNextAsync(RaceSessionLeaderboard());
                     break;
 
                 //case RaceLeaderboardHeatEventUserUpdate.ValueOneofCase.Flags:
@@ -324,19 +302,19 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
 
         private void CalculateLaps(RaceSessionLeaderboardEventUser raceSessionLeaderboardEventUser, EventUserUpdate? update)
         {
-            var heatWithoutStint = _raceSession?.HeatWithoutStints.HeatWithoutStints_.SingleOrDefault(x => x.Id == update?.Id);
-            if (heatWithoutStint is null)
+            var heatWithoutStints = _raceSessionWithoutStints?.HeatWithoutStints.SingleOrDefault(x => x.Id == update?.Id);
+            if (heatWithoutStints is null)
             {
                 return;
             }
 
             raceSessionLeaderboardEventUser.LapsCompleted = raceSessionLeaderboardEventUser.EventUserHeats.Values.Sum(x => x.EventUserUpdatesLap?.Laps);
 
-            if (_raceSession?.HeatStintEndTypeId == HeatStintEndTypeId.Duration)
+            if (_raceSessionWithoutStints?.HeatStintEndTypeId == HeatStintEndTypeId.Duration)
             {
                 raceSessionLeaderboardEventUser.PreviousTimerElapsed = raceSessionLeaderboardEventUser.TimerElapsed;
                 var first = true;
-                raceSessionLeaderboardEventUser.TimerElapsed = TimeSpan.FromTicks(_raceSession.HeatWithoutStints.HeatWithoutStints_
+                raceSessionLeaderboardEventUser.TimerElapsed = TimeSpan.FromTicks(_raceSessionWithoutStints.HeatWithoutStints
                         .Where(x => raceSessionLeaderboardEventUser.EventUserHeats.ContainsKey(new Guid(x.Id)))
                     .OrderByDescending(x => x.Number).Sum(x =>
                     {
@@ -347,7 +325,7 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
                         }
                         else
                         {
-                            return _raceSession.HeatStintEndDurationDuration.ToTimeSpan().Ticks;
+                            return _raceSessionWithoutStints.HeatStintEndDurationDuration.ToTimeSpan().Ticks;
                         }
                     }));
 
@@ -356,8 +334,10 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
                     raceSessionLeaderboardEventUser.LapsPredicted = null;
                 }
                 else
-                {
-                    raceSessionLeaderboardEventUser.LapsPredicted = raceSessionLeaderboardEventUser.LapsCompleted * _raceSession.RaceIndicators.Count() * _raceSession.RaceHeatEndDurationDuration.ToTimeSpan().Ticks / raceSessionLeaderboardEventUser.TimerElapsed.Ticks;
+                {   
+                    raceSessionLeaderboardEventUser.LapsPredicted =
+                        raceSessionLeaderboardEventUser.LapsCompleted * _race!.RaceIndicators.Count() * _raceSessionWithoutStints!.HeatStintEndDurationDuration.ToTimeSpan().Ticks / raceSessionLeaderboardEventUser.TimerElapsed.Ticks;
+
                 }
             }
         }
@@ -365,7 +345,7 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
 
         private void CalculatePositions(EventUserUpdate? update)
         {
-            if (_raceSession!.HeatStintEndTypeId == HeatStintEndTypeId.Duration)
+            if (_raceSessionWithoutStints!.HeatStintEndTypeId == HeatStintEndTypeId.Duration)
             {
                 KeyValuePair<Guid, RaceSessionLeaderboardEventUser>? leaderRaceSessionLeaderboardEventUserKv = null;
                 KeyValuePair<Guid, RaceSessionLeaderboardEventUser>? intervalRaceSessionLeaderboardEventUserKv = null;
@@ -420,17 +400,17 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
         }
 
 
-        private RaceSessionWithoutStintState RaceSessionWithoutStintState()
+        private RaceSessionWithoutStintsState RaceSessionWithoutStintsState()
         {
-            var raceSessionWithoutStintState = new RaceSessionWithoutStintState
+            var raceSessionWithoutStintState = new RaceSessionWithoutStintsState
             {
-                RaceSessionStateType = _raceSession!.RaceSessionStateType,
+                StateType = _raceSessionWithoutStints!.StateType,
             };
 
-            var currentHeatWithoutStint = _raceSession.HeatWithoutStints.HeatWithoutStints_.SingleOrDefault(x => x.Id == _currentHeatWithoutStintId.ToString());
-            if (currentHeatWithoutStint is not null)
+            var currentHeatWithoutStints = _raceSessionWithoutStints.HeatWithoutStints.SingleOrDefault(x => x.Id == _currentHeatWithoutStintsId.ToString());
+            if (currentHeatWithoutStints is not null)
             {
-                raceSessionWithoutStintState.CurrentHeatWithoutStint = currentHeatWithoutStint;
+                raceSessionWithoutStintState.CurrentHeatWithoutStints = currentHeatWithoutStints;
             }
 
             return raceSessionWithoutStintState;
@@ -486,9 +466,9 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
                 //    raceLeaderboardEventUser.GapInterval = raceEventUserKv.Value.GapIntervalTime.Value.ToString(_trackLaptimeDecimalsFormat, CultureInfo.InvariantCulture);
                 //}
 
-                if (_currentHeatWithoutStintId.HasValue)
+                if (_currentHeatWithoutStintsId.HasValue)
                 {
-                    if (raceSessionLeaderboardEventUserKv.Value.EventUserHeats.TryGetValue(_currentHeatWithoutStintId.Value, out var raceLeaderboardEventUserHeat))
+                    if (raceSessionLeaderboardEventUserKv.Value.EventUserHeats.TryGetValue(_currentHeatWithoutStintsId.Value, out var raceLeaderboardEventUserHeat))
                     {
                         if (raceLeaderboardEventUserHeat.Finished)
                         {
@@ -551,12 +531,3 @@ namespace RazManager.Silo.Grains.Entities.RaceSessionWithoutStint
         }
     }
 }
-
-
-Task<Razmanager.Protobuf.Public.V1.Race> ReadAsync();
-Task<Razmanager.Protobuf.Public.V1.RaceWithoutStintState> ReadRaceWithoutStintStateAsync(Razmanager.Protobuf.Public.V1.SessionTypeId sessionTypeId);
-Task<Razmanager.Protobuf.Public.V1.RaceLeaderboard> ReadRaceLeaderboardAsync(Razmanager.Protobuf.Public.V1.SessionTypeId sessionTypeId);
-Task CommandAsync(Razmanager.Protobuf.Public.V1.SummaryCommandTypeId raceCommandTypeId);
-Task HeatWithoutStintStateTypeUpdatedAsync(Razmanager.Protobuf.Public.V1.HeatWithoutStint heatWithoutStint);
-Task HeatWithoutStintStateUpdatedAsync(Guid id, Razmanager.Protobuf.Public.V1.HeatWithoutStint heatWithoutStint);
-Task EventUserUpdateAsync(Razmanager.Protobuf.Internal.Silo.SystemServices.EventUser.EventUserUpdate update);

@@ -35,10 +35,5 @@ message TeamUser {
 }
 
 message EventState {
-  string id = 1;
-  google.protobuf.StringValue race_id = 2;
-  google.protobuf.StringValue heat_id = 3;
+  Race current_race = 1;
 }
-
-
-// eventleaderboard

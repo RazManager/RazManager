@@ -8,6 +8,11 @@ enum SummaryCommandTypeId {
   SUMMARY_COMMAND_TYPE_ID_RESET = 3;
 }
 
+message SummaryCommandRequest {
+  string id = 1;
+  SummaryCommandTypeId command_type_id = 2;
+}
+
 message SummaryCommandPermissions {
   repeated SummaryCommandTypeId items = 1;
 }

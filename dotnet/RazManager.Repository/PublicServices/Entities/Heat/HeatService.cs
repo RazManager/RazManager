@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RazManager.Repository.PublicServices.Entities.Heat
 {
-    public class HeatService : Razmanager.Protobuf.Public.V1.HeatWithoutStintService.HeatWithoutStintServiceBase
+    public class HeatService : Razmanager.Protobuf.Public.V1.HeatWithoutStintsService.HeatWithoutStintsServiceBase
     {
         private readonly Stores.Context.RepositoryDbContext _repositoryDbContext;
         private readonly IHttpContextOptions _httpContextOptions;

@@ -65,7 +65,7 @@ namespace RazManager.IO.Services.PerformanceTest
                     {
                         var heatWithoutSServiceClient = new Razmanager.Protobuf.Public.V1.HeatWithoutStintService.HeatWithoutStintServiceClient(channel);
 
-                        using (var call = heatWithoutSServiceClient.HeatWithoutStintLeaderboardSubscribe(new StringValue{ Value = "019d2979-dcbf-7460-bb0e-9eae1e1d5b6e" }, null, null, stoppingToken))
+                        using (var call = heatWithoutSServiceClient.LeaderboardSubscribe(new StringValue{ Value = "019d2979-dcbf-7460-bb0e-9eae1e1d5b6e" }, null, null, stoppingToken))
                         {
                             await foreach (var heatLeaderboard in call.ResponseStream.ReadAllAsync(stoppingToken))
                             {
