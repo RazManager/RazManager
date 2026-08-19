@@ -346,7 +346,7 @@ namespace RazManager.IO.Services.ChronoLog
                                         Console.WriteLine($"{car}\t{teamColumn}\t{laps}\t{previousLap.Laps}\t{lapDifference}\t{lastLapColumn}\t{lastEventColumn}");
                                     }
 
-                                    ignoreLap = laps > 1 && (lapDifference <= 0 || lapDifference > 10);
+                                    ignoreLap = laps > 1 && (lapDifference <= 0 || lapDifference > 10000);
                                     if (!ignoreLap)
                                     {
                                         //if (lapDifference != 1 && laps > 0 && previousLap.LapsDifference.HasValue && lapDifference + previousLap.LapsDifference != 0)
@@ -440,9 +440,9 @@ namespace RazManager.IO.Services.ChronoLog
                                     {
                                         _correlationIdTimestamps.Remove(item.Key, out var value);
                                     }
-
-                                    latestCarLaps[car] = (laps, lapDifference);
                                 }
+
+                                latestCarLaps[car] = (laps, lapDifference);
                             }
                         }
                     }
