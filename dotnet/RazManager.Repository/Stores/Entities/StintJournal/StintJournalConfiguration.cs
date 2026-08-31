@@ -8,7 +8,7 @@ namespace RazManager.Repository.Stores.Entities.StintJournal
     {
         public void Configure(EntityTypeBuilder<StintJournalEntity> builder)
         {
-            builder.HasIndex(x => new { x.HeatWithStintId, x.Timestamp, x.SequenceNumber }).IsUnique();
+            builder.HasIndex(x => new { x.StintId, x.Timestamp, x.SequenceNumber }).IsUnique();
         }
     }
 }

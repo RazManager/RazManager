@@ -17,7 +17,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 
-namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
+namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStints
 {
     public class HeatWithoutStintsService : Razmanager.Protobuf.Internal.Repository.SystemServices.HeatWithoutStints.HeatWithoutStintsService.HeatWithoutStintsServiceBase
     {
@@ -26,8 +26,8 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
         private readonly ILogger<HeatWithoutStintsService> _logger;
 
         public HeatWithoutStintsService(Stores.Context.RepositoryDbContext dbContext,
-                                       AutoMapper.IMapper mapper,
-                                       ILogger<HeatWithoutStintsService> logger)
+                                        AutoMapper.IMapper mapper,
+                                        ILogger<HeatWithoutStintsService> logger)
         {
             _repositoryDbContext = dbContext;
             _mapper = mapper;
@@ -38,7 +38,7 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
         public override async Task<Razmanager.Protobuf.Public.V1.HeatWithoutStints> Read(StringValue request, ServerCallContext context)
         {
             var entity = await _repositoryDbContext.HeatWithoutStints
-                .Include(x => x.RaceSession).ThenInclude(x => x.Race).ThenInclude(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationIndicators)
+                .Include(x => x.RaceSessionWithoutStints).ThenInclude(x => x.Race).ThenInclude(x => x.TrackConfiguration).ThenInclude(x => x.TrackConfigurationIndicators)
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.Car).ThenInclude(x => x.CarImages.Where(x => x.ImageSize == ImageSize.Avatar))
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.HeatIndicatorStints.OrderBy(x => x.Lap))
                 .Include(x => x.HeatIndicators.OrderBy(x => x.IndicatorId)).ThenInclude(x => x.EventUser.EventUsers)
@@ -107,7 +107,7 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
         public override async Task<HeatStintJournalListResponse> ListHeatJournals(StringValue request, ServerCallContext context)
         {
             var entities = _repositoryDbContext.HeatJournals
-                .Where(x => x.HeatWithoutStintId == new Guid(request.Value))
+                .Where(x => x.HeatWithoutStintsId == new Guid(request.Value))
                 .OrderBy(x => x.Timestamp).ThenBy(x => x.SequenceNumber)
                 .AsAsyncEnumerable()
                 .ConfigureAwait(false);
@@ -129,7 +129,7 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
         {
             _repositoryDbContext.Add(new HeatJournalEntity
             {
-                HeatWithoutStintId = new Guid(request.HeatStintId),
+                HeatWithoutStintsId = new Guid(request.HeatStintId),
                 Timestamp = request.HeatStintJournal.HeatStintJournalState.Timestamp.ToDateTime(),
                 SequenceNumber = request.SequenceNumber,
                 Payload = request.HeatStintJournal.ToByteArray(),
@@ -144,7 +144,7 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
         public override async Task<Empty> DeleteHeatJournals(StringValue request, ServerCallContext context)
         {
             await _repositoryDbContext.HeatJournals
-                .Where(x => x.HeatWithoutStintId == new Guid(request.Value))
+                .Where(x => x.HeatWithoutStintsId == new Guid(request.Value))
                 .ExecuteDeleteAsync();
 
             return new Empty();
@@ -154,12 +154,12 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
         public override async Task<Empty> DeleteStints(StringValue request, ServerCallContext context)
         {
             await _repositoryDbContext.HeatIndicatorStints
-                .Where(x => x.HeatIndicator.HeatWithoutStintId == new Guid(request.Value))
+                .Where(x => x.HeatIndicator.HeatWithoutStintsId == new Guid(request.Value))
                 .ExecuteDeleteAsync();
 
             var heatIndicators = _repositoryDbContext.HeatIndicators
-                .Where(x => x.HeatWithoutStintId == new Guid(request.Value))
-                .Include(x => x.HeatWithoutStint)
+                .Where(x => x.HeatWithoutStintsId == new Guid(request.Value))
+                .Include(x => x.HeatWithoutStints)
                 .Include(x => x.EventUser.EventUsers)
                 .AsAsyncEnumerable()
                 .ConfigureAwait(false);
@@ -171,13 +171,13 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStint
                     Lap = 1
                 };
 
-                if (!string.IsNullOrEmpty(heatIndicator.HeatWithoutStint.PreconfiguredIndicatorsJson))
+                if (!string.IsNullOrEmpty(heatIndicator.HeatWithoutStints.PreconfiguredIndicatorsJson))
                 {
                     var jsonSerializerOptions = new JsonSerializerOptions
                     {
                         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     };
-                    var preconfiguredIndicators = JsonSerializer.Deserialize<List<PreconfiguredIndicator>>(heatIndicator.HeatWithoutStint.PreconfiguredIndicatorsJson, jsonSerializerOptions);
+                    var preconfiguredIndicators = JsonSerializer.Deserialize<List<PreconfiguredIndicator>>(heatIndicator.HeatWithoutStints.PreconfiguredIndicatorsJson, jsonSerializerOptions);
                     if (preconfiguredIndicators is null)
                     {
                         _logger.LogWarning("preconfiguredIndicators is null.");

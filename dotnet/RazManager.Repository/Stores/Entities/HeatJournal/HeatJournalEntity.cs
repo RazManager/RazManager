@@ -8,8 +8,8 @@ namespace RazManager.Repository.Stores.Entities.HeatJournal
     public class HeatJournalEntity : HeatStintJournalEntityBase
     {
         [Required]
-        public Guid HeatWithoutStintId { get; set; }
+        public Guid HeatWithoutStintsId { get; set; }
 
-        public HeatWithoutStint.HeatWithoutStintsEntity HeatWithoutStint { get; set; } = null!;
+        public HeatWithoutStints.HeatWithoutStintsEntity HeatWithoutStints { get; set; } = null!;
     }
 }

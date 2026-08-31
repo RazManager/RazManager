@@ -8,7 +8,7 @@ namespace RazManager.Repository.Stores.Entities.Stint
     {
         public void Configure(EntityTypeBuilder<StintEntity> builder)
         {
-            builder.HasIndex(x => new { x.HeatWithStintId, x.Number }).IsUnique();
+            builder.HasIndex(x => new { x.HeatWithStintsId, x.Number }).IsUnique();
         }
     }
 }

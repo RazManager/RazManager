@@ -23,7 +23,7 @@ namespace RazManager.Repository.SystemServices.Entities.HeatWithoutStints
 
         private uint? IndicatorColor(HeatIndicatorEntity heatIndicator)
         {
-            return heatIndicator.HeatWithoutStint.RaceSession.Race.TrackConfiguration.TrackConfigurationIndicators.SingleOrDefault(x => x.IndicatorId == heatIndicator.IndicatorId)?.Color;
+            return heatIndicator.HeatWithoutStints.RaceSessionWithoutStints.Race.TrackConfiguration.TrackConfigurationIndicators.SingleOrDefault(x => x.IndicatorId == heatIndicator.IndicatorId)?.Color;
         }
 
 

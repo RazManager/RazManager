@@ -125,7 +125,7 @@ builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Internal.Repositor
 builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Internal.Repository.UserServices.Tenant.TenantService.TenantServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
 builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Internal.Repository.UserServices.TenantInvite.TenantInviteService.TenantInviteServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
 
-builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Public.V1.HeatWithoutStintService.HeatWithoutStintServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
+builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Public.V1.HeatWithoutStintsService.HeatWithoutStintsServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
 builder.Services.AddGrpcClientAccessToken<Razmanager.Protobuf.Public.V1.RaceService.RaceServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
 builder.Services.AddGrpcClientWithoutAuthentication<Razmanager.Protobuf.Public.V1.VersionService.VersionServiceClient>(repositoryClientOptions!.RepositoryClientAddress);
 
@@ -219,7 +219,7 @@ app.MapGrpcService<RazManager.App.CrudServices.Entities.User.UserService>();
 //app.MapGrpcService<RazManager.Repository.Logic.UserServices.Entities.Device.DeviceService>();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Device.DeviceService>();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Event.EventService>();
-app.MapGrpcService<RazManager.App.PublicServices.Entities.HeatWithoutStint.HeatWithoutStintService>();
+app.MapGrpcService<RazManager.App.PublicServices.Entities.HeatWithoutStints.HeatWithoutStintsService>();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Race.RaceService> ();
 app.MapGrpcService<RazManager.App.PublicServices.Entities.Version.VersionService>();
 app.MapGrpcService<RazManager.App.UserServices.Entities.Event.EventService>();

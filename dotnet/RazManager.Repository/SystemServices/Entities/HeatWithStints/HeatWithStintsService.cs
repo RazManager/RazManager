@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace RazManager.Repository.SystemServices.Entities.HeatWithStint
+namespace RazManager.Repository.SystemServices.Entities.HeatWithStints
 {
     public class HeatWithStintsService : Razmanager.Protobuf.Internal.Repository.SystemServices.HeatWithStints.HeatWithStintsService.HeatWithStintsServiceBase
     {

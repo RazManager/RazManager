@@ -142,8 +142,8 @@
 			<Link>Protos/public/track_configuration.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
-		<Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stint.service.v1.proto" GrpcServices="Client">
-			<Link>Protos/public/heat_without_stint.service.v1.proto</Link>
+		<Protobuf Include="../protos/razmanager/protobuf/public/heat_without_stints.service.v1.proto" GrpcServices="Client">
+			<Link>Protos/public/heat_without_stints.service.v1.proto</Link>
 			<ProtoRoot>../protos</ProtoRoot>
 		</Protobuf>
 		<Protobuf Include="../protos/razmanager/protobuf/public/race.service.v1.proto" GrpcServices="Client">

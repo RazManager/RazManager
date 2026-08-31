@@ -8,6 +8,6 @@ namespace RazManager.Repository.Stores.Entities.RaceSessionWithoutStints
     public class RaceSessionWithoutStintsEntity : RaceSessionEntityBase
     {
         [Required]
-        public List<HeatWithoutStint.HeatWithoutStintsEntity> HeatWithoutStints { get; set; } = [];
+        public List<HeatWithoutStints.HeatWithoutStintsEntity> HeatWithoutStints { get; set; } = [];
     }
 }
